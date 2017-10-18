@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     cpicturesthread.cpp \
     cthetvdbv2.cpp \
     cthemoviedbv3.cpp \
-    cmovie.cpp
+    cmovie.cpp \
+    cmoviesearch.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -49,7 +50,8 @@ HEADERS  += cmainwindow.h \
     cpicturesthread.h \
     cthetvdbv2.h \
     cthemoviedbv3.h \
-    cmovie.h
+    cmovie.h \
+    cmoviesearch.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \
@@ -57,7 +59,8 @@ FORMS    += cmainwindow.ui \
     cedit.ui \
     cseasondetails.ui \
     cepisodedetails.ui \
-    cmessagedialog.ui
+    cmessagedialog.ui \
+    cmoviesearch.ui
 
 DISTFILES +=
 

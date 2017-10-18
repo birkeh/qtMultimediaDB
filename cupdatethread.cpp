@@ -1,5 +1,4 @@
 #include "cupdatethread.h"
-#include "cserie.h"
 #include "cseason.h"
 #include "cepisode.h"
 #include "cthetvdbv2.h"
@@ -28,9 +27,9 @@ void cUpdateThread::run()
 	timer.restart();
 	QString szFailed;
 
-	for(int x = 0;x < m_indexList.count();x++)
+	for(int x = 0;x < m_serieList.count();x++)
 	{
-		cSerie*	lpSerie	= m_indexList.at(x).data(Qt::UserRole).value<cSerie*>();
+		cSerie*	lpSerie	= m_serieList.at(x);
 		if(lpSerie)
 		{
 			emit updateMessage(lpSerie->seriesName(), x);
@@ -82,9 +81,9 @@ void cUpdateThread::run()
 */
 }
 
-void cUpdateThread::setData(cMessageDialog* lpMessageDialog, const QModelIndexList &indexList, const QSqlDatabase& db)
+void cUpdateThread::setData(cMessageDialog* lpMessageDialog, const cSerieList &serieList, const QSqlDatabase& db)
 {
 	connect(lpMessageDialog->cancelButton(), SIGNAL(clicked()), this, SLOT(stop()));
-	m_indexList	= indexList;
+	m_serieList	= serieList;
 	m_db		= db;
 }

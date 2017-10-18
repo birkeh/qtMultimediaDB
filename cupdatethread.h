@@ -4,6 +4,8 @@
 
 #include "cmessagedialog.h"
 
+#include "cserie.h"
+
 #include <QThread>
 #include <QMutexLocker>
 #include <QList>
@@ -18,7 +20,7 @@ class cUpdateThread : public QThread
 public:
 	explicit				cUpdateThread();
 
-	void					setData(cMessageDialog *lpMessageDialog, const QModelIndexList& indexList, const QSqlDatabase& db);
+	void					setData(cMessageDialog *lpMessageDialog, const cSerieList& serieList, const QSqlDatabase& db);
 public slots:
 	void					stop();
 
@@ -29,7 +31,7 @@ signals:
 private:
 	QMutex					m_mutex;
 	bool					m_bStop;
-	QModelIndexList			m_indexList;
+	cSerieList				m_serieList;
 	QSqlDatabase			m_db;
 	QWidget*				m_lpParent;
 

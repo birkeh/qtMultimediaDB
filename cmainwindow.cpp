@@ -4,6 +4,7 @@
 #include "cthetvdbv2.h"
 #include "cseasondelegate.h"
 #include "csearch.h"
+#include "cmoviesearch.h"
 #include "cmessageanimatedialog.h"
 #include "cmessagedialog.h"
 #include "cedit.h"
@@ -579,52 +580,27 @@ void cMainWindow::displaySeries()
 
 void cMainWindow::on_m_lpSeriesList1_customContextMenuRequested(const QPoint &pos)
 {
-	QMenu*	lpMenu	= new QMenu(this);
-
-	lpMenu->addAction("add", this, SLOT(onActionAdd()));
-
-	if(ui->m_lpSeriesList1->selectionModel()->selectedRows().count() == 1)
-	{
-		cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(ui->m_lpSeriesList1->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>();
-		if(lpSerie)
-		{
-			lpMenu->addAction("update", this, SLOT(onActionUpdate()));
-			lpMenu->addAction("delete", this, SLOT(onActionDelete()));
-			lpMenu->addAction("edit", this, SLOT(onActionEdit()));
-			lpMenu->addSeparator();
-
-			if(!lpSerie->imdbID().isEmpty())
-				lpMenu->addAction("open IMDB", this, SLOT(onActionGotoIMDB()));
-
-			if(!lpSerie->download().isEmpty())
-			{
-				lpMenu->addAction("open download link", this, SLOT(onActionGotoDownload()));
-				lpMenu->addAction("copy download link", this, SLOT(onActionCopyDownload()));
-			}
-			lpMenu->addSeparator();
-			lpMenu->addAction("load images", this, SLOT(onActionLoadPictures()));
-		}
-	}
-	else if(ui->m_lpSeriesList1->selectionModel()->selectedRows().count())
-	{
-		lpMenu->addAction("update", this, SLOT(onActionUpdate()));
-		lpMenu->addAction("delete", this, SLOT(onActionDelete()));
-		lpMenu->addSeparator();
-		lpMenu->addAction("load images", this, SLOT(onActionLoadPictures()));
-	}
-
-	lpMenu->popup(ui->m_lpSeriesList1->viewport()->mapToGlobal(pos));
+	showSeriesContextMenu(ui->m_lpSeriesList1, pos);
 }
 
 void cMainWindow::on_m_lpSeriesList2_customContextMenuRequested(const QPoint &pos)
+{
+	showSeriesContextMenu(ui->m_lpSeriesList2, pos);
+}
+
+void cMainWindow::showSeriesContextMenu(QTreeView* lpTreeView, const QPoint &pos)
 {
 	QMenu*	lpMenu	= new QMenu(this);
 
 	lpMenu->addAction("add", this, SLOT(onActionAdd()));
 
-	if(ui->m_lpSeriesList2->selectionModel()->selectedRows().count() == 1)
+	lpMenu->addAction("update all", this, SLOT(onActionUpdateAll()));
+	lpMenu->addAction("update unfinished", this, SLOT(onActionUpdateUnfinished()));
+	lpMenu->addSeparator();
+
+	if(lpTreeView->selectionModel()->selectedRows().count() == 1)
 	{
-		cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(ui->m_lpSeriesList2->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>();
+		cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(lpTreeView->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>();
 		if(lpSerie)
 		{
 			lpMenu->addAction("update", this, SLOT(onActionUpdate()));
@@ -644,15 +620,29 @@ void cMainWindow::on_m_lpSeriesList2_customContextMenuRequested(const QPoint &po
 			lpMenu->addAction("load images", this, SLOT(onActionLoadPictures()));
 		}
 	}
-	else if(ui->m_lpSeriesList2->selectionModel()->selectedRows().count())
+	else if(lpTreeView->selectionModel()->selectedRows().count())
 	{
-		lpMenu->addAction("update", this, SLOT(onActionUpdate()));
-		lpMenu->addAction("delete", this, SLOT(onActionDelete()));
+		lpMenu->addAction("update selected", this, SLOT(onActionUpdate()));
+		lpMenu->addAction("delete selected", this, SLOT(onActionDelete()));
 		lpMenu->addSeparator();
 		lpMenu->addAction("load images", this, SLOT(onActionLoadPictures()));
 	}
 
-	lpMenu->popup(ui->m_lpSeriesList2->viewport()->mapToGlobal(pos));
+	lpMenu->popup(lpTreeView->viewport()->mapToGlobal(pos));
+}
+
+void cMainWindow::on_m_lpMoviesList_customContextMenuRequested(const QPoint &pos)
+{
+	showMoviesContextMenu(ui->m_lpMoviesList, pos);
+}
+
+void cMainWindow::showMoviesContextMenu(QTreeView* lpTreeView, const QPoint &pos)
+{
+	QMenu*	lpMenu	= new QMenu(this);
+
+	lpMenu->addAction("add", this, SLOT(onActionMovieAdd()));
+
+	lpMenu->popup(lpTreeView->viewport()->mapToGlobal(pos));
 }
 
 static bool serieSort(cSerie* s1, cSerie* s2)
@@ -811,9 +801,127 @@ void cMainWindow::onActionAdd()
 	delete lpDialog;
 }
 
+void cMainWindow::onActionMovieAdd()
+{
+	cMovieSearch*	lpSearch	= new cMovieSearch(this);
+	if(lpSearch->exec() == QDialog::Rejected)
+	{
+		delete lpSearch;
+		return;
+	}
+
+
+	qint32	id				= lpSearch->id();
+	QString	szPlaceholder	= lpSearch->placeholderName();
+	bool	bPlaceholder	= lpSearch->placeholder();
+	qint16	iYear			= lpSearch->year();
+
+	delete lpSearch;
+
+	cMovie*	lpMovie			= 0;
+
+	cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
+	lpDialog->setTitle("Refresh");
+	lpDialog->setMessage("Loading");
+	lpDialog->show();
+
+	if(!bPlaceholder)
+	{
+		if(id == -1)
+			return;
+
+		cTheMovieDBV3		movieDB3;
+
+		lpMovie	= movieDB3.load(id, "de");
+		if(!lpMovie)
+			lpMovie	= movieDB3.load(id, "en");
+
+		delete lpDialog;
+/*
+		QString	szDownload;
+		if(!runEdit(lpSerie, szDownload))
+			return;
+
+		lpDialog	= new cMessageAnimateDialog(this);
+		lpDialog->setTitle("Update");
+		lpDialog->setMessage("Updating");
+		lpDialog->show();
+
+		lpSerie->save(m_db);
+*/
+	}
+	else
+	{
+/*
+		lpSerie	= new cSerie;
+		lpSerie->setSeriesName(szPlaceholder);
+
+		qint32	iMax	= 0;
+		QSqlQuery	query;
+		if(query.exec("SELECT MAX(id) FROM serie;"))
+		{
+			query.next();
+			if(query.isValid())
+				iMax	= query.value(0).toInt();
+		}
+		if(iMax < 1000000)
+			iMax	= 1000000;
+		else
+			iMax++;
+		lpSerie->setID(iMax);
+		lpSerie->setFirstAired(QDate(iYear, 1, 1));
+		lpSerie->save(m_db);
+*/
+	}
+/*
+	m_serieList.add(lpSerie);
+	std::sort(m_serieList.begin(), m_serieList.end(), serieSort);
+
+	m_szOldSelected	= lpSerie->seriesName();
+	displaySeries();
+
+	delete lpDialog;
+*/
+}
+
+void cMainWindow::onActionUpdateAll()
+{
+	cSerieList	serieList	= m_serieList;
+
+	if(serieList.count())
+		doUpdate(serieList);
+}
+
+void cMainWindow::onActionUpdateUnfinished()
+{
+	cSerieList	serieList;
+
+	for(int x = 0;x < m_serieList.count();x++)
+	{
+		cSerie*	lpSerie	= m_serieList.at(x);
+		if(lpSerie->status().compare("Ended", Qt::CaseInsensitive))
+			serieList.add(lpSerie);
+	}
+	if(serieList.count())
+		doUpdate(serieList);
+}
+
 void cMainWindow::onActionUpdate()
 {
-	if(ui->m_lpSeriesList1->selectionModel()->selectedRows().count())
+	cSerieList	serieList;
+
+	for(int x = 0;x < ui->m_lpSeriesList1->selectionModel()->selectedRows().count();x++)
+	{
+		cSerie*	lpSerie	= ui->m_lpSeriesList1->selectionModel()->selectedRows().at(x).data(Qt::UserRole).value<cSerie*>();
+		serieList.add(lpSerie);
+	}
+	if(serieList.count())
+		doUpdate(serieList);
+}
+
+void cMainWindow::doUpdate(cSerieList& serieList)
+{
+	if(serieList.count())
 	{
 		if(ui->m_lpSeriesList1->selectionModel()->selectedRows().count() == 1)
 			m_szOldSelected	= m_lpSeriesListModel->itemFromIndex(ui->m_lpSeriesList1->selectionModel()->selectedIndexes().at(1))->text();
@@ -821,11 +929,11 @@ void cMainWindow::onActionUpdate()
 		m_lpMessageDialog	= new cMessageDialog(this);
 		m_lpMessageDialog->setWindowTitle("Update");
 		m_lpMessageDialog->setMessage("Updating");
-		m_lpMessageDialog->setProgress(0, ui->m_lpSeriesList1->selectionModel()->selectedRows().count());
+		m_lpMessageDialog->setProgress(0, serieList.count());
 		m_lpMessageDialog->show();
 
 		m_lpUpdateThread		= new cUpdateThread;
-		m_lpUpdateThread->setData(m_lpMessageDialog, ui->m_lpSeriesList1->selectionModel()->selectedRows(), m_db);
+		m_lpUpdateThread->setData(m_lpMessageDialog, serieList, m_db);
 
 		connect(m_lpUpdateThread, SIGNAL(finished()), this, SLOT(updateDone()));
 		connect(m_lpUpdateThread, SIGNAL(updateMessage(QString,qint32)), this, SLOT(updateMessage(QString,qint32)));

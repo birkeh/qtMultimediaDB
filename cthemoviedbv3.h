@@ -15,7 +15,7 @@ public:
 	cTheMovieDBV3();
 
 	QList<cMovie*>	search(const QString& szMovie, const qint16& year = -1, const QString& szLanguage = "all");
-//	cSerie*			load(const qint32 &iID, const QString& szLanguage);
+	cMovie*			load(const qint32 &iID, const QString& szLanguage);
 private:
 	QString			m_szToken;
 //	QStringList		getActors(const qint32& iID);

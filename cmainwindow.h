@@ -19,6 +19,8 @@
 #include <QStandardItemModel>
 #include <QItemSelection>
 
+#include <QTreeView>
+
 
 namespace Ui {
 class cMainWindow;
@@ -42,7 +44,11 @@ private slots:
 	void				on_m_lpSeriesList2_doubleClicked(const QModelIndex &index);
 	void				on_m_lpSeriesList2_pressed(const QModelIndex &index);
 
+	void				on_m_lpMoviesList_customContextMenuRequested(const QPoint &pos);
+
 	void				onActionAdd();
+	void				onActionUpdateAll();
+	void				onActionUpdateUnfinished();
 	void				onActionUpdate();
 	void				onActionDelete();
 	void				onActionEdit();
@@ -50,6 +56,8 @@ private slots:
 	void				onActionGotoDownload();
 	void				onActionCopyDownload();
 	void				onActionLoadPictures();
+
+	void				onActionMovieAdd();
 
 	void				updateMessage(const QString& szMessage, const qint32 &iProgress);
 	void				updateAppendMessage(const QString& szMessage);
@@ -91,6 +99,11 @@ private:
 	void				displaySeries();
 
 	bool				runEdit(cSerie *lpSerie, QString& szDownload);
+
+	void				showSeriesContextMenu(QTreeView* lpTreeView, const QPoint &pos);
+	void				doUpdate(cSerieList& serieList);
+
+	void				showMoviesContextMenu(QTreeView* lpTreeView, const QPoint &pos);
 protected:
 	void				closeEvent(QCloseEvent *event);
 };
