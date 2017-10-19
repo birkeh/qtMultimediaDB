@@ -36,25 +36,34 @@ void cMovieViewItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 	//doc.drawContents(painter, clip);
 
 	painter->setClipRect(clip);
-	oldBrush	= painter->brush();
 
-	switch(lpMovie->state())
+	if(!lpMovie)
 	{
-	case cMovie::StateInit:
-		painter->setBrush(STATE_INIT);
-		break;
-	case cMovie::StateProgress:
-		painter->setBrush(STATE_PROGRESS);
-		break;
-	case cMovie::StateDone:
-		painter->setBrush(STATE_DONE);
-		break;
-	default:
-		break;
+		QItemModel*	lpModel	= (QItemModel*)index.model();
+		aaaaa
 	}
-	painter->drawRect(clip);
+	if(lpMovie)
+	{
+		oldBrush	= painter->brush();
 
-	painter->setBrush(oldBrush);
+		switch(lpMovie->state())
+		{
+		case cMovie::StateInit:
+			painter->setBrush(STATE_INIT);
+			break;
+		case cMovie::StateProgress:
+			painter->setBrush(STATE_PROGRESS);
+			break;
+		case cMovie::StateDone:
+			painter->setBrush(STATE_DONE);
+			break;
+		default:
+			break;
+		}
+		painter->drawRect(clip);
+
+		painter->setBrush(oldBrush);
+	}
 
 	QAbstractTextDocumentLayout::PaintContext ctx;
 	// set text color to red for selected item

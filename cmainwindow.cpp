@@ -39,6 +39,34 @@
 #include <QDesktopWidget>
 
 
+static bool serieSort(cSerie* s1, cSerie* s2)
+{
+	QString str1	= s1->seriesName();
+	QString	str2	= s2->seriesName();
+	return(str1 < str2);
+}
+
+static bool movieSort(cMovie* s1, cMovie* s2)
+{
+	QString	collection1	= s1->belongsToCollection();
+	QString	collection2	= s2->belongsToCollection();
+
+	QString title1		= s1->movieTitle();
+	QString	title2		= s2->movieTitle();
+
+	if(collection1.isEmpty() && collection2.isEmpty())
+		return(title1 < title2);
+
+	if(!collection1.isEmpty() && !collection2.isEmpty())
+	{
+		if(collection1 == collection2)
+			return(title1 < title2);
+		return(collection1 < collection2);
+	}
+
+	return(title1 < title2);
+}
+
 cMainWindow::cMainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::cMainWindow),
@@ -317,7 +345,7 @@ void cMainWindow::loadMoviesDB()
 	QSqlQuery	query;
 	qint32		iMovieID;
 
-	if(query.exec("SELECT movieID, movieTitle, originalTitle, backdropPath, posterPath, overview, releaseDate, genre, imdbid, originalLanguage, popularity, productionCompanies, productionCountries, voteAverage, voteCount, adult, belongsToCollection, budget, homepage, revenue, runtime, spokenLanguages, status, tagline, video, `cast`, crew, state FROM movie ORDER BY movieTitle, releaseDate;"))
+	if(query.exec("SELECT movieID, movieTitle, originalTitle, backdropPath, posterPath, overview, releaseDate, genre, imdbid, originalLanguage, popularity, productionCompanies, productionCountries, voteAverage, voteCount, adult, belongsToCollection, budget, homepage, revenue, runtime, spokenLanguages, status, tagline, video, `cast`, crew, state, sortText FROM (SELECT *, IFNULL(belongsToCollection, movieTitle) AS sortText FROM movie) ORDER BY sortText, releaseDate;"))
 	{
 		while(query.next())
 		{
@@ -574,7 +602,6 @@ void cMainWindow::displaySeries()
 void cMainWindow::displayMovies()
 {
 	m_lpMoviesListModel->clear();
-
 	m_lpMoviesListModel->setColumnCount(1);
 
 	QStringList	header;
@@ -582,13 +609,32 @@ void cMainWindow::displayMovies()
 
 	m_lpMoviesListModel->setHorizontalHeaderLabels(header);
 
+	QString			szOldCollection("");
+	QStandardItem*	lpRoot	= 0;
+
 	for(int x = 0;x < m_movieList.count();x++)
 	{
 		cMovie*	lpMovie	= m_movieList.at(x);
 
+		if(lpMovie->belongsToCollection() != szOldCollection)
+		{
+			szOldCollection	= lpMovie->belongsToCollection();
+			if(szOldCollection.isEmpty())
+				lpRoot	= 0;
+			else
+			{
+				lpRoot	= new QStandardItem(szOldCollection);
+				m_lpMoviesListModel->appendRow(lpRoot);
+			}
+		}
+
 		QStandardItem*	lpItem	= new QStandardItem(QString("<font color='white'><b>%1</b> (%2)&nbsp;&nbsp;<br><i>%3</i></font>").arg(lpMovie->movieTitle()).arg(lpMovie->releaseDate().year()).arg(lpMovie->tagline()));
 		lpItem->setData(QVariant::fromValue(lpMovie), Qt::UserRole);
-		m_lpMoviesListModel->appendRow(lpItem);
+
+		if(lpRoot)
+			lpRoot->appendRow(lpItem);
+		else
+			m_lpMoviesListModel->appendRow(lpItem);
 	}
 }
 
@@ -658,21 +704,6 @@ void cMainWindow::showMoviesContextMenu(QTreeView* lpTreeView, const QPoint &pos
 
 	lpMenu->popup(lpTreeView->viewport()->mapToGlobal(pos));
 }
-
-static bool serieSort(cSerie* s1, cSerie* s2)
-{
-	QString str1	= s1->seriesName();
-	QString	str2	= s2->seriesName();
-	return(str1 < str2);
-}
-
-static bool movieSort(cMovie* s1, cMovie* s2)
-{
-	QString str1	= s1->movieTitle();
-	QString	str2	= s2->movieTitle();
-	return(str1 < str2);
-}
-
 bool cMainWindow::runEdit(cSerie* lpSerie, QString& szDownload)
 {
 	cEdit*	lpEdit	= new cEdit;
@@ -902,9 +933,7 @@ void cMainWindow::onActionMovieAdd()
 */
 	}
 
-	m_movieList.add(lpMovie);
-	std::sort(m_movieList.begin(), m_movieList.end(), movieSort);
-
+	loadMoviesDB();
 	displayMovies();
 
 	delete lpDialog;

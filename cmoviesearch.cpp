@@ -40,7 +40,7 @@ void cMovieSearch::on_m_lpSearchButton_clicked()
 	lpDialog->show();
 
 	cTheMovieDBV3		theMovieDBV3;
-	QList<cMovie*>		movieList	= theMovieDBV3.search(ui->m_lpSearch->text());
+	QList<cMovie*>		movieList	= theMovieDBV3.search(ui->m_lpSearch->text(), -1, "de");
 
 	ui->m_lpResults->clear();
 
