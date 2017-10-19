@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 
 	QCoreApplication::setOrganizationName("WIN-DESIGN");
 	QCoreApplication::setOrganizationDomain("windesign.at");
-	QCoreApplication::setApplicationName("qtSerien");
+	QCoreApplication::setApplicationName("qtMovies");
 
 	QSettings	settings;
 

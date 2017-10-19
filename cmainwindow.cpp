@@ -1,3 +1,5 @@
+#include "common.h"
+
 #include "cmainwindow.h"
 #include "ui_cmainwindow.h"
 
@@ -135,9 +137,7 @@ void cMainWindow::closeEvent(QCloseEvent *event)
 
 void cMainWindow::initDB()
 {
-	QDir	dir;
-	dir.mkpath(QDir::homePath() + QDir::separator() + "qtseries" + QDir::separator());
-	QString	szDBPath	= QDir::homePath() + QDir::separator() + "qtseries" + QDir::separator() + "qtseries.db";
+	QString		szDBPath	= rootPath()+ QDir::separator() + QString("qtmovies.db");
 
 	m_db	= QSqlDatabase::addDatabase("QSQLITE");
 	m_db.setHostName("localhost");
@@ -224,7 +224,8 @@ void cMainWindow::initDB()
 					"   tagline             STRING,"
 					"   video               BOOL,"
 					"   cast                TEXT,"
-					"   crew                TEXT);"); // NAME|CHARACTER|ORDER
+					"   crew                TEXT,"
+					"   state               INTEGER);");
 	}
 }
 
@@ -316,7 +317,7 @@ void cMainWindow::loadMoviesDB()
 	QSqlQuery	query;
 	qint32		iMovieID;
 
-	if(query.exec("SELECT movieID, movieTitle, originalTitle, backdropPath, posterPath, overview, releaseDate, genre, imdbid, originalLanguage, popularity, productionCompanies, productionCountries, voteAverage, voteCount, adult, belongsToCollection, budget, homepage, revenue, runtime, spokenLanguages, status, tagline, video, `cast`, crew FROM movie ORDER BY movieTitle, releaseDate;"))
+	if(query.exec("SELECT movieID, movieTitle, originalTitle, backdropPath, posterPath, overview, releaseDate, genre, imdbid, originalLanguage, popularity, productionCompanies, productionCountries, voteAverage, voteCount, adult, belongsToCollection, budget, homepage, revenue, runtime, spokenLanguages, status, tagline, video, `cast`, crew, state FROM movie ORDER BY movieTitle, releaseDate;"))
 	{
 		while(query.next())
 		{
@@ -349,6 +350,7 @@ void cMainWindow::loadMoviesDB()
 			lpMovie->setVoteCount(query.value("voteCount").toInt());
 			lpMovie->setCast(query.value("cast").toString().split("|"));
 			lpMovie->setCrew(query.value("crew").toString().split("|"));
+			lpMovie->setState((cMovie::State)query.value("state").toInt());
 		}
 	}
 	else
@@ -584,7 +586,7 @@ void cMainWindow::displayMovies()
 	{
 		cMovie*	lpMovie	= m_movieList.at(x);
 
-		QStandardItem*	lpItem	= new QStandardItem(QString("<b>%1</b> <font color='blue'>(%2)</font>&nbsp;&nbsp;<br><i>%3</i>").arg(lpMovie->movieTitle()).arg(lpMovie->releaseDate().year()).arg(lpMovie->tagline()));
+		QStandardItem*	lpItem	= new QStandardItem(QString("<font color='white'><b>%1</b> (%2)&nbsp;&nbsp;<br><i>%3</i></font>").arg(lpMovie->movieTitle()).arg(lpMovie->releaseDate().year()).arg(lpMovie->tagline()));
 		lpItem->setData(QVariant::fromValue(lpMovie), Qt::UserRole);
 		m_lpMoviesListModel->appendRow(lpItem);
 	}

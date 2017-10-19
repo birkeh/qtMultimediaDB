@@ -1,3 +1,5 @@
+#include "common.h"
+
 #include "cimage.h"
 
 #include <QDir>
@@ -17,10 +19,10 @@ QPixmap cImage::getImage(const QString& szFileName)
 {
 	QPixmap	pixmap;
 
-	QString	szPath	= QDir::homePath() + QDir::separator() + "qtseries" + QDir::separator() + szFileName;
+	QString	szPath	= rootPath() + QDir::separator() + szFileName;
 
 	if(szFileName.isEmpty())
-		pixmap.load(QDir::homePath() + QDir::separator() + "qtseries" + QDir::separator() + "empty.jpg");
+		pixmap.load(rootPath() + QDir::separator() + QDir::separator() + "empty.jpg");
 	else
 		pixmap.load(szPath);
 
@@ -34,7 +36,7 @@ QPixmap cImage::downloadFile(const QString& szFileName)
 {
 	QPixmap					pixmap;
 
-	QString	szPath	= QDir::homePath() + QDir::separator() + "qtseries" + QDir::separator() + szFileName;
+	QString	szPath	= rootPath() + QDir::separator() + szFileName;
 	QString	szURL	= "http://thetvdb.com/banners/" + szFileName;
 
 	QNetworkAccessManager	networkManager;

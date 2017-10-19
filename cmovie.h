@@ -12,6 +12,14 @@
 class cMovie
 {
 public:
+	enum State
+	{
+		StateUnknown	= 0,
+		StateInit		= 1,
+		StateProgress	= 2,
+		StateDone		= 3,
+	};
+
 	cMovie();
 
 	void					setMovieTitle(const QString& szTitle);
@@ -99,6 +107,9 @@ public:
 	void					setCrew(const QStringList& szCrew);
 	QStringList				crew();
 
+	void					setState(const State state);
+	State					state();
+
 	bool					save(QSqlDatabase& db);
 	bool					del(QSqlDatabase& db);
 private:
@@ -130,6 +141,7 @@ private:
 	qint32					m_iVoteCount;
 	QStringList				m_szCast;
 	QStringList				m_szCrew;
+	State					m_iState;
 };
 
 Q_DECLARE_METATYPE(cMovie*)

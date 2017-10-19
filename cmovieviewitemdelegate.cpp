@@ -1,12 +1,22 @@
 #include "cmovieviewitemdelegate.h"
 
+#include "cmovie.h"
+
 #include <QPainter>
 #include <QTextDocument>
 #include <QAbstractTextDocumentLayout>
 
 
+#define STATE_INIT		Qt::gray
+#define STATE_PROGRESS	Qt::blue
+#define STATE_DONE		Qt::green
+#define STATE_UNKNOWN	Qt::black
+
 void cMovieViewItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option, const QModelIndex &index) const
 {
+	cMovie*	lpMovie	= qvariant_cast<cMovie*>(index.data(Qt::UserRole));
+	QBrush	oldBrush;
+
 	QStyleOptionViewItem options = option;
 	initStyleOption(&options, index);
 
@@ -26,6 +36,26 @@ void cMovieViewItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 	//doc.drawContents(painter, clip);
 
 	painter->setClipRect(clip);
+	oldBrush	= painter->brush();
+
+	switch(lpMovie->state())
+	{
+	case cMovie::StateInit:
+		painter->setBrush(STATE_INIT);
+		break;
+	case cMovie::StateProgress:
+		painter->setBrush(STATE_PROGRESS);
+		break;
+	case cMovie::StateDone:
+		painter->setBrush(STATE_DONE);
+		break;
+	default:
+		break;
+	}
+	painter->drawRect(clip);
+
+	painter->setBrush(oldBrush);
+
 	QAbstractTextDocumentLayout::PaintContext ctx;
 	// set text color to red for selected item
 	if (option.state & QStyle::State_Selected)

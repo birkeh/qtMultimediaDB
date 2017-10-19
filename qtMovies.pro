@@ -8,7 +8,7 @@ QT       += core gui network xml sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = qtSerien
+TARGET = qtMovies
 TEMPLATE = app
 
 
@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     cthemoviedbv3.cpp \
     cmovie.cpp \
     cmoviesearch.cpp \
-    cmovieviewitemdelegate.cpp
+    cmovieviewitemdelegate.cpp \
+    common.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -53,7 +54,8 @@ HEADERS  += cmainwindow.h \
     cthemoviedbv3.h \
     cmovie.h \
     cmoviesearch.h \
-    cmovieviewitemdelegate.h
+    cmovieviewitemdelegate.h \
+    common.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \

@@ -166,6 +166,7 @@ cMovie* cTheMovieDBV3::load(const qint32 &iID, const QString &szLanguage)
 		lpMovie->setVideo(jsonObj["video"].toBool());
 		lpMovie->setVoteAverage(jsonObj["vote_average"].toDouble());
 		lpMovie->setVoteCount(jsonObj["vote_count"].toInt());
+		lpMovie->setState(cMovie::StateInit);
 
 		request.setUrl(QUrl(QString("https://api.themoviedb.org/3/movie/%1/credits?api_key=%2").arg(iID).arg(m_szToken)));
 

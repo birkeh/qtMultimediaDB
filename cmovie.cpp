@@ -305,13 +305,23 @@ QStringList cMovie::crew()
 	return(m_szCrew);
 }
 
+void cMovie::setState(const State state)
+{
+	m_iState	= state;
+}
+
+cMovie::State cMovie::state()
+{
+	return(m_iState);
+}
+
 bool cMovie::save(QSqlDatabase &db)
 {
 	QSqlQuery	query;
 	QSqlQuery	queryMovie;
 
-	queryMovie.prepare("INSERT INTO movie (movieID,movieTitle,originalTitle,backdropPath,posterPath,overview,releaseDate,genre,imdbid,originalLanguage,popularity,productionCompanies,productionCountries,voteAverage,voteCount,adult,belongsToCollection,budget,homepage,revenue,runtime,spokenLanguages,status,tagline,video,cast,crew)"
-						  " VALUES (:movieID,:movieTitle,:originalTitle,:backdropPath,:posterPath,:overview,:releaseDate,:genre,:imdbid,:originalLanguage,:popularity,:productionCompanies,:productionCountries,:voteAverage,:voteCount,:adult,:belongsToCollection,:budget,:homepage,:revenue,:runtime,:spokenLanguages,:status,:tagline,:video,:cast,:crew);");
+	queryMovie.prepare("INSERT INTO movie (movieID,movieTitle,originalTitle,backdropPath,posterPath,overview,releaseDate,genre,imdbid,originalLanguage,popularity,productionCompanies,productionCountries,voteAverage,voteCount,adult,belongsToCollection,budget,homepage,revenue,runtime,spokenLanguages,status,tagline,video,cast,crew,state)"
+						  " VALUES (:movieID,:movieTitle,:originalTitle,:backdropPath,:posterPath,:overview,:releaseDate,:genre,:imdbid,:originalLanguage,:popularity,:productionCompanies,:productionCountries,:voteAverage,:voteCount,:adult,:belongsToCollection,:budget,:homepage,:revenue,:runtime,:spokenLanguages,:status,:tagline,:video,:cast,:crew,:state);");
 
 	db.transaction();
 	query.exec(QString("SELECT movieID FROM movie WHERE movieID=%1;").arg(movieID()));
@@ -344,6 +354,7 @@ bool cMovie::save(QSqlDatabase &db)
 		queryMovie.bindValue(":video", video());
 		queryMovie.bindValue(":cast", cast().join("|"));
 		queryMovie.bindValue(":crew", crew().join("|"));
+		queryMovie.bindValue(":state", state());
 
 		if(queryMovie.exec())
 		{
