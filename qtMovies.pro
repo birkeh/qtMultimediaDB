@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     cthetvdbv2.cpp \
     cthemoviedbv3.cpp \
     cmovie.cpp \
-    cmoviesearch.cpp
+    cmoviesearch.cpp \
+    cmovieviewitemdelegate.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -51,7 +52,8 @@ HEADERS  += cmainwindow.h \
     cthetvdbv2.h \
     cthemoviedbv3.h \
     cmovie.h \
-    cmoviesearch.h
+    cmoviesearch.h \
+    cmovieviewitemdelegate.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \

@@ -1,5 +1,14 @@
 #include "cmovie.h"
 
+#include <QStringList>
+#include <QSqlQuery>
+#include <QVariant>
+#include <QSqlError>
+
+#include <QDebug>
+#include <QMap>
+#include <QMapIterator>
+
 
 cMovie::cMovie()
 {
@@ -76,7 +85,7 @@ QString cMovie::belongsToCollection()
 	return(m_szBelongsToCollection);
 }
 
-void cMovie::setButget(const qreal dBudget)
+void cMovie::setBudget(const qreal dBudget)
 {
 	m_dBudget	= dBudget;
 }
@@ -274,4 +283,113 @@ void cMovie::setVoteCount(const qint32 iVoteCount)
 qint32 cMovie::voteCount()
 {
 	return(m_iVoteCount);
+}
+
+void cMovie::setCast(const QStringList &szCast)
+{
+	m_szCast	= szCast;
+}
+
+QStringList cMovie::cast()
+{
+	return(m_szCast);
+}
+
+void cMovie::setCrew(const QStringList &szCrew)
+{
+	m_szCrew	= szCrew;
+}
+
+QStringList cMovie::crew()
+{
+	return(m_szCrew);
+}
+
+bool cMovie::save(QSqlDatabase &db)
+{
+	QSqlQuery	query;
+	QSqlQuery	queryMovie;
+
+	queryMovie.prepare("INSERT INTO movie (movieID,movieTitle,originalTitle,backdropPath,posterPath,overview,releaseDate,genre,imdbid,originalLanguage,popularity,productionCompanies,productionCountries,voteAverage,voteCount,adult,belongsToCollection,budget,homepage,revenue,runtime,spokenLanguages,status,tagline,video,cast,crew)"
+						  " VALUES (:movieID,:movieTitle,:originalTitle,:backdropPath,:posterPath,:overview,:releaseDate,:genre,:imdbid,:originalLanguage,:popularity,:productionCompanies,:productionCountries,:voteAverage,:voteCount,:adult,:belongsToCollection,:budget,:homepage,:revenue,:runtime,:spokenLanguages,:status,:tagline,:video,:cast,:crew);");
+
+	db.transaction();
+	query.exec(QString("SELECT movieID FROM movie WHERE movieID=%1;").arg(movieID()));
+	if(!query.next())
+	{
+		queryMovie.bindValue(":movieID", movieID());
+		queryMovie.bindValue(":movieTitle", movieTitle());
+		queryMovie.bindValue(":originalTitle", originalTitle());
+		queryMovie.bindValue(":backdropPath", backdropPath());
+		queryMovie.bindValue(":posterPath", posterPath());
+		queryMovie.bindValue(":overview", overview());
+		queryMovie.bindValue(":releaseDate", releaseDate());
+		queryMovie.bindValue(":genre", genres().join(","));
+		queryMovie.bindValue(":imdbid", imdbID());
+		queryMovie.bindValue(":originalLanguage", originalLanguage());
+		queryMovie.bindValue(":popularity", popularity());
+		queryMovie.bindValue(":productionCompanies", productionCompanies().join(","));
+		queryMovie.bindValue(":productionCountries", productionCountries().join(","));
+		queryMovie.bindValue(":voteAverage", voteAverage());
+		queryMovie.bindValue(":voteCount", voteCount());
+		queryMovie.bindValue(":adult", adult());
+		queryMovie.bindValue(":belongsToCollection", belongsToCollection());
+		queryMovie.bindValue(":budget", budget());
+		queryMovie.bindValue(":homepage", homepage());
+		queryMovie.bindValue(":revenue", revenue());
+		queryMovie.bindValue(":runtime", runtime());
+		queryMovie.bindValue(":spokenLanguages", spokenLanguages().join(","));
+		queryMovie.bindValue(":status", status());
+		queryMovie.bindValue(":tagline", tagline());
+		queryMovie.bindValue(":video", video());
+		queryMovie.bindValue(":cast", cast().join("|"));
+		queryMovie.bindValue(":crew", crew().join("|"));
+
+		if(queryMovie.exec())
+		{
+		}
+		else
+			qDebug() << queryMovie.lastError().text();
+	}
+	db.commit();
+
+	return(true);
+}
+
+bool cMovie::del(QSqlDatabase& db)
+{
+	QSqlQuery			query;
+
+	db.transaction();
+	query.prepare("DELETE FROM movie WHERE movieID=:movieID;");
+	query.bindValue(":movieID", movieID());
+	query.exec();
+
+	db.commit();
+
+	return(true);
+}
+
+cMovie* cMovieList::add(const qint32& iID)
+{
+	for(int z = 0;z < count();z++)
+	{
+		if(at(z)->movieID() == iID)
+			return(at(z));
+	}
+	cMovie*	lpNew	= new cMovie;
+	lpNew->setMovieID(iID);
+	append(lpNew);
+	return(lpNew);
+}
+
+cMovie* cMovieList::add(cMovie* lpMovie)
+{
+	for(int z = 0;z < count();z++)
+	{
+		if(at(z) == lpMovie)
+			return(0);
+	}
+	append(lpMovie);
+	return(lpMovie);
 }

@@ -88,6 +88,7 @@ private:
 	QTime				m_timer;
 
 	QStandardItemModel*	m_lpSeriesListModel;
+	QStandardItemModel*	m_lpMoviesListModel;
 
 	bool				m_bProcessing;
 
@@ -97,6 +98,7 @@ private:
 	void				loadMoviesDB();
 
 	void				displaySeries();
+	void				displayMovies();
 
 	bool				runEdit(cSerie *lpSerie, QString& szDownload);
 

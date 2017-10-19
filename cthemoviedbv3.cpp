@@ -10,6 +10,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+using std::pair;
+
 
 cTheMovieDBV3::cTheMovieDBV3()
 {
@@ -126,7 +128,7 @@ cMovie* cTheMovieDBV3::load(const qint32 &iID, const QString &szLanguage)
 		lpMovie->setBackdropPath(jsonObj["backdrop_path"].toString());
 		tmpObj	= jsonObj["belongs_to_collection"].toObject();
 		lpMovie->setBelongsToCollection(tmpObj["name"].toString());
-		lpMovie->setButget(jsonObj["budget"].toDouble());
+		lpMovie->setBudget(jsonObj["budget"].toDouble());
 		for(int z = 0;z < genreArray.count();z++)
 		{
 			tmpObj	= genreArray[z].toObject();
@@ -164,6 +166,49 @@ cMovie* cTheMovieDBV3::load(const qint32 &iID, const QString &szLanguage)
 		lpMovie->setVideo(jsonObj["video"].toBool());
 		lpMovie->setVoteAverage(jsonObj["vote_average"].toDouble());
 		lpMovie->setVoteCount(jsonObj["vote_count"].toInt());
+
+		request.setUrl(QUrl(QString("https://api.themoviedb.org/3/movie/%1/credits?api_key=%2").arg(iID).arg(m_szToken)));
+
+		request.setRawHeader("Content-Type", "application/json");
+		if(!szLanguage.contains("all"))
+			request.setRawHeader("Accept-Language", szLanguage.toUtf8());
+		else
+			request.setRawHeader("Accept-Language", "en");
+
+		reply   = networkManager.get(request);
+
+		QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+		loop.exec();
+
+		if (reply->error() == QNetworkReply::NoError)
+		{
+			strReply		= (QString)reply->readAll();
+			jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+			QJsonObject		jsonCast		= jsonResponse.object();
+			QJsonArray		jsonArrayCast	= jsonCast["cast"].toArray();
+			QJsonArray		jsonArrayCrew	= jsonCast["crew"].toArray();
+
+			QStringList		szCast;
+			QStringList		szCrew;
+
+			delete reply;
+
+			for(int x = 0;x < jsonArrayCast.count();x++)
+			{
+				tmpObj	= jsonArrayCast.at(x).toObject();
+				szCast.append(QString("%1,%2").arg(tmpObj["name"].toString()).arg(tmpObj["character"].toString()));
+			}
+			if(szCast.count())
+				lpMovie->setCast(szCast);
+
+			for(int x = 0;x < jsonArrayCrew.count();x++)
+			{
+				tmpObj	= jsonArrayCrew.at(x).toObject();
+				szCrew.append(QString("%1,%2").arg(tmpObj["name"].toString()).arg(tmpObj["job"].toString()));
+			}
+			if(szCrew.count())
+				lpMovie->setCrew(szCrew);
+		}
 	}
 	else
 	{

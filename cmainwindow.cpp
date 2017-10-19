@@ -12,6 +12,8 @@
 
 #include "cthemoviedbv3.h"
 
+#include "cmovieviewitemdelegate.h"
+
 #include <QTreeWidgetItem>
 #include <QDir>
 #include <QFile>
@@ -64,8 +66,15 @@ cMainWindow::cMainWindow(QWidget *parent) :
 
 	ui->m_lpSeriesList1->header()->setSectionResizeMode(2, QHeaderView::Stretch);
 
+	m_lpMoviesListModel			= new QStandardItemModel(0, 1);
+	QStringList	headerLabels	= QStringList() << tr("Movie");
+	m_lpMoviesListModel->setHorizontalHeaderLabels(headerLabels);
+	ui->m_lpMoviesList->setModel(m_lpMoviesListModel);
+	ui->m_lpMoviesList->setItemDelegate(new cMovieViewItemDelegate());
+
 	loadDB();
 	displaySeries();
+	displayMovies();
 
 	QSettings	settings;
 	qint16		iX		= settings.value("main/x", QVariant::fromValue(-1)).toInt();
@@ -192,27 +201,37 @@ void cMainWindow::initDB()
 					"   movieID             INTEGER,"
 					"   movieTitle          STRING,"
 					"   originalTitle       STRING,"
-					"   language            STRING,"
 					"   backdropPath        STRING,"
 					"   posterPath          STRING,"
 					"   overview            TEXT,"
 					"   releaseDate         DATE,"
-					"   actor               STRING,"
 					"   genre               STRING,"
 					"   imdbid              STRING,"
 					"   originalLanguage    STRING,"
 					"   popularity		    DOUBLE,"
 					"   productionCompanies STRING,"
 					"   productionCountries STRING,"
-					"   voteRating          DOUBLE,"
+					"   voteAverage         DOUBLE,"
 					"   voteCount           INTEGER,"
-					"   actors              TEXT);"); // NAME|CHARACTER|ORDER
+					"   adult               BOOL,"
+					"   belongsToCollection STRING,"
+					"   budget              DOUBLE,"
+					"   homepage            STRING,"
+					"   revenue             DOUBLE,"
+					"   runtime             INTEGER,"
+					"   spokenLanguages     STRING,"
+					"   status              STRING,"
+					"   tagline             STRING,"
+					"   video               BOOL,"
+					"   cast                TEXT,"
+					"   crew                TEXT);"); // NAME|CHARACTER|ORDER
 	}
 }
 
 void cMainWindow::loadDB()
 {
 	loadSeriesDB();
+	loadMoviesDB();
 }
 
 void cMainWindow::loadSeriesDB()
@@ -295,75 +314,47 @@ void cMainWindow::loadMoviesDB()
 	m_movieList.clear();
 
 	QSqlQuery	query;
-/*
-	qint32		iOldSeriesID	= -1;
-	qint32		iOldSeasonID	= -1;
-	qint32		iSeriesID;
-	qint32		iSeasonID;
-	cSeason*	lpSeason;
-	cEpisode*	lpEpisode;
+	qint32		iMovieID;
 
-	if(query.exec("SELECT serie.seriesID, serie.seriesName, serie.language, serie.banner, serie.overview, serie.firstAired, serie.network, serie.imdbid, serie.id, serie.contentRating, serie.rating, serie.ratingCount, serie.runtime, serie.status, serie.download, serie.cliffhanger, serie.actor, serie.genre, episode.episodeID, episode.episodeName, episode.episodeNumber, episode.firstAired, episode.imdbid, episode.language, episode.overview, episode.productioncode, episode.rating, episode.ratingCount, episode.seasonNumber, episode.seasonID, episode.seriesID, episode.state, episode.filename, episode.thumb_height, episode.thumb_width, episode.director, episode.gueststars, episode.episode_writer FROM serie LEFT JOIN episode ON serie.id = episode.seriesID ORDER BY serie.seriesName, episode.seasonNumber, episode.episodeNumber;"))
+	if(query.exec("SELECT movieID, movieTitle, originalTitle, backdropPath, posterPath, overview, releaseDate, genre, imdbid, originalLanguage, popularity, productionCompanies, productionCountries, voteAverage, voteCount, adult, belongsToCollection, budget, homepage, revenue, runtime, spokenLanguages, status, tagline, video, `cast`, crew FROM movie ORDER BY movieTitle, releaseDate;"))
 	{
 		while(query.next())
 		{
-			iSeriesID	= query.value( 8).toInt();
-			iSeasonID	= query.value(29).toInt();
+			iMovieID	= query.value("movieID").toInt();
+			cMovie*	lpMovie	= m_movieList.add(iMovieID);
 
-			if(iSeriesID != iOldSeriesID)
-			{
-				m_serieList.add(iSeriesID);
-				iOldSeriesID	= iSeriesID;
-			}
-
-			cSerie*	lpSerie	= m_serieList.add(iSeriesID);
-			lpSerie->setSeriesID(query.value(0).toInt());
-			lpSerie->setSeriesName(query.value(1).toString());
-			lpSerie->setLanguage(query.value(2).toString());
-			lpSerie->setBanner(query.value(3).toString());
-			lpSerie->setOverview(query.value(4).toString());
-			lpSerie->setFirstAired(query.value(5).toDate());
-			lpSerie->setNetwork(query.value(6).toString());
-			lpSerie->setIMDBID(query.value(7).toString());
-			lpSerie->setContentRating(query.value(9).toString());
-			lpSerie->setRating(query.value(10).toDouble());
-			lpSerie->setRatingCount(query.value(11).toInt());
-			lpSerie->setRuntime(query.value(12).toInt());
-			lpSerie->setStatus(query.value(13).toString());
-			lpSerie->setDownload(query.value(14).toString());
-			lpSerie->setCliffhanger(query.value(15).toBool());
-			lpSerie->setActors(query.value(16).toString().split(","));
-			lpSerie->setGenre(query.value(17).toString().split(","));
-
-			if(iSeasonID != iOldSeasonID)
-			{
-				lpSeason		= lpSerie->addSeason(query.value(28).toInt());
-				iOldSeasonID	= iSeasonID;
-			}
-
-			lpEpisode	= lpSeason->addEpisode(query.value(20).toInt());
-			lpEpisode->setID(query.value(18).toInt());
-			lpEpisode->setEpisodeName(query.value(19).toString());
-			lpEpisode->setFirstAired(query.value(21).toDate());
-			lpEpisode->setIMDBID(query.value(22).toString());
-			lpEpisode->setLanguage(query.value(23).toString());
-			lpEpisode->setOverview(query.value(24).toString());
-			lpEpisode->setProductionCode(query.value(25).toString());
-			lpEpisode->setRating(query.value(26).toDouble());
-			lpEpisode->setRatingCount(query.value(27).toInt());
-			lpEpisode->setSeasonNumber(query.value(28).toInt());
-			lpEpisode->setSeasonID(query.value(29).toInt());
-			lpEpisode->setSeriesID(query.value(30).toInt());
-			lpEpisode->setState((cEpisode::State)query.value(31).toInt());
-			lpEpisode->setFileName(query.value(32).toString());
-			lpEpisode->setThumbHeight(query.value(33).toInt());
-			lpEpisode->setThumbWidth(query.value(34).toInt());
-			lpEpisode->setDirector(query.value(35).toString().split(","));
-			lpEpisode->setGuestStars(query.value(36).toString().split(","));
-			lpEpisode->setWriter(query.value(37).toString().split(","));
+			lpMovie->setMovieTitle(query.value("movieTitle").toString());
+			lpMovie->setOriginalTitle(query.value("originalTitle").toString());
+			lpMovie->setReleaseDate(query.value("releaseDate").toString());
+			lpMovie->setAdult(query.value("adult").toBool());
+			lpMovie->setBackdropPath(query.value("backdropPath").toString());
+			lpMovie->setBelongsToCollection(query.value("belongsToCollection").toString());
+			lpMovie->setBudget(query.value("budget").toDouble());
+			lpMovie->setGenres(query.value("genre").toString().split(","));
+			lpMovie->setHomepage(query.value("homepage").toString());
+			lpMovie->setIMDBID(query.value("imdbid").toString());
+			lpMovie->setOriginalLanguage(query.value("originalLanguage").toString());
+			lpMovie->setOverview(query.value("overview").toString());
+			lpMovie->setPopularity(query.value("popularity").toDouble());
+			lpMovie->setPosterPath(query.value("posterPath").toString());
+			lpMovie->setProductionCompanies(query.value("productionCompanies").toString());
+			lpMovie->setProductionCountries(query.value("productionCountries").toString());
+			lpMovie->setRevenue(query.value("revenue").toDouble());
+			lpMovie->setRuntime(query.value("runtime").toInt());
+			lpMovie->setSpokenLanguages(query.value("spokenLanguages").toString().split(","));
+			lpMovie->setStatus(query.value("status").toString());
+			lpMovie->setTagline(query.value("tagline").toString());
+			lpMovie->setVideo(query.value("video").toBool());
+			lpMovie->setVoteAverage(query.value("voteAverage").toDouble());
+			lpMovie->setVoteCount(query.value("voteCount").toInt());
+			lpMovie->setCast(query.value("cast").toString().split("|"));
+			lpMovie->setCrew(query.value("crew").toString().split("|"));
 		}
 	}
-*/
+	else
+	{
+		qDebug() << query.lastError().text();
+	}
 }
 
 void cMainWindow::displaySeries()
@@ -578,6 +569,27 @@ void cMainWindow::displaySeries()
 	ui->m_lpSeriesList2->setColumnHidden(2, true);
 }
 
+void cMainWindow::displayMovies()
+{
+	m_lpMoviesListModel->clear();
+
+	m_lpMoviesListModel->setColumnCount(1);
+
+	QStringList	header;
+	header << "Movie";
+
+	m_lpMoviesListModel->setHorizontalHeaderLabels(header);
+
+	for(int x = 0;x < m_movieList.count();x++)
+	{
+		cMovie*	lpMovie	= m_movieList.at(x);
+
+		QStandardItem*	lpItem	= new QStandardItem(QString("<b>%1</b> <font color='blue'>(%2)</font>&nbsp;&nbsp;<br><i>%3</i>").arg(lpMovie->movieTitle()).arg(lpMovie->releaseDate().year()).arg(lpMovie->tagline()));
+		lpItem->setData(QVariant::fromValue(lpMovie), Qt::UserRole);
+		m_lpMoviesListModel->appendRow(lpItem);
+	}
+}
+
 void cMainWindow::on_m_lpSeriesList1_customContextMenuRequested(const QPoint &pos)
 {
 	showSeriesContextMenu(ui->m_lpSeriesList1, pos);
@@ -649,6 +661,13 @@ static bool serieSort(cSerie* s1, cSerie* s2)
 {
 	QString str1	= s1->seriesName();
 	QString	str2	= s2->seriesName();
+	return(str1 < str2);
+}
+
+static bool movieSort(cMovie* s1, cMovie* s2)
+{
+	QString str1	= s1->movieTitle();
+	QString	str2	= s2->movieTitle();
 	return(str1 < str2);
 }
 
@@ -837,6 +856,13 @@ void cMainWindow::onActionMovieAdd()
 			lpMovie	= movieDB3.load(id, "en");
 
 		delete lpDialog;
+
+		lpDialog	= new cMessageAnimateDialog(this);
+		lpDialog->setTitle("Update");
+		lpDialog->setMessage("Updating");
+		lpDialog->show();
+
+		lpMovie->save(m_db);
 /*
 		QString	szDownload;
 		if(!runEdit(lpSerie, szDownload))
@@ -873,15 +899,13 @@ void cMainWindow::onActionMovieAdd()
 		lpSerie->save(m_db);
 */
 	}
-/*
-	m_serieList.add(lpSerie);
-	std::sort(m_serieList.begin(), m_serieList.end(), serieSort);
 
-	m_szOldSelected	= lpSerie->seriesName();
-	displaySeries();
+	m_movieList.add(lpMovie);
+	std::sort(m_movieList.begin(), m_movieList.end(), movieSort);
+
+	displayMovies();
 
 	delete lpDialog;
-*/
 }
 
 void cMainWindow::onActionUpdateAll()
