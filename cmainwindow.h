@@ -45,6 +45,7 @@ private slots:
 	void				on_m_lpSeriesList2_pressed(const QModelIndex &index);
 
 	void				on_m_lpMoviesList_customContextMenuRequested(const QPoint &pos);
+	void				on_m_lpMoviesList_doubleClicked(const QModelIndex &index);
 
 	void				onActionAdd();
 	void				onActionUpdateAll();
@@ -58,6 +59,12 @@ private slots:
 	void				onActionLoadPictures();
 
 	void				onActionMovieAdd();
+	void				onActionMovieUpdateAll();
+	void				onActionMovieUpdate();
+	void				onActionMovieDelete();
+	void				onActionMovieEdit();
+	void				onActionMovieGotoIMDB();
+	void				onActionMovieLoadPictures();
 
 	void				updateMessage(const QString& szMessage, const qint32 &iProgress);
 	void				updateAppendMessage(const QString& szMessage);
@@ -101,6 +108,7 @@ private:
 	void				displayMovies();
 
 	bool				runEdit(cSerie *lpSerie, QString& szDownload);
+	bool				runMovieEdit(cMovie *lpMovie);
 
 	void				showSeriesContextMenu(QTreeView* lpTreeView, const QPoint &pos);
 	void				doUpdate(cSerieList& serieList);

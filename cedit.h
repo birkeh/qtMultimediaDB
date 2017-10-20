@@ -5,7 +5,6 @@
 #include "cserie.h"
 
 #include <QDialog>
-//#include <QDialogButtonBox>
 
 
 namespace Ui {
@@ -33,9 +32,9 @@ private slots:
 
 	void		on_m_lpTabWidget_tabBarClicked(int index);
 
-	void on_m_lpCliffhanger_clicked();
+	void		on_m_lpCliffhanger_clicked();
 
-    void on_m_lpFirstAired_dateChanged(const QDate &date);
+	void		on_m_lpFirstAired_dateChanged(const QDate &date);
 
 private:
 	Ui::cEdit*			ui;
@@ -59,7 +58,6 @@ private:
 	QPushButton*		m_lpAllDone;
 
 	QSpacerItem*		m_lpVerticalSpacer;
-//	QDialogButtonBox*	m_lpButtonBox;
 
 	cSerie*				m_lpSerie;
 };

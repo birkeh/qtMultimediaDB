@@ -42,7 +42,6 @@ cEdit::cEdit(QWidget *parent) :
 	m_lpAllProgress(0),
 	m_lpAllDone(0),
 	m_lpVerticalSpacer(0),
-//	m_lpButtonBox(0),
 	m_lpSerie(0)
 {
 	ui->setupUi(this);

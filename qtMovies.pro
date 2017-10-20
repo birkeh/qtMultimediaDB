@@ -33,7 +33,9 @@ SOURCES += main.cpp\
     cmovie.cpp \
     cmoviesearch.cpp \
     cmovieviewitemdelegate.cpp \
-    common.cpp
+    common.cpp \
+    cmovieedit.cpp \
+    cmovieimage.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -55,7 +57,9 @@ HEADERS  += cmainwindow.h \
     cmovie.h \
     cmoviesearch.h \
     cmovieviewitemdelegate.h \
-    common.h
+    common.h \
+    cmovieedit.h \
+    cmovieimage.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \
@@ -64,7 +68,8 @@ FORMS    += cmainwindow.ui \
     cseasondetails.ui \
     cepisodedetails.ui \
     cmessagedialog.ui \
-    cmoviesearch.ui
+    cmoviesearch.ui \
+    cmovieedit.ui
 
 DISTFILES +=
 

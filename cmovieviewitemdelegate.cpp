@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QTextDocument>
 #include <QAbstractTextDocumentLayout>
+#include <QAbstractItemModel>
+#include <QStandardItemModel>
 
 
 #define STATE_INIT		Qt::gray
@@ -39,10 +41,47 @@ void cMovieViewItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 
 	if(!lpMovie)
 	{
-		QItemModel*	lpModel	= (QItemModel*)index.model();
-		aaaaa
+		int	statusInit	= 0;
+		int	statusProg	= 0;
+		int	statusDone	= 0;
+
+		QStandardItemModel*	lpModel		= (QStandardItemModel*)index.model();
+		QStandardItem*		lpParent	= lpModel->itemFromIndex(index);
+		if(lpParent)
+		{
+			int x	= 0;
+
+			QStandardItem*	lpChild	= lpParent->child(x);
+			while(lpChild)
+			{
+				cMovie*	lpMovie1	= qvariant_cast<cMovie*>(lpChild->data(Qt::UserRole));
+				if(lpMovie1)
+				{
+					switch(lpMovie1->state())
+					{
+					case cMovie::StateInit:
+						statusInit++;
+						break;
+					case cMovie::StateProgress:
+						statusProg++;
+						break;
+					case cMovie::StateDone:
+						statusDone++;
+						break;
+					}
+				}
+				x++;
+				lpChild	= lpParent->child(x);
+			}
+		}
+		if(statusProg)
+			painter->setBrush(STATE_PROGRESS);
+		else if(statusInit)
+			painter->setBrush(STATE_INIT);
+		else
+			painter->setBrush(STATE_DONE);
 	}
-	if(lpMovie)
+	else
 	{
 		oldBrush	= painter->brush();
 
@@ -60,10 +99,16 @@ void cMovieViewItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 		default:
 			break;
 		}
-		painter->drawRect(clip);
-
-		painter->setBrush(oldBrush);
 	}
+	QRect back	= clip;
+
+	back.setLeft(back.left()+2);
+	back.setRight(back.right()-2);
+	back.setTop(back.top()+4);
+	back.setBottom(back.bottom()-4);
+
+	painter->drawRect(back);
+	painter->setBrush(oldBrush);
 
 	QAbstractTextDocumentLayout::PaintContext ctx;
 	// set text color to red for selected item

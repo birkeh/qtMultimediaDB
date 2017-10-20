@@ -10,6 +10,7 @@
 #include "cmessageanimatedialog.h"
 #include "cmessagedialog.h"
 #include "cedit.h"
+#include "cmovieedit.h"
 #include "cimage.h"
 
 #include "cthemoviedbv3.h"
@@ -623,7 +624,7 @@ void cMainWindow::displayMovies()
 				lpRoot	= 0;
 			else
 			{
-				lpRoot	= new QStandardItem(szOldCollection);
+				lpRoot	= new QStandardItem(QString("<font color='white'><b>%1</b></font>").arg(szOldCollection));
 				m_lpMoviesListModel->appendRow(lpRoot);
 			}
 		}
@@ -702,8 +703,42 @@ void cMainWindow::showMoviesContextMenu(QTreeView* lpTreeView, const QPoint &pos
 
 	lpMenu->addAction("add", this, SLOT(onActionMovieAdd()));
 
+	lpMenu->addAction("update all", this, SLOT(onActionMovieUpdateAll()));
+	lpMenu->addSeparator();
+
+	if(lpTreeView->selectionModel()->selectedRows().count() == 1)
+	{
+		cMovie*	lpMovie	= m_lpMoviesListModel->itemFromIndex(lpTreeView->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cMovie*>();
+		if(lpMovie)
+		{
+			lpMenu->addAction("update", this, SLOT(onActionMovieUpdate()));
+			lpMenu->addAction("delete", this, SLOT(onActionMovieDelete()));
+			lpMenu->addAction("edit", this, SLOT(onActionMovieEdit()));
+			lpMenu->addSeparator();
+
+			if(!lpMovie->imdbID().isEmpty())
+				lpMenu->addAction("open IMDB", this, SLOT(onActionMovieGotoIMDB()));
+
+//			if(!lpMovie->download().isEmpty())
+//			{
+//				lpMenu->addAction("open download link", this, SLOT(onActionMovieGotoDownload()));
+//				lpMenu->addAction("copy download link", this, SLOT(onActionMovieCopyDownload()));
+//			}
+			lpMenu->addSeparator();
+			lpMenu->addAction("load images", this, SLOT(onActionMovieLoadPictures()));
+		}
+	}
+	else if(lpTreeView->selectionModel()->selectedRows().count())
+	{
+		lpMenu->addAction("update selected", this, SLOT(onActionMovieUpdate()));
+		lpMenu->addAction("delete selected", this, SLOT(onActionMovieDelete()));
+		lpMenu->addSeparator();
+		lpMenu->addAction("load images", this, SLOT(onActionLoadMoviePictures()));
+	}
+
 	lpMenu->popup(lpTreeView->viewport()->mapToGlobal(pos));
 }
+
 bool cMainWindow::runEdit(cSerie* lpSerie, QString& szDownload)
 {
 	cEdit*	lpEdit	= new cEdit;
@@ -771,6 +806,52 @@ bool cMainWindow::runEdit(cSerie* lpSerie, QString& szDownload)
 	lpSerie->updateState();
 
 	delete lpEdit;
+
+	return(true);
+}
+
+bool cMainWindow::runMovieEdit(cMovie *lpMovie)
+{
+	cMovieEdit*	lpMovieEdit	= new cMovieEdit(this);
+
+	cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
+	lpDialog->setTitle("Edit");
+	lpDialog->setMessage("Loading");
+	lpDialog->show();
+
+	lpMovieEdit->setMovie(lpMovie);
+
+	QSettings	settings;
+	qint16		iX		= settings.value("movieEdit/x", QVariant::fromValue(-1)).toInt();
+	qint16		iY		= settings.value("movieEdit/y", QVariant::fromValue(-1)).toInt();
+	qint16		iWidth	= settings.value("movieEdit/width", QVariant::fromValue(-1)).toInt();
+	qint16		iHeight	= settings.value("movieEdit/height", QVariant::fromValue(-1)).toInt();
+
+	if(iX != -1 && iY != -1)
+		lpMovieEdit->move(iX, iY);
+	if(iWidth != -1 && iHeight != -1)
+		lpMovieEdit->resize(iWidth, iHeight);
+
+	delete lpDialog;
+
+	qint16	ret	= lpMovieEdit->exec();
+
+	settings.setValue("movieEdit/width", QVariant::fromValue(lpMovieEdit->size().width()));
+	settings.setValue("movieEdit/height", QVariant::fromValue(lpMovieEdit->size().height()));
+	settings.setValue("movieEdit/x", QVariant::fromValue(lpMovieEdit->x()));
+	settings.setValue("movieEdit/y", QVariant::fromValue(lpMovieEdit->y()));
+	if(this->isMaximized())
+		settings.setValue("movieEdit/maximized", QVariant::fromValue(true));
+	else
+		settings.setValue("movieEdit/maximized", QVariant::fromValue(false));
+
+	if(ret == QDialog::Rejected)
+	{
+		delete lpMovieEdit;
+		return(false);
+	}
+
+	delete lpMovieEdit;
 
 	return(true);
 }
@@ -890,15 +971,7 @@ void cMainWindow::onActionMovieAdd()
 
 		delete lpDialog;
 
-		lpDialog	= new cMessageAnimateDialog(this);
-		lpDialog->setTitle("Update");
-		lpDialog->setMessage("Updating");
-		lpDialog->show();
-
-		lpMovie->save(m_db);
-/*
-		QString	szDownload;
-		if(!runEdit(lpSerie, szDownload))
+		if(!runMovieEdit(lpMovie))
 			return;
 
 		lpDialog	= new cMessageAnimateDialog(this);
@@ -906,18 +979,16 @@ void cMainWindow::onActionMovieAdd()
 		lpDialog->setMessage("Updating");
 		lpDialog->show();
 
-		lpSerie->save(m_db);
-*/
+		lpMovie->save(m_db);
 	}
 	else
 	{
-/*
-		lpSerie	= new cSerie;
-		lpSerie->setSeriesName(szPlaceholder);
+		lpMovie	= new cMovie;
+		lpMovie->setMovieTitle(szPlaceholder);
 
 		qint32	iMax	= 0;
 		QSqlQuery	query;
-		if(query.exec("SELECT MAX(id) FROM serie;"))
+		if(query.exec("SELECT MAX(movieID) FROM movie;"))
 		{
 			query.next();
 			if(query.isValid())
@@ -927,10 +998,9 @@ void cMainWindow::onActionMovieAdd()
 			iMax	= 1000000;
 		else
 			iMax++;
-		lpSerie->setID(iMax);
-		lpSerie->setFirstAired(QDate(iYear, 1, 1));
-		lpSerie->save(m_db);
-*/
+		lpMovie->setMovieID(iMax);
+		lpMovie->setReleaseDate(QString("%1-01-01").arg(iYear));
+		lpMovie->save(m_db);
 	}
 
 	loadMoviesDB();
@@ -945,6 +1015,10 @@ void cMainWindow::onActionUpdateAll()
 
 	if(serieList.count())
 		doUpdate(serieList);
+}
+
+void cMainWindow::onActionMovieUpdateAll()
+{
 }
 
 void cMainWindow::onActionUpdateUnfinished()
@@ -972,6 +1046,10 @@ void cMainWindow::onActionUpdate()
 	}
 	if(serieList.count())
 		doUpdate(serieList);
+}
+
+void cMainWindow::onActionMovieUpdate()
+{
 }
 
 void cMainWindow::doUpdate(cSerieList& serieList)
@@ -1045,6 +1123,28 @@ void cMainWindow::onActionDelete()
 	delete lpDialog;
 }
 
+void cMainWindow::onActionMovieDelete()
+{
+	if(QMessageBox::question(this, "Delete Movie", "Are you sure?") == QMessageBox::No)
+		return;
+
+	cMovie*	lpMovie	= m_lpMoviesListModel->itemFromIndex(ui->m_lpMoviesList->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cMovie*>();
+	if(!lpMovie)
+		return;
+
+	cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
+	lpDialog->setTitle("Delete");
+	lpDialog->setMessage("Deleting");
+	lpDialog->show();
+
+	lpMovie->del(m_db);
+
+	loadMoviesDB();
+	displayMovies();
+
+	delete lpDialog;
+}
+
 void cMainWindow::onActionEdit()
 {
 	cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(ui->m_lpSeriesList1->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>();
@@ -1067,8 +1167,33 @@ void cMainWindow::onActionEdit()
 	lpSerie->save(m_db);
 
 	m_szOldSelected	= lpSerie->seriesName();
-	loadDB();
+	loadSeriesDB();
 	displaySeries();
+
+	delete lpDialog;
+}
+
+void cMainWindow::onActionMovieEdit()
+{
+	cMovie*	lpMovie	= m_lpMoviesListModel->itemFromIndex(ui->m_lpMoviesList->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cMovie*>();
+	if(!lpMovie)
+		return;
+
+	QString	szDownload;
+	if(!runMovieEdit(lpMovie))
+		return;
+
+	cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
+	lpDialog->setTitle("Update");
+	lpDialog->setMessage("Updating");
+	lpDialog->show();
+
+	lpMovie->del(m_db);
+	lpMovie->save(m_db);
+
+	m_szOldSelected	= lpMovie->movieTitle();
+	loadMoviesDB();
+	displayMovies();
 
 	delete lpDialog;
 }
@@ -1078,10 +1203,14 @@ void cMainWindow::on_m_lpSeriesList1_doubleClicked(const QModelIndex &/*index*/)
 	onActionEdit();
 }
 
-
 void cMainWindow::on_m_lpSeriesList2_doubleClicked(const QModelIndex &/*index*/)
 {
 	onActionEdit();
+}
+
+void cMainWindow::on_m_lpMoviesList_doubleClicked(const QModelIndex &index)
+{
+	onActionMovieEdit();
 }
 
 void cMainWindow::onActionGotoIMDB()
@@ -1092,6 +1221,19 @@ void cMainWindow::onActionGotoIMDB()
 		if(lpSerie)
 		{
 			QString	link	= QString("http://www.imdb.com/title/%1").arg(lpSerie->imdbID());
+			QDesktopServices::openUrl(QUrl(link));
+		}
+	}
+}
+
+void cMainWindow::onActionMovieGotoIMDB()
+{
+	if(ui->m_lpMoviesList->selectionModel()->selectedRows().count())
+	{
+		cMovie*	lpMovie	= m_lpMoviesListModel->itemFromIndex(ui->m_lpMoviesList->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cMovie*>();
+		if(lpMovie)
+		{
+			QString	link	= QString("http://www.imdb.com/title/%1").arg(lpMovie->imdbID());
 			QDesktopServices::openUrl(QUrl(link));
 		}
 	}
@@ -1160,6 +1302,10 @@ void cMainWindow::onActionLoadPictures()
 	connect(m_lpPicturesThread, SIGNAL(picturesAppendMessage(QString)), this, SLOT(picturesAppendMessage(QString)));
 
 	m_lpPicturesThread->start();
+}
+
+void cMainWindow::onActionMovieLoadPictures()
+{
 }
 
 void cMainWindow::picturesMessage(const QString& szMessage, const qint32& iProgress)

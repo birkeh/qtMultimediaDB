@@ -10,9 +10,19 @@
 #include <QMapIterator>
 
 
-cMovie::cMovie()
+cMovie::cMovie() :
+	m_szOverview(QString("")),
+	m_dPopularity(0.0),
+	m_szPosterPath(QString("")),
+	m_dRevenue(0.0),
+	m_iRuntime(0),
+	m_szStatus(QString("")),
+	m_szTagline(QString("")),
+	m_bVideo(false),
+	m_dVoteAverage(0.0),
+	m_iVoteCount(0),
+	m_iState(StateInit)
 {
-
 }
 
 void cMovie::setMovieTitle(const QString& szTitle)
