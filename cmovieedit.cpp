@@ -34,6 +34,7 @@ void cMovieEdit::setMovie(cMovie *lpMovie)
 		break;
 	case cMovie::StateProgress:
 		ui->m_lpProgress->setChecked(true);
+		break;
 	case cMovie::StateDone:
 		ui->m_lpDone->setChecked(true);
 		break;
@@ -57,12 +58,14 @@ void cMovieEdit::setMovie(cMovie *lpMovie)
 		lpItem->setText(1, str.at(1));
 		ui->m_lpDetailsActors->addTopLevelItem(lpItem);
 	}
+	ui->m_lpDetailsActors->resizeColumnToContents(0);
 	for(int x = 0;x < m_lpMovie->genres().count();x++)
 	{
 		lpItem	= new QTreeWidgetItem(ui->m_lpDetailsGenre);
 		lpItem->setText(0, m_lpMovie->genres().at(x));
 		ui->m_lpDetailsGenre->addTopLevelItem(lpItem);
 	}
+	ui->m_lpDetailsGenre->resizeColumnToContents(0);
 }
 
 void cMovieEdit::on_m_lpInit_clicked()

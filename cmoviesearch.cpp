@@ -40,7 +40,22 @@ void cMovieSearch::on_m_lpSearchButton_clicked()
 	lpDialog->show();
 
 	cTheMovieDBV3		theMovieDBV3;
-	QList<cMovie*>		movieList	= theMovieDBV3.search(ui->m_lpSearch->text(), -1, "de");
+	QString				szSearchText	= ui->m_lpSearch->text();
+	qint16				iYear			= -1;
+
+	if(szSearchText.contains("(") && szSearchText.contains(")"))
+	{
+		QString	tmp	= szSearchText.mid(szSearchText.indexOf("(")+1);
+		if(tmp.contains(")"))
+		{
+			tmp		= tmp.left(tmp.indexOf(")"));
+			iYear	= tmp.toInt();
+
+			szSearchText	= szSearchText.left(szSearchText.indexOf("(")-1);
+		}
+	}
+
+	QList<cMovie*>		movieList	= theMovieDBV3.search(szSearchText, iYear, "de");
 
 	ui->m_lpResults->clear();
 

@@ -66,6 +66,9 @@ QList<cMovie*> cTheMovieDBV3::search(const QString& szMovie, const qint16& year,
 				break;
 
 			page++;
+			if(page > 20)
+				break;
+
 			delete reply;
 		}
 		else

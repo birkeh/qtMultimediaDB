@@ -110,9 +110,20 @@ void cMovie::setGenres(const QString& szGenres)
 	m_szGenres	= szGenres.split(",");
 }
 
+QStringList	cleanList(const QStringList& list)
+{
+	QStringList	list1;
+
+	for(int x = 0;x < list.count();x++)
+	{
+		if(!list.at(x).isEmpty())
+			list1.append(list.at(x));
+	}
+	return(list1);
+}
 void cMovie::setGenres(const QStringList& szGenres)
 {
-	m_szGenres	= szGenres;
+	m_szGenres	= cleanList(szGenres);
 }
 
 QStringList cMovie::genres()
@@ -187,7 +198,7 @@ void cMovie::setProductionCompanies(const QString& szProductionCompanies)
 
 void cMovie::setProductionCompanies(const QStringList& szProductionCompanies)
 {
-	m_szProductionCompanies	= szProductionCompanies;
+	m_szProductionCompanies	= cleanList(szProductionCompanies);
 }
 
 QStringList cMovie::productionCompanies()
@@ -202,7 +213,7 @@ void cMovie::setProductionCountries(const QString& szProductionCountries)
 
 void cMovie::setProductionCountries(const QStringList& szProductionCountries)
 {
-	m_szProductionCountries	= szProductionCountries;
+	m_szProductionCountries	= cleanList(szProductionCountries);
 }
 
 QStringList cMovie::productionCountries()
@@ -237,7 +248,7 @@ void cMovie::setSpokenLanguages(const QString& szSpokenLanguages)
 
 void cMovie::setSpokenLanguages(const QStringList& szSpokenLanguages)
 {
-	m_szSpokenLanguages	= szSpokenLanguages;
+	m_szSpokenLanguages	= cleanList(szSpokenLanguages);
 }
 
 QStringList cMovie::spokenLanguages()
@@ -297,7 +308,7 @@ qint32 cMovie::voteCount()
 
 void cMovie::setCast(const QStringList &szCast)
 {
-	m_szCast	= szCast;
+	m_szCast	= cleanList(szCast);
 }
 
 QStringList cMovie::cast()
@@ -307,7 +318,7 @@ QStringList cMovie::cast()
 
 void cMovie::setCrew(const QStringList &szCrew)
 {
-	m_szCrew	= szCrew;
+	m_szCrew	= cleanList(szCrew);
 }
 
 QStringList cMovie::crew()

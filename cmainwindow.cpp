@@ -624,12 +624,12 @@ void cMainWindow::displayMovies()
 				lpRoot	= 0;
 			else
 			{
-				lpRoot	= new QStandardItem(QString("<font color='white'><b>%1</b></font>").arg(szOldCollection));
+				lpRoot	= new QStandardItem(QString("<b>%1</b>").arg(szOldCollection));
 				m_lpMoviesListModel->appendRow(lpRoot);
 			}
 		}
 
-		QStandardItem*	lpItem	= new QStandardItem(QString("<font color='white'><b>%1</b> (%2)&nbsp;&nbsp;<br><i>%3</i></font>").arg(lpMovie->movieTitle()).arg(lpMovie->releaseDate().year()).arg(lpMovie->tagline()));
+		QStandardItem*	lpItem	= new QStandardItem(QString("<b>%1</b> (%2)&nbsp;&nbsp;<br><i>%3</i>").arg(lpMovie->movieTitle()).arg(lpMovie->releaseDate().year()).arg(lpMovie->tagline()));
 		lpItem->setData(QVariant::fromValue(lpMovie), Qt::UserRole);
 
 		if(lpRoot)

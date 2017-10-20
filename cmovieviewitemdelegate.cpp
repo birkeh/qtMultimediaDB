@@ -9,7 +9,7 @@
 #include <QStandardItemModel>
 
 
-#define STATE_INIT		Qt::gray
+#define STATE_INIT		Qt::lightGray
 #define STATE_PROGRESS	Qt::blue
 #define STATE_DONE		Qt::green
 #define STATE_UNKNOWN	Qt::black
@@ -18,26 +18,13 @@ void cMovieViewItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 {
 	cMovie*	lpMovie	= qvariant_cast<cMovie*>(index.data(Qt::UserRole));
 	QBrush	oldBrush;
+	cMovie::State state;
+	QPen	oldPen;
 
 	QStyleOptionViewItem options = option;
 	initStyleOption(&options, index);
 
 	painter->save();
-
-	QTextDocument doc;
-	doc.setHtml(options.text);
-
-	options.text = "";
-	options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter);
-
-	// shift text right to make icon visible
-	QSize iconSize = options.icon.actualSize(options.rect.size());
-	painter->translate(options.rect.left()+iconSize.width(), options.rect.top());
-	QRect clip(0, 0, options.rect.width()+iconSize.width(), options.rect.height());
-
-	//doc.drawContents(painter, clip);
-
-	painter->setClipRect(clip);
 
 	if(!lpMovie)
 	{
@@ -75,45 +62,83 @@ void cMovieViewItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 			}
 		}
 		if(statusProg)
-			painter->setBrush(STATE_PROGRESS);
+			state	= cMovie::StateProgress;
 		else if(statusInit)
-			painter->setBrush(STATE_INIT);
+			state	= cMovie::StateInit;
 		else
-			painter->setBrush(STATE_DONE);
+			state	= cMovie::StateDone;
 	}
 	else
-	{
-		oldBrush	= painter->brush();
+		state	= lpMovie->state();
 
-		switch(lpMovie->state())
+	QTextDocument doc;
+
+	if(option.state & QStyle::State_Selected)
+		doc.setHtml(QString("<font color='red'>%1</font>").arg(options.text));
+	else
+	{
+		switch(state)
 		{
 		case cMovie::StateInit:
-			painter->setBrush(STATE_INIT);
+			doc.setHtml(QString("<font color='black'>%1</font>").arg(options.text));
 			break;
 		case cMovie::StateProgress:
-			painter->setBrush(STATE_PROGRESS);
+			doc.setHtml(QString("<font color='white'>%1</font>").arg(options.text));
 			break;
 		case cMovie::StateDone:
-			painter->setBrush(STATE_DONE);
+			doc.setHtml(QString("<font color='black'>%1</font>").arg(options.text));
 			break;
 		default:
 			break;
 		}
 	}
-	QRect back	= clip;
 
-	back.setLeft(back.left()+2);
-	back.setRight(back.right()-2);
-	back.setTop(back.top()+4);
-	back.setBottom(back.bottom()-4);
+	options.text = "";
+	options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter);
+
+	// shift text right to make icon visible
+	QSize iconSize = options.icon.actualSize(options.rect.size());
+	painter->translate(options.rect.left()+iconSize.width(), options.rect.top());
+	QRect clip(0, 0, options.rect.width()+iconSize.width(), options.rect.height());
+
+	painter->setClipRect(clip);
+
+	oldBrush	= painter->brush();
+	oldPen		= painter->pen();
+
+	switch(state)
+	{
+	case cMovie::StateInit:
+		painter->setBrush(STATE_INIT);
+		if(!(option.state & QStyle::State_Selected))
+			painter->setPen(STATE_INIT);
+		break;
+	case cMovie::StateProgress:
+		painter->setBrush(STATE_PROGRESS);
+		if(!(option.state & QStyle::State_Selected))
+			painter->setPen(STATE_PROGRESS);
+		break;
+	case cMovie::StateDone:
+		painter->setBrush(STATE_DONE);
+		if(!(option.state & QStyle::State_Selected))
+			painter->setPen(STATE_DONE);
+		break;
+	default:
+		break;
+	}
+
+	QRect	back	= clip;
+	back.setLeft(back.left()+1);
+	back.setRight(back.right()-1);
+	back.setTop(back.top()+1);
+	back.setBottom(back.bottom()-1);
 
 	painter->drawRect(back);
 	painter->setBrush(oldBrush);
+	painter->setPen(oldPen);
 
 	QAbstractTextDocumentLayout::PaintContext ctx;
-	// set text color to red for selected item
-	if (option.state & QStyle::State_Selected)
-		ctx.palette.setColor(QPalette::Text, QColor("red"));
+
 	ctx.clip = clip;
 	doc.documentLayout()->draw(painter, ctx);
 
