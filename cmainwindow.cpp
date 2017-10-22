@@ -859,12 +859,28 @@ bool cMainWindow::runMovieEdit(cMovie *lpMovie)
 void cMainWindow::onActionAdd()
 {
 	cSearch*	lpSearch	= new cSearch(this);
+
+	QSettings	settings;
+	qint16		iX		= settings.value("search/x", QVariant::fromValue(-1)).toInt();
+	qint16		iY		= settings.value("search/y", QVariant::fromValue(-1)).toInt();
+	qint16		iWidth	= settings.value("search/width", QVariant::fromValue(-1)).toInt();
+	qint16		iHeight	= settings.value("search/height", QVariant::fromValue(-1)).toInt();
+
+	if(iX != -1 && iY != -1)
+		lpSearch->move(iX, iY);
+	if(iWidth != -1 && iHeight != -1)
+		lpSearch->resize(iWidth, iHeight);
+
 	if(lpSearch->exec() == QDialog::Rejected)
 	{
 		delete lpSearch;
 		return;
 	}
 
+	settings.setValue("search/width", QVariant::fromValue(lpSearch->size().width()));
+	settings.setValue("search/height", QVariant::fromValue(lpSearch->size().height()));
+	settings.setValue("search/x", QVariant::fromValue(lpSearch->x()));
+	settings.setValue("search/y", QVariant::fromValue(lpSearch->y()));
 
 	qint32	id				= lpSearch->id();
 	QString	szPlaceholder	= lpSearch->placeholderName();
@@ -937,12 +953,28 @@ void cMainWindow::onActionAdd()
 void cMainWindow::onActionMovieAdd()
 {
 	cMovieSearch*	lpSearch	= new cMovieSearch(this);
+
+	QSettings	settings;
+	qint16		iX		= settings.value("movieSearch/x", QVariant::fromValue(-1)).toInt();
+	qint16		iY		= settings.value("movieSearch/y", QVariant::fromValue(-1)).toInt();
+	qint16		iWidth	= settings.value("movieSearch/width", QVariant::fromValue(-1)).toInt();
+	qint16		iHeight	= settings.value("movieSearch/height", QVariant::fromValue(-1)).toInt();
+
+	if(iX != -1 && iY != -1)
+		lpSearch->move(iX, iY);
+	if(iWidth != -1 && iHeight != -1)
+		lpSearch->resize(iWidth, iHeight);
+
 	if(lpSearch->exec() == QDialog::Rejected)
 	{
 		delete lpSearch;
 		return;
 	}
 
+	settings.setValue("movieSearch/width", QVariant::fromValue(lpSearch->size().width()));
+	settings.setValue("movieSearch/height", QVariant::fromValue(lpSearch->size().height()));
+	settings.setValue("movieSearch/x", QVariant::fromValue(lpSearch->x()));
+	settings.setValue("movieSearch/y", QVariant::fromValue(lpSearch->y()));
 
 	qint32	id				= lpSearch->id();
 	QString	szPlaceholder	= lpSearch->placeholderName();

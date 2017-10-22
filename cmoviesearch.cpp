@@ -17,6 +17,8 @@ cMovieSearch::cMovieSearch(QWidget *parent) :
 	ui->setupUi(this);
 	ui->m_lpSearchButton->setEnabled(false);
 	ui->m_lpTabWidget->setCurrentIndex(0);
+
+	ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 }
 
 cMovieSearch::~cMovieSearch()
@@ -101,4 +103,45 @@ bool cMovieSearch::placeholder()
 qint16 cMovieSearch::year()
 {
 	return(ui->m_lpYear->value());
+}
+
+void cMovieSearch::on_m_lpResults_clicked(const QModelIndex &index)
+{
+	setButtonBox();
+}
+
+void cMovieSearch::on_m_lpPlaceholderName_textChanged(const QString &arg1)
+{
+	setButtonBox();
+}
+
+void cMovieSearch::on_m_lpYear_valueChanged(int arg1)
+{
+	setButtonBox();
+}
+
+void cMovieSearch::setButtonBox()
+{
+	if(ui->m_lpTabWidget->currentIndex() == 0)
+	{
+		if(ui->m_lpResults->selectedItems().count())
+			ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
+		else
+			ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+		return;
+	}
+
+	if(ui->m_lpPlaceholderName->text().isEmpty())
+	{
+		ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+		return;
+	}
+
+	if(ui->m_lpYear->value() == 0)
+	{
+		ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+		return;
+	}
+
+	ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 }
