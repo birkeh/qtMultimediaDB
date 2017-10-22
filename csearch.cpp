@@ -18,6 +18,8 @@ cSearch::cSearch(QWidget *parent) :
 	ui->m_lpTabWidget->setCurrentIndex(0);
 
 	ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+	ui->m_lpSearch->setFocus();
+	ui->m_lpSearchButton->setDefault(true);
 }
 
 cSearch::~cSearch()
@@ -128,4 +130,10 @@ void cSearch::setButtonBox()
 	}
 
 	ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
+}
+
+void cSearch::on_m_lpResults_doubleClicked(const QModelIndex &index)
+{
+	if(index.isValid())
+		accept();
 }

@@ -21,6 +21,8 @@
 
 #include <QTreeView>
 
+#include <QShortcut>
+
 
 namespace Ui {
 class cMainWindow;
@@ -66,6 +68,8 @@ private slots:
 	void				onActionMovieGotoIMDB();
 	void				onActionMovieLoadPictures();
 
+	void				onActionAddGlobal();
+
 	void				updateMessage(const QString& szMessage, const qint32 &iProgress);
 	void				updateAppendMessage(const QString& szMessage);
 	void				updateDone();
@@ -98,6 +102,8 @@ private:
 	QStandardItemModel*	m_lpMoviesListModel;
 
 	bool				m_bProcessing;
+
+	QShortcut*			m_lpShortcut;
 
 	void				initDB();
 	void				loadDB();

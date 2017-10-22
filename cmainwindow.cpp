@@ -75,7 +75,8 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	m_lpMessageDialog(0),
 	m_lpUpdateThread(0),
 	m_lpPicturesThread(0),
-	m_bProcessing(false)
+	m_bProcessing(false),
+	m_lpShortcut(0)
 {
 	m_timer.start();
 
@@ -85,7 +86,7 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	lpDialog->show();
 
 	ui->setupUi(this);
-	ui->m_lpMainTab->setCurrentWidget(0);
+	ui->m_lpMainTab->setCurrentIndex(0);
 
 	m_lpSeriesListModel	= new QStandardItemModel(0, 3);
 	initDB();
@@ -142,10 +143,16 @@ cMainWindow::cMainWindow(QWidget *parent) :
 
 	connect(ui->m_lpSeriesList1->verticalScrollBar(), &QScrollBar::valueChanged, this, &cMainWindow::scrollbarValueChanged1);
 	connect(ui->m_lpSeriesList2->verticalScrollBar(), &QScrollBar::valueChanged, this, &cMainWindow::scrollbarValueChanged2);
+
+	m_lpShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_A), this, SLOT(onActionAddGlobal()));
+	m_lpShortcut->setAutoRepeat(false);
 }
 
 cMainWindow::~cMainWindow()
 {
+	if(m_lpShortcut)
+		delete m_lpShortcut;
+
 	delete ui;
 }
 
@@ -392,8 +399,11 @@ void cMainWindow::displaySeries()
 {
 	m_lpSeriesListModel->clear();
 
-	qint16	iMin	= m_serieList.minSeason();
-	qint16	iMax	= m_serieList.maxSeason();
+	qint16	iMin		= m_serieList.minSeason();
+	qint16	iMax		= m_serieList.maxSeason();
+
+	qint16	iSeries		= 0;
+	qint16	iEpisodes	= 0;
 
 	m_lpSeriesListModel->setColumnCount(iMax-iMin+2);
 
@@ -417,6 +427,8 @@ void cMainWindow::displaySeries()
 
 	for(int serie = 0;serie < m_serieList.count();serie++)
 	{
+		iSeries++;
+
 		QList<QStandardItem*>	lpItems;
 
 		for(int z = 0;z < header.count();z++)
@@ -452,6 +464,8 @@ void cMainWindow::displaySeries()
 
 			for(int y = 0;y < lpSeason->episodeList().count();y++)
 			{
+				iEpisodes++;
+
 				if(lpSeason->episodeList().at(y)->state() == cEpisode::StateInit)
 				{
 					if(szInit.isEmpty())
@@ -598,10 +612,15 @@ void cMainWindow::displaySeries()
 	ui->m_lpSeriesList2->setColumnHidden(0, true);
 	ui->m_lpSeriesList2->setColumnHidden(1, true);
 	ui->m_lpSeriesList2->setColumnHidden(2, true);
+
+	ui->m_lpSeriesCount->setText(QString("%1").arg(iSeries));
+	ui->m_lpEpisodesCount->setText(QString("%1").arg(iEpisodes));
 }
 
 void cMainWindow::displayMovies()
 {
+	qint16	iMovies	= 0;
+
 	m_lpMoviesListModel->clear();
 	m_lpMoviesListModel->setColumnCount(1);
 
@@ -615,6 +634,8 @@ void cMainWindow::displayMovies()
 
 	for(int x = 0;x < m_movieList.count();x++)
 	{
+		iMovies++;
+
 		cMovie*	lpMovie	= m_movieList.at(x);
 
 		if(lpMovie->belongsToCollection() != szOldCollection)
@@ -637,6 +658,8 @@ void cMainWindow::displayMovies()
 		else
 			m_lpMoviesListModel->appendRow(lpItem);
 	}
+
+	ui->m_lpMoviesCount->setText(QString("%1").arg(iMovies));
 }
 
 void cMainWindow::on_m_lpSeriesList1_customContextMenuRequested(const QPoint &pos)
@@ -854,6 +877,14 @@ bool cMainWindow::runMovieEdit(cMovie *lpMovie)
 	delete lpMovieEdit;
 
 	return(true);
+}
+
+void cMainWindow::onActionAddGlobal()
+{
+	if(ui->m_lpMainTab->currentIndex() == 0)
+		onActionAdd();
+	else
+		onActionMovieAdd();
 }
 
 void cMainWindow::onActionAdd()

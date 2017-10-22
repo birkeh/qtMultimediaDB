@@ -19,6 +19,8 @@ cMovieSearch::cMovieSearch(QWidget *parent) :
 	ui->m_lpTabWidget->setCurrentIndex(0);
 
 	ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+	ui->m_lpSearch->setFocus();
+	ui->m_lpSearchButton->setDefault(true);
 }
 
 cMovieSearch::~cMovieSearch()
@@ -144,4 +146,10 @@ void cMovieSearch::setButtonBox()
 	}
 
 	ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
+}
+
+void cMovieSearch::on_m_lpResults_doubleClicked(const QModelIndex &index)
+{
+	if(index.isValid())
+		accept();
 }

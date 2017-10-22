@@ -29,6 +29,8 @@ private slots:
 	void	on_m_lpPlaceholderName_textChanged(const QString &arg1);
 	void	on_m_lpYear_valueChanged(int arg1);
 
+	void on_m_lpResults_doubleClicked(const QModelIndex &index);
+
 private:
 	Ui::cSearch *ui;
 

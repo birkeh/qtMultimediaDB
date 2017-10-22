@@ -30,6 +30,8 @@ private slots:
 
 	void on_m_lpResults_clicked(const QModelIndex &index);
 
+	void on_m_lpResults_doubleClicked(const QModelIndex &index);
+
 private:
 	Ui::cMovieSearch *ui;
 
