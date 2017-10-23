@@ -371,7 +371,7 @@ bool cSerie::save(QSqlDatabase &db)
 		querySerie.bindValue(":status", status());
 		querySerie.bindValue(":download", download());
 		querySerie.bindValue(":cliffhanger", cliffhanger());
-		querySerie.bindValue(":actor", actors().join(","));
+		querySerie.bindValue(":actor", actors().join("|"));
 		querySerie.bindValue(":genre", genre().join(","));
 		if(querySerie.exec())
 		{

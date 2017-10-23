@@ -107,45 +107,74 @@ cSerie* cTheTVDBV2::load(const qint32 &iID, const QString &szLanguage)
 	QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
 	loop.exec();
 
-	if (reply->error() == QNetworkReply::NoError)
-	{
-		QString			strReply		= (QString)reply->readAll();
-		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
-		QJsonObject		jsonObj			= jsonResponse.object();
-		QJsonObject		serieDetails	= jsonObj["data"].toObject();
-		QJsonArray		genreArray		= serieDetails["genre"].toArray();
-		QStringList		genreList;
-
-		delete reply;
-
-		lpSerie	= new cSerie;
-		lpSerie->setSeriesName(serieDetails["seriesName"].toString());
-		lpSerie->setSeriesID(serieDetails["seriesId"].toInt());
-		lpSerie->setLanguage(szLanguage);
-		lpSerie->setBanner(serieDetails["banner"].toString());
-		lpSerie->setOverview(serieDetails["overview"].toString());
-		lpSerie->setFirstAired(serieDetails["firstAired"].toString());
-		lpSerie->setNetwork(serieDetails["network"].toString());
-		lpSerie->setIMDBID(serieDetails["imdbId"].toString());
-		lpSerie->setID(serieDetails["id"].toInt());
-		lpSerie->setContentRating(serieDetails["rating"].toString());
-		for(int z = 0;z < genreArray.count();z++)
-			genreList.append(genreArray[z].toString());
-		lpSerie->setGenre(genreList);
-		lpSerie->setRating(serieDetails["siteRating"].toDouble());
-		lpSerie->setRatingCount(serieDetails["siteRatingCount"].toInt());
-		lpSerie->setRuntime(serieDetails["runtime"].toString().toInt());
-		lpSerie->setStatus(serieDetails["status"].toString());
-
-		lpSerie->setActors(getActors(iID));
-
-		getEpisodes(lpSerie, szLanguage);
-	}
-	else
+	if(reply->error() != QNetworkReply::NoError)
 	{
 		qDebug() << reply->errorString();
 		delete reply;
+
+		return(0);
 	}
+
+	QString			strReply		= (QString)reply->readAll();
+	QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+	QJsonObject		jsonObj			= jsonResponse.object();
+	QJsonObject		serieDetails	= jsonObj["data"].toObject();
+
+	delete reply;
+
+	QJsonObject		jsonError		= jsonObj["errors"].toObject();
+	if(!jsonError["invalidLanguage"].toString().isEmpty())
+	{
+		request	= QNetworkRequest(QUrl(QString("https://api.thetvdb.com/series/%1").arg(iID)));
+		request.setRawHeader("Content-Type", "application/json");
+		request.setRawHeader("Authorization", QString("Bearer %1").arg(m_szToken).toUtf8());
+		request.setRawHeader("Accept-Language", "en");
+
+		reply   = networkManager.get(request);
+
+		QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+		loop.exec();
+
+		if(reply->error() != QNetworkReply::NoError)
+		{
+			qDebug() << reply->errorString();
+			delete reply;
+
+			return(0);
+		}
+
+		strReply		= (QString)reply->readAll();
+		jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+		jsonObj			= jsonResponse.object();
+		serieDetails	= jsonObj["data"].toObject();
+	}
+
+	QJsonArray		genreArray		= serieDetails["genre"].toArray();
+	QStringList		genreList;
+
+	lpSerie	= new cSerie;
+	lpSerie->setSeriesName(serieDetails["seriesName"].toString());
+	lpSerie->setSeriesID(serieDetails["seriesId"].toInt());
+	lpSerie->setLanguage(szLanguage);
+	lpSerie->setBanner(serieDetails["banner"].toString());
+	lpSerie->setOverview(serieDetails["overview"].toString());
+	lpSerie->setFirstAired(serieDetails["firstAired"].toString());
+	lpSerie->setNetwork(serieDetails["network"].toString());
+	lpSerie->setIMDBID(serieDetails["imdbId"].toString());
+	lpSerie->setID(serieDetails["id"].toInt());
+	lpSerie->setContentRating(serieDetails["rating"].toString());
+	for(int z = 0;z < genreArray.count();z++)
+		genreList.append(genreArray[z].toString());
+	lpSerie->setGenre(genreList);
+	lpSerie->setRating(serieDetails["siteRating"].toDouble());
+	lpSerie->setRatingCount(serieDetails["siteRatingCount"].toInt());
+	lpSerie->setRuntime(serieDetails["runtime"].toString().toInt());
+	lpSerie->setStatus(serieDetails["status"].toString());
+
+	lpSerie->setActors(getActors(iID));
+
+	getEpisodes(lpSerie, szLanguage);
+
 	return(lpSerie);
 }
 
@@ -174,7 +203,7 @@ QStringList cTheTVDBV2::getActors(const qint32& iID)
 		for(int z = 0;z < actorsArray.count();z++)
 		{
 			QJsonObject	actor			= actorsArray.at(z).toObject();
-			actorsList.append(actor["name"].toString());
+			actorsList.append(QString("%1,%2").arg(actor["name"].toString()).arg(actor["role"].toString()));
 		}
 		delete reply;
 

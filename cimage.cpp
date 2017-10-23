@@ -37,7 +37,8 @@ QPixmap cImage::downloadFile(const QString& szFileName)
 	QPixmap					pixmap;
 
 	QString	szPath	= rootPath() + QDir::separator() + szFileName;
-	QString	szURL	= "http://thetvdb.com/banners/" + szFileName;
+//	QString	szURL	= "http://thetvdb.com/banners/" + szFileName;
+	QString	szURL	= "https://www.thetvdb.com/banners/" + szFileName;
 
 	QNetworkAccessManager	networkManager;
 	QUrl					url(szURL);

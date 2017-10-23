@@ -313,7 +313,7 @@ void cMainWindow::loadSeriesDB()
 			lpSerie->setStatus(query.value(13).toString());
 			lpSerie->setDownload(query.value(14).toString());
 			lpSerie->setCliffhanger(query.value(15).toBool());
-			lpSerie->setActors(query.value(16).toString().split(","));
+			lpSerie->setActors(query.value(16).toString().split("|"));
 			lpSerie->setGenre(query.value(17).toString().split(","));
 
 			if(iSeasonID != iOldSeasonID)
