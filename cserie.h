@@ -14,55 +14,114 @@ class cSerie
 public:
 	cSerie();
 
-	void			setSeriesName(const QString& szSeriesName);
+	void			setSeriesName(const QString& szSeriesName);			//OK
 	QString			seriesName();
 
-	void			setSeriesID(const qint32& iSeriesID);
+	void			setOriginalName(const QString& szOriginalName);		//New
+	QString			originalName();
+
+	void			setSeriesID(const qint32& iSeriesID);				//OK
 	qint32			seriesID();
 
-	void			setLanguage(const QString& szLanguage);
-	QString			language();
+	void			setBackdropPath(const QString& szBackdropPath);		//New
+	QString			backdropPath();
 
-	void			setBanner(const QString& szBanner);
-	QString			banner();
+	void			setCreatedBy(const QStringList& szCreatedBy);		//New
+	void			setCreatedBy(const QString& szCreatedBy);
+	QStringList		createdBy();
 
-	void			setOverview(const QString& szOverview);
+	void			setHomepage(const QString& szHomepage);				//New
+	QString			homepage();
+
+	void			setLastAired(const QString& szLAstAired);			//New
+	void			setLastAired(const QDate& lastAired);
+	QDate			lastAired();
+
+	void			setNetworks(const QStringList& szNetworks);			//New
+	void			setNetworks(const QString& szNetworks);
+	QStringList		networks();
+
+	void			setNrEpisodes(const qint16& iEpisodes);				//New
+	qint16			nrEpisodes();
+
+	void			setNrSeasons(const qint16& iSeasons);				//New
+	qint16			nrSeasons();
+
+	void			setOriginCountries(const QStringList& szOriginCountrues); //New
+	void			setOriginCountries(const QString& szOriginCountries);
+	QStringList		originCountries();
+
+	void			setOriginalLanguage(const QString& szOriginalLanguage);	//New
+	QString			originalLanguage();
+
+	void			setPopularity(const qreal& dPopularity);			//New
+	qreal			popularity();
+
+	void			setPosterPath(const QString& szPosterPath);			//New
+	QString			posterPath();
+
+	void			setProductionCompanies(const QStringList& szProductionCompanies); //New
+	void			setProductionCompanies(const QString& szProductionCompanies);
+	QStringList		productionCompanies();
+
+	void			setType(const QString& szType);						//New
+	QString			type();
+
+	void			setVoteAverage(const qreal& dVoteAverage);			//New
+	qreal			voteAverage();
+
+	void			setVoteCount(const qint16& iVoteCount);				//New
+	qint16			voteCount();
+
+//	void			setLanguage(const QString& szLanguage);
+//	QString			language();
+
+//	void			setBanner(const QString& szBanner);
+//	QString			banner();
+
+	void			setOverview(const QString& szOverview);				//OK
 	QString			overview();
 
-	void			setFirstAired(const QString& szFirstAired);
+	void			setFirstAired(const QString& szFirstAired);			//OK
 	void			setFirstAired(const QDate& firstAired);
 	QDate			firstAired();
 
-	void			setNetwork(const QString& szNetwork);
-	QString			network();
+//	void			setNetwork(const QString& szNetwork);				//Old
+//	QString			network();
 
-	void			setIMDBID(const QString& szIMDBID);
-	QString			imdbID();
+//	void			setIMDBID(const QString& szIMDBID);
+//	QString			imdbID();
 
-	void			setID(const qint32& iID);
-	qint32			id();
+//	void			setID(const qint32& iID);
+//	qint32			id();
 
-	void			setActors(const QString& szActors);
-	void			setActors(const QStringList& szActors);
-	QStringList		actors();
+//	void			setActors(const QString& szActors);
+//	void			setActors(const QStringList& szActors);
+//	QStringList		actors();
 
-	void			setContentRating(const QString& szContentRating);
-	QString			contentRating();
+//	void			setContentRating(const QString& szContentRating);
+//	QString			contentRating();
 
-	void			setGenre(const QString& szGenre);
+	void			setCast(const QStringList& szCast);					//New
+	QStringList		cast();
+
+	void			setCrew(const QStringList& szCrew);					//New
+	QStringList		crew();
+
+	void			setGenre(const QString& szGenre);					//OK
 	void			setGenre(const QStringList& szGenre);
 	QStringList		genre();
 
-	void			setRating(const qreal& dRating);
-	qreal			rating();
+//	void			setRating(const qreal& dRating);
+//	qreal			rating();
 
-	void			setRatingCount(const qint16& iRatingCount);
-	qint16			ratingCount();
+//	void			setRatingCount(const qint16& iRatingCount);
+//	qint16			ratingCount();
 
-	void			setRuntime(const qint16& iRuntime);
-	qint16			runime();
+//	void			setRuntime(const qint16& iRuntime);
+//	qint16			runime();
 
-	void			setStatus(const QString& szStatus);
+	void			setStatus(const QString& szStatus);				//OK
 	QString			status();
 
 	void			setDownload(const QString& szDownload);
@@ -100,6 +159,7 @@ public:
 	void			deleteResources();
 private:
 	QString			m_szSeriesName;
+	QString			m_szOriginalName;
 	qint32			m_iSeriesID;
 	QString			m_szLanguage;
 	QString			m_szBanner;

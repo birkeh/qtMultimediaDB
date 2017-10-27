@@ -186,28 +186,37 @@ void cMainWindow::initDB()
 	if(!m_db.tables().contains("serie"))
 	{
 		query.exec("CREATE TABLE serie ("
-					"   seriesID      INTEGER,"
-					"   seriesName    STRING,"
-					"   language      STRING,"
-					"   banner        STRING,"
-					"   overview      TEXT,"
-					"   firstAired    DATE,"
-					"   network       STRING,"
-					"   imdbid        STRING,"
-					"   id            INTEGER,"
-					"   contentRating STRING,"
-					"   rating        DOUBLE,"
-					"   ratingCount   INTEGER,"
-					"   runtime       INTEGER,"
-					"   status        STRING,"
-					"   download      STRING,"
-					"   cliffhanger   BOOL,"
-					"   actor         STRING,"
-					"   genre         STRING);");
+					"   seriesID            INTEGER,"
+					"   seriesName          STRING,"
+					"   originalName        STRING,"
+					"   backdropPath        STRING,"
+					"   createdBy           STRING,"
+					"   homepage            STRING,"
+					"   lastAired           DATE,"
+					"   networks            STRING,"
+					"   nrEpisodes          INTEGER,"
+					"   nrSeasons           INTEGER,"
+					"   originCountries     STRING,"
+					"   originalLanguage    STRING,"
+					"   popularity          DOUBLE,"
+					"   posterPath          STRING,"
+					"   productionCompanies STRING,"
+					"   type                STRING,"
+					"   voteAverage         DOUBLE,"
+					"   voteCount           INT,"
+					"   overview            TEXT,"
+					"   firstAired          DATE,"
+					"   cast                STRING,"
+					"   crew                STRING,"
+					"   genre               STRING,"
+					"   status              STRING,"
+					"   download            STRING,"
+					"   cliffhanger         BOOL);");
 	}
 
 	if(!m_db.tables().contains("episode"))
 	{
+/*
 		query.exec("CREATE TABLE episode ("
 					"	episodeID      INTEGER,"
 					"	episodeName    STRING,"
@@ -229,8 +238,8 @@ void cMainWindow::initDB()
 					"   director       STRING,"
 					"   gueststars     STRING,"
 					"   episode_writer STRING);");
+*/
 	}
-
 	if(!m_db.tables().contains("movie"))
 	{
 		query.exec("CREATE TABLE movie ("
@@ -283,7 +292,7 @@ void cMainWindow::loadSeriesDB()
 	qint32		iSeasonID;
 	cSeason*	lpSeason;
 	cEpisode*	lpEpisode;
-
+/*
     if(query.exec("SELECT serie.seriesID, serie.seriesName, serie.language, serie.banner, serie.overview, serie.firstAired, serie.network, serie.imdbid, serie.id, serie.contentRating, serie.rating, serie.ratingCount, serie.runtime, serie.status, serie.download, serie.cliffhanger, serie.actor, serie.genre, episode.episodeID, episode.episodeName, episode.episodeNumber, episode.firstAired, episode.imdbid, episode.language, episode.overview, episode.productioncode, episode.rating, episode.ratingCount, episode.seasonNumber, episode.seasonID, episode.seriesID, episode.state, episode.filename, episode.thumb_height, episode.thumb_width, episode.director, episode.gueststars, episode.episode_writer FROM serie LEFT JOIN episode ON serie.id = episode.seriesID ORDER BY serie.seriesName, episode.seasonNumber, episode.episodeNumber;"))
 	{
 		while(query.next())
@@ -344,6 +353,7 @@ void cMainWindow::loadSeriesDB()
 			lpEpisode->setWriter(query.value(37).toString().split(","));
 		}
 	}
+*/
 }
 
 void cMainWindow::loadMoviesDB()
@@ -691,10 +701,10 @@ void cMainWindow::showSeriesContextMenu(QTreeView* lpTreeView, const QPoint &pos
 			lpMenu->addAction("delete", this, SLOT(onActionDelete()));
 			lpMenu->addAction("edit", this, SLOT(onActionEdit()));
 			lpMenu->addSeparator();
-
+/*
 			if(!lpSerie->imdbID().isEmpty())
 				lpMenu->addAction("open IMDB", this, SLOT(onActionGotoIMDB()));
-
+*/
 			if(!lpSerie->download().isEmpty())
 			{
 				lpMenu->addAction("open download link", this, SLOT(onActionGotoDownload()));
@@ -968,7 +978,7 @@ void cMainWindow::onActionAdd()
 			iMax	= 1000000;
 		else
 			iMax++;
-		lpSerie->setID(iMax);
+		lpSerie->setSeriesID(iMax);
 		lpSerie->setFirstAired(QDate(iYear, 1, 1));
 		lpSerie->save(m_db);
 	}
@@ -1028,9 +1038,9 @@ void cMainWindow::onActionMovieAdd()
 
 		cTheMovieDBV3		movieDB3;
 
-		lpMovie	= movieDB3.load(id, "de");
+		lpMovie	= movieDB3.loadMovie(id, "de");
 		if(!lpMovie)
-			lpMovie	= movieDB3.load(id, "en");
+			lpMovie	= movieDB3.loadMovie(id, "en");
 
 		delete lpDialog;
 
@@ -1275,7 +1285,7 @@ void cMainWindow::on_m_lpMoviesList_doubleClicked(const QModelIndex &index)
 {
 	onActionMovieEdit();
 }
-
+/*
 void cMainWindow::onActionGotoIMDB()
 {
 	if(ui->m_lpSeriesList1->selectionModel()->selectedRows().count())
@@ -1288,7 +1298,7 @@ void cMainWindow::onActionGotoIMDB()
 		}
 	}
 }
-
+*/
 void cMainWindow::onActionMovieGotoIMDB()
 {
 	if(ui->m_lpMoviesList->selectionModel()->selectedRows().count())

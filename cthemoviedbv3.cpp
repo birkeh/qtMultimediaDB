@@ -18,7 +18,7 @@ cTheMovieDBV3::cTheMovieDBV3()
 	m_szToken	= "a33271b9e54cdcb9a80680eaf5522f1b";
 }
 
-QList<cMovie*> cTheMovieDBV3::search(const QString& szMovie, const qint16& year, const QString& szLanguage)
+QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint16& year, const QString& szLanguage)
 {
 	QList<cMovie*>			movieList;
 	QNetworkAccessManager	networkManager;
@@ -80,7 +80,69 @@ QList<cMovie*> cTheMovieDBV3::search(const QString& szMovie, const qint16& year,
 	return(movieList);
 }
 
-cMovie* cTheMovieDBV3::load(const qint32 &iID, const QString &szLanguage)
+QList<cSerie*> cTheMovieDBV3::searchSerie(const QString& szSerie, const qint16& year, const QString& szLanguage)
+{
+	QList<cSerie*>			serieList;
+	QNetworkAccessManager	networkManager;
+	QString					szRequest	= QString("https://api.themoviedb.org/3/search/tv?api_key=%1").arg(m_szToken);
+	qint16					page		= 1;
+
+	if(!szLanguage.contains("all"))
+		szRequest.append(QString("&language=%1").arg(szLanguage));
+
+	szRequest.append(QString("&query=%1").arg(szSerie));
+
+	if(year != -1)
+		szRequest.append(QString("&year=%1").arg(year));
+
+	szRequest.append("&include_adult=false");
+
+	for(;;)
+	{
+		QNetworkRequest			request(QUrl(QString("%1&page=%2").arg(szRequest).arg(page)));
+
+		QNetworkReply*			reply   = networkManager.get(request);
+		QEventLoop				loop;
+
+		QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+		loop.exec();
+
+		if (reply->error() == QNetworkReply::NoError)
+		{
+			QString			strReply		= (QString)reply->readAll();
+			QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+			QJsonObject		jsonObj			= jsonResponse.object();
+			QJsonArray		jsonArray		= jsonObj["results"].toArray();
+
+			for(int z = 0;z < jsonArray.count();z++)
+			{
+				QJsonObject	serie			= jsonArray[z].toObject();
+				cSerie*		lpSerie			= new cSerie;
+				lpSerie->setSeriesName(serie["name"].toString());
+				lpSerie->setSeriesID(serie["id"].toInt());
+				lpSerie->setOriginalName(serie["original_name"].toString());
+				lpSerie->setFirstAired(serie["first_air_date"].toString());
+				serieList.append(lpSerie);
+			}
+			if(jsonObj["total_pages"].toInt() == page)
+				break;
+
+			page++;
+			if(page > 20)
+				break;
+
+			delete reply;
+		}
+		else
+		{
+			qDebug() << reply->errorString();
+			delete reply;
+		}
+	}
+	return(serieList);
+}
+
+cMovie* cTheMovieDBV3::loadMovie(const qint32 &iID, const QString &szLanguage)
 {
 	cMovie*					lpMovie	= 0;
 	QNetworkAccessManager	networkManager;
@@ -220,4 +282,236 @@ cMovie* cTheMovieDBV3::load(const qint32 &iID, const QString &szLanguage)
 		delete reply;
 	}
 	return(lpMovie);
+}
+
+cSerie* cTheMovieDBV3::loadSerie(const QString& szIMDBID)
+{
+	qint32					iID;
+	QNetworkAccessManager	networkManager;
+	QNetworkRequest			request(QUrl(QString("https://api.themoviedb.org/3/find/%1?api_key=%2&external_source=imdb_id").arg(szIMDBID).arg(m_szToken)));
+
+	request.setRawHeader("Content-Type", "application/json");
+	request.setRawHeader("Authorization", QString("Bearer %1").arg(m_szToken).toUtf8());
+
+	QNetworkReply*			reply   = networkManager.get(request);
+	QEventLoop				loop;
+
+	QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	loop.exec();
+
+	if (reply->error() == QNetworkReply::NoError)
+	{
+		QString			strReply		= (QString)reply->readAll();
+		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+		QJsonObject		jsonObj			= jsonResponse.object();
+
+		QJsonObject		tmpObj;
+
+		delete reply;
+
+		tmpObj	= jsonObj["tv_results"].toObject();
+		iID		= tmpObj["id"].toInt();
+
+		return(loadSerie(iID, "de"));
+	}
+	return(0);
+}
+
+cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
+{
+	cSerie*					lpSerie	= 0;
+	QNetworkAccessManager	networkManager;
+	QNetworkRequest			request(QUrl(QString("https://api.themoviedb.org/3/tv/%1?api_key=%2&language=%3").arg(iID).arg(m_szToken).arg(szLanguage)));
+
+	request.setRawHeader("Content-Type", "application/json");
+	request.setRawHeader("Authorization", QString("Bearer %1").arg(m_szToken).toUtf8());
+	if(!szLanguage.contains("all"))
+		request.setRawHeader("Accept-Language", szLanguage.toUtf8());
+	else
+		request.setRawHeader("Accept-Language", "en");
+
+	QNetworkReply*			reply   = networkManager.get(request);
+	QEventLoop				loop;
+
+	QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	loop.exec();
+
+	if (reply->error() == QNetworkReply::NoError)
+	{
+		QString			strReply		= (QString)reply->readAll();
+		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+		QJsonObject		jsonObj			= jsonResponse.object();
+
+		QJsonArray		tmpArray;
+		QStringList		tmpList;
+
+		QJsonObject		tmpObj;
+
+		delete reply;
+
+		lpSerie	= new cSerie;
+
+		lpSerie->setBackdropPath(jsonObj["backdrop_path"].toString());
+		tmpArray	= jsonObj["created_by"].toArray();
+		for(int x = 0;x < tmpArray.count();x++)
+			tmpList.append(tmpArray.at(x).toObject()["name"].toString());
+		lpSerie->setCreatedBy(tmpList);
+		tmpList.clear();
+		lpSerie->setFirstAired(jsonObj["first_air_date"].toString());
+		tmpArray	= jsonObj["genres"].toArray();
+		for(int x = 0;x < tmpArray.count();x++)
+			tmpList.append(tmpArray.at(x).toObject()["name"].toString());
+		lpSerie->setGenre(tmpList);
+		tmpList.clear();
+		lpSerie->setHomepage(jsonObj["homepage"].toString());
+		lpSerie->setLastAired(jsonObj["last_air_date"].toString());
+		lpSerie->setSeriesName(jsonObj["name"].toString());
+		tmpArray	= jsonObj["networks"].toArray();
+		for(int x = 0;x < tmpArray.count();x++)
+			tmpList.append(tmpArray.at(x).toObject()["name"].toString());
+		lpSerie->setNetworks(tmpList);
+		tmpList.clear();
+		lpSerie->setNrEpisodes(jsonObj["number_of_episodes"].toInt());
+		lpSerie->setNrSeasons(jsonObj["number_of_seasons"].toInt());
+		tmpArray	= jsonObj["origin_country"].toArray();
+		for(int x = 0;x < tmpArray.count();x++) //!!!!!!!!!!
+			tmpList.append(tmpArray.at(x).toObject()["name"].toString());
+		lpSerie->setOriginCountries(tmpList);
+		tmpList.clear();
+		lpSerie->setOriginalLanguage(jsonObj["original_language"].toString());
+		lpSerie->setOriginalName(jsonObj["original_name"].toString());
+		lpSerie->setOverview(jsonObj["overview"].toString());
+		lpSerie->setPopularity(jsonObj["popularity"].toDouble());
+		lpSerie->setPosterPath(jsonObj["poster_path"].toString());
+		tmpArray	= jsonObj["production_companies"].toArray();
+		for(int x = 0;x < tmpArray.count();x++)
+			tmpList.append(tmpArray.at(x).toObject()["name"].toString());
+		lpSerie->setProductionCompanies(tmpList);
+		tmpList.clear();
+		lpSerie->setStatus(jsonObj["status"].toString());
+		lpSerie->setType(jsonObj["type"].toString());
+		lpSerie->setVoteAverage(jsonObj["vote_average"].toDouble());
+		lpSerie->setVoteCount(jsonObj["vote_count"].toInt());
+
+		request.setUrl(QUrl(QString("https://api.themoviedb.org/3/tv/%1/credits?api_key=%2").arg(iID).arg(m_szToken)));
+
+		request.setRawHeader("Content-Type", "application/json");
+		if(!szLanguage.contains("all"))
+			request.setRawHeader("Accept-Language", szLanguage.toUtf8());
+		else
+			request.setRawHeader("Accept-Language", "en");
+
+		reply   = networkManager.get(request);
+
+		QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+		loop.exec();
+
+		if (reply->error() == QNetworkReply::NoError)
+		{
+			strReply		= (QString)reply->readAll();
+			jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+			QJsonObject		jsonCast		= jsonResponse.object();
+			QJsonArray		jsonArrayCast	= jsonCast["cast"].toArray();
+			QJsonArray		jsonArrayCrew	= jsonCast["crew"].toArray();
+
+			QStringList		szCast;
+			QStringList		szCrew;
+
+			delete reply;
+
+			for(int x = 0;x < jsonArrayCast.count();x++)
+			{
+				tmpObj	= jsonArrayCast.at(x).toObject();
+				szCast.append(QString("%1,%2").arg(tmpObj["name"].toString()).arg(tmpObj["character"].toString()));
+			}
+			if(szCast.count())
+				lpSerie->setCast(szCast);
+
+			for(int x = 0;x < jsonArrayCrew.count();x++)
+			{
+				tmpObj	= jsonArrayCrew.at(x).toObject();
+				szCrew.append(QString("%1,%2").arg(tmpObj["name"].toString()).arg(tmpObj["job"].toString()));
+			}
+			if(szCrew.count())
+				lpSeerie->setCrew(szCrew);
+		}
+
+		tmpArray	= jsonObj["seasons"].toArray();
+
+		for(int x = 0; x < tmpArray.count();x++)
+		{
+			QJsonObject	seasonObj		= tmpArray.at(x).toObject();
+			qint16		seasonNumber	= seasonObj["season_number"].toInt();
+			cSeason*	lpSeason		= lpSerie->addSeason(seasonNumber);
+
+			request.setUrl(QUrl(QString("https://api.themoviedb.org/3/tv/%1/season/%2?api_key=%3&language=%4").arg(iID).arg(seasonNumber).arg(m_szToken).arg(szLanguage)));
+
+			request.setRawHeader("Content-Type", "application/json");
+			if(!szLanguage.contains("all"))
+				request.setRawHeader("Accept-Language", szLanguage.toUtf8());
+			else
+				request.setRawHeader("Accept-Language", "en");
+
+			reply   = networkManager.get(request);
+
+			QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+			loop.exec();
+
+			if (reply->error() == QNetworkReply::NoError)
+			{
+				strReply		= (QString)reply->readAll();
+				jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+				QJsonObject		jsonEpisodes		= jsonResponse.object();
+				QJsonArray		jsonArrayEpisodes	= jsonEpisodes["episodes"].toArray();
+
+				delete reply;
+
+				for(int x = 0;x < jsonArrayEpisodes.count();x++)
+				{
+					tmpObj	= jsonArrayEpisodes.at(x).toObject();
+
+					cEpisode*	lpEpisode	= lpSeason->addEpisode(tmpObj["episode_number"].toInt());
+					lpEpisode->setAirDate(tmpObj["air_date"].toString());
+					lpEpisode->setName(tmpObj["name"].toString());
+					lpEpisode->setOverview(tmpObj["overview"].toString());
+					lpEpisode->setID(tmpObj["id"].toInt());
+					lpEpisode->setProductionCode(tmpObj["production_code"].toString());
+					lpEpisode->setSeasonNumber(tmpObj["season_number"].toInt());
+					lpEpisode->setStillPath(tmpObj["still_path"].toString());
+					lpEpisode->setVoteAverage(tmpObj["vote_average"].toDouble());
+					lpEpisode->setVoteCount(tmpObj["vote_count"].toInt());
+
+					QJsonArray	jsonArrayCrew		= tmpObj["crew"].toArray();
+					QJsonArray	jsonArrayGuestStars	= tmpObj["guest_start"].toArray();
+
+					QStringList	szCrew;
+					QStringList	szGuestStars;
+
+					delete reply;
+
+					for(int x = 0;x < jsonArrayCrew.count();x++)
+					{
+						tmpObj	= jsonArrayCrew.at(x).toObject();
+						szCrew.append(QString("%1,%2").arg(tmpObj["name"].toString()).arg(tmpObj["job"].toString()));
+					}
+					if(szCrew.count())
+						lpEpisode->setCrew(szCrew);
+
+					for(int x = 0;x < jsonArrayGuestStars.count();x++)
+					{
+						tmpObj	= jsonArrayGuestStars.at(x).toObject();
+						szGuestStars.append(QString("%1,%2").arg(tmpObj["name"].toString()).arg(tmpObj["character"].toString()));
+					}
+					if(szGuestStars.count())
+						lpEpisode->setGuestStars(szGuestStars);
+				}
+			}
+		}
+	}
+	else
+	{
+		qDebug() << reply->errorString();
+		delete reply;
+	}
+	return(lpSerie);
 }

@@ -2,6 +2,7 @@
 #include "ui_csearch.h"
 
 #include "cthetvdbv2.h"
+#include "cthemoviedbv3.h"
 
 #include "cserie.h"
 #include "cmessageanimatedialog.h"
@@ -43,7 +44,10 @@ void cSearch::on_m_lpSearchButton_clicked()
 	lpDialog->show();
 
 	cTheTVDBV2			theTVDBV2;
+	cTheMovieDBV3		theMovieDBV3;
+
 	QList<cSerie*>		serieList2	= theTVDBV2.search(ui->m_lpSearch->text());
+	QList<cSerie*>		serieList3	= theMovieDBV3.searchSerie(ui->m_lpSearch->text(), -1, "de");
 
 	ui->m_lpResults->clear();
 
@@ -53,7 +57,7 @@ void cSearch::on_m_lpSearchButton_clicked()
 		QTreeWidgetItem*	lpNew		= new QTreeWidgetItem(ui->m_lpResults);
 		lpNew->setText(0, lpSerie->seriesName());
 		lpNew->setText(2, QString("%1").arg(lpSerie->firstAired().year()));
-		lpNew->setData(0, Qt::UserRole, QVariant::fromValue(lpSerie->id()));
+		lpNew->setData(0, Qt::UserRole, QVariant::fromValue(lpSerie->seriesID()));
 		ui->m_lpResults->addTopLevelItem(lpNew);
 	}
 	ui->m_lpResults->resizeColumnToContents(0);

@@ -4,40 +4,9 @@
 #include <QVariant>
 
 
-void addPerson(const QString& szTable, const QString& szField1, const qint32 &iValue1, const QString &szField2, const QString& szName)
-{
-	qint32		personID;
-	QSqlQuery	query;
-
-	query.exec(QString("SELECT personID FROM person WHERE name='%1';").arg(szName));
-	if(query.next())
-		personID	= query.value(0).toInt();
-	else
-	{
-		query.prepare("INSERT INTO person (name) VALUES (:name);");
-		query.bindValue(":name", szName);
-		query.exec();
-
-		query.clear();
-		query.prepare("SELECT personID FROM person WHERE name=:name;");
-		query.bindValue(":name", szName);
-		query.exec();
-		query.next();
-		personID	= query.value(0).toInt();
-	}
-
-	query.exec(QString("SELECT * FROM %1 WHERE %2=%3 AND %4=%5;").arg(szTable).arg(szField1).arg(iValue1).arg(szField2).arg(personID));
-	if(!query.next())
-	{
-		query.prepare(QString("INSERT INTO %1 (%2, %3) VALUES (:%4, :%5);").arg(szTable).arg(szField1).arg(szField2).arg(szField1).arg(szField2));
-		query.bindValue(QString(":%1").arg(szField1), iValue1);
-		query.bindValue(QString(":%1").arg(szField2), personID);
-		query.exec();
-	}
-}
-
 cSerie::cSerie() :
 	m_szSeriesName(""),
+	m_szOriginalName(""),
 	m_iSeriesID(-1),
 	m_szLanguage(""),
 	m_szBanner(""),
@@ -68,6 +37,19 @@ QString cSerie::seriesName()
 	return(m_szSeriesName);
 }
 
+void			setOriginalName(const QString& szOriginalName);		//New
+QString			originalName();
+
+void cSerie::setOriginalName(const QString& szOriginalName)
+{
+	m_szOriginalName	= szOriginalName;
+}
+
+QString cSerie::originalName()
+{
+	return(m_szOriginalName);
+}
+
 void cSerie::setSeriesID(const qint32& iSeriesID)
 {
 	m_iSeriesID		= iSeriesID;
@@ -78,6 +60,56 @@ qint32 cSerie::seriesID()
 	return(m_iSeriesID);
 }
 
+void			setBackdropPath(const QString& szBackdropPath);		//New
+QString			backdropPath();
+
+void			setCreatedBy(const QStringList& szCreatedBy);		//New
+void			setCreatedBy(const QString& szCreatedBy);
+QStringList		createdBy();
+
+void			setHomepage(const QString& szHomepage);				//New
+QString			homepage();
+
+void			setLastAired(const QString& szLAstAired);			//New
+void			setLastAired(const QDate& lastAired);
+QDate			lastAired();
+
+void			setNetworks(const QStringList& szNetworks);			//New
+void			setNetworks(const QString& szNetworks);
+QStringList		networks();
+
+void			setNrEpisodes(const qint16& iEpisodes);				//New
+qint16			nrEpisodes();
+
+void			setNrSeasons(const qint16& iSeasons);				//New
+qint16			nrSeasons();
+
+void			setOriginCountries(const QStringList& szOriginCountrues); //New
+void			setOriginCountries(const QString& szOriginCountries);
+QStringList		originCountries();
+
+void			setOriginalLanguage(const QString& szOriginalLanguage);	//New
+QString			originalLanguage();
+
+void			setPopularity(const qreal& dPopularity);			//New
+qreal			popularity();
+
+void			setPosterPath(const QString& szPosterPath);			//New
+QString			posterPath();
+
+void			setProductionCompanies(const QStringList& szProductionCompanies); //New
+void			setProductionCompanies(const QString& szProductionCompanies);
+QStringList		productionCompanies();
+
+void			setType(const QString& szType);						//New
+QString			type();
+
+void			setVoteAverage(const qreal& dVoteAverage);			//New
+qreal			voteAverage();
+
+void			setVoteCount(const qint16& iVoteCount);				//New
+qint16			voteCount();
+/*
 void cSerie::setLanguage(const QString& szLanguage)
 {
 	m_szLanguage	= szLanguage;
@@ -97,7 +129,7 @@ QString cSerie::banner()
 {
 	return(m_szBanner);
 }
-
+*/
 void cSerie::setOverview(const QString& szOverview)
 {
 	m_szOverview	= szOverview;
@@ -122,7 +154,7 @@ QDate cSerie::firstAired()
 {
 	return(m_firstAired);
 }
-
+/*
 void cSerie::setNetwork(const QString& szNetwork)
 {
 	m_szNetwork		= szNetwork;
@@ -179,6 +211,13 @@ QString cSerie::contentRating()
 {
 	return(m_szContentRating);
 }
+*/
+
+void			setCast(const QStringList& szCast);					//New
+QStringList		cast();
+
+void			setCrew(const QStringList& szCrew);					//New
+QStringList		crew();
 
 void cSerie::setGenre(const QString& szGenre)
 {
@@ -196,7 +235,7 @@ QStringList cSerie::genre()
 {
 	return(m_szGenre);
 }
-
+/*
 void cSerie::setRating(const qreal& dRating)
 {
 	m_dRating	= dRating;
@@ -226,7 +265,7 @@ qint16 cSerie::runime()
 {
 	return(m_iRuntime);
 }
-
+*/
 void cSerie::setStatus(const QString& szStatus)
 {
 	m_szStatus	= szStatus;
@@ -341,6 +380,7 @@ qint16 cSerie::maxEpisode()
 
 bool cSerie::save(QSqlDatabase &db)
 {
+/*
 	QSqlQuery	query;
 	QSqlQuery	querySerie;
 	QSqlQuery	queryEpisode;
@@ -416,7 +456,7 @@ bool cSerie::save(QSqlDatabase &db)
 		}
 	}
 	db.commit();
-
+*/
 	return(true);
 }
 
@@ -426,11 +466,11 @@ bool cSerie::del(QSqlDatabase& db)
 
 	db.transaction();
 	query.prepare("DELETE FROM episode WHERE seriesID=:seriesID;");
-	query.bindValue(":seriesID", id());
+	query.bindValue(":seriesID", seriesID());
 	query.exec();
 
 	query.prepare("DELETE FROM serie WHERE id=:seriesID;");
-	query.bindValue(":seriesID", id());
+	query.bindValue(":seriesID", seriesID());
 	query.exec();
 
 	db.commit();
@@ -507,11 +547,11 @@ cSerie* cSerieList::add(const qint32& iID)
 {
 	for(int z = 0;z < count();z++)
 	{
-		if(at(z)->id() == iID)
+		if(at(z)->seriesID() == iID)
 			return(at(z));
 	}
 	cSerie*	lpNew	= new cSerie;
-	lpNew->setID(iID);
+	lpNew->setSeriesID(iID);
 	append(lpNew);
 	return(lpNew);
 }
