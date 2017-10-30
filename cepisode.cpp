@@ -1,25 +1,25 @@
 #include "cepisode.h"
+#include "common.h"
 
 
 #define DELETE(x) { if(x) delete x;x = 0;}
 
 cEpisode::cEpisode() :
 	m_iID(-1),
-	m_szDirector(""),
-	m_szEpisodeName(""),
+	m_szName(""),
 	m_iEpisodeNumber(-1),
-	m_firstAired(QDate(1900, 1, 1)),
-	m_szGuestStars(""),
-	m_szIMDBID(""),
-	m_szLanguage(""),
+	m_airDate(QDate(1900, 1, 1)),
 	m_szOverview(""),
 	m_szProductionCode(""),
-	m_dRating(-1.0),
-	m_iRatingCount(-1),
 	m_iSeasonNumber(-1),
-	m_szWriter(""),
 	m_iSeasonID(-1),
 	m_iSeriesID(-1),
+	m_szStillPath(""),
+	m_dVoteAverage(-1.0),
+	m_iVoteCount(-1),
+//	m_szFileName(""),
+//	m_iThumbHeight(-1),
+//	m_iThumbWidth(-1),
 	m_state(cEpisode::StateInit),
 	m_lpGroup(0),
 	m_lpLabel(0),
@@ -44,31 +44,14 @@ qint32 cEpisode::id()
 	return(m_iID);
 }
 
-void cEpisode::setDirector(const QString& szDirector)
+void cEpisode::setName(const QString& szName)
 {
-	m_szDirector	= szDirector.split("|");
-	m_szDirector.removeAll("");
+	m_szName	= szName;
 }
 
-void cEpisode::setDirector(const QStringList& szDirector)
+QString cEpisode::name()
 {
-	m_szDirector	= szDirector;
-	m_szDirector.removeAll("");
-}
-
-QStringList cEpisode::director()
-{
-	return(m_szDirector);
-}
-
-void cEpisode::setEpisodeName(const QString& szEpisodeName)
-{
-	m_szEpisodeName	= szEpisodeName;
-}
-
-QString cEpisode::episodeName()
-{
-	return(m_szEpisodeName);
+	return(m_szName);
 }
 
 void cEpisode::setEpisodeNumber(const qint16& iEpisodeNumber)
@@ -81,56 +64,34 @@ qint16 cEpisode::episodeNumber()
 	return(m_iEpisodeNumber);
 }
 
-void cEpisode::setFirstAired(const QString& szFirstAired)
+void cEpisode::setAirDate(const QString& szAirDate)
 {
-	m_firstAired	= QDate::fromString(szFirstAired, "yyyy-MM-dd");
+	m_airDate	= QDate::fromString(szAirDate, "yyyy-MM-dd");
 }
 
-void cEpisode::setFirstAired(const QDate& firstAired)
+void cEpisode::setAirDate(const QDate& airDate)
 {
-	m_firstAired	= firstAired;
+	m_airDate	= airDate;
 }
 
-QDate cEpisode::firstAired()
+QDate cEpisode::airDate()
 {
-	return(m_firstAired);
+	return(m_airDate);
 }
 
 void cEpisode::setGuestStars(const QString& szGuestStars)
 {
 	m_szGuestStars	= szGuestStars.split("|");
-	m_szGuestStars.removeAll("");
 }
 
 void cEpisode::setGuestStars(const QStringList& szGuestStars)
 {
-	m_szGuestStars	= szGuestStars;
-	m_szGuestStars.removeAll("");
+	m_szGuestStars	= cleanList(szGuestStars);
 }
 
 QStringList cEpisode::guestStars()
 {
 	return(m_szGuestStars);
-}
-
-void cEpisode::setIMDBID(const QString& szIMDBID)
-{
-	m_szIMDBID	= szIMDBID;
-}
-
-QString cEpisode::imdbID()
-{
-	return(m_szIMDBID);
-}
-
-void cEpisode::setLanguage(const QString& szLanguage)
-{
-	m_szLanguage	= szLanguage;
-}
-
-QString cEpisode::language()
-{
-	return(m_szLanguage);
 }
 
 void cEpisode::setOverview(const QString& szOverview)
@@ -153,26 +114,6 @@ QString cEpisode::productionCode()
 	return(m_szProductionCode);
 }
 
-void cEpisode::setRating(const qreal& dRating)
-{
-	m_dRating	= dRating;
-}
-
-qreal cEpisode::rating()
-{
-	return(m_dRating);
-}
-
-void cEpisode::setRatingCount(const qint32& iRatingCount)
-{
-	m_iRatingCount	= iRatingCount;
-}
-
-qint32 cEpisode::ratingCount()
-{
-	return(m_iRatingCount);
-}
-
 void cEpisode::setSeasonNumber(const qint16& iSeasonNumber)
 {
 	m_iSeasonNumber	= iSeasonNumber;
@@ -181,23 +122,6 @@ void cEpisode::setSeasonNumber(const qint16& iSeasonNumber)
 qint16 cEpisode::seasonNumber()
 {
 	return(m_iSeasonNumber);
-}
-
-void cEpisode::setWriter(const QString& szWriter)
-{
-	m_szWriter	= szWriter.split("|");
-	m_szWriter.removeAll("");
-}
-
-void cEpisode::setWriter(const QStringList& szWriter)
-{
-	m_szWriter	= szWriter;
-	m_szWriter.removeAll("");
-}
-
-QStringList cEpisode::writer()
-{
-	return(m_szWriter);
 }
 
 void cEpisode::setSeasonID(const qint32& iSeasonID)
@@ -218,6 +142,51 @@ void cEpisode::setSeriesID(const qint32& iSeriesID)
 qint32 cEpisode::seriesID()
 {
 	return(m_iSeriesID);
+}
+
+void cEpisode::setStillPath(const QString& szStillPath)
+{
+	m_szStillPath	= szStillPath;
+}
+
+QString cEpisode::stillPath()
+{
+	return(m_szStillPath);
+}
+
+void cEpisode::setVoteAverage(const qreal& dVoteAverage)
+{
+	m_dVoteAverage	= dVoteAverage;
+}
+
+qreal cEpisode::voteAverage()
+{
+	return(m_dVoteAverage);
+}
+
+void cEpisode::setVoteCount(const qint16& iVoteCount)
+{
+	m_iVoteCount	= iVoteCount;
+}
+
+qint16 cEpisode::voteCount()
+{
+	return(m_iVoteCount);
+}
+
+void cEpisode::setCrew(const QString& szCrew)
+{
+	m_szCrew	= szCrew.split("|");
+}
+
+void cEpisode::setCrew(const QStringList& szCrew)
+{
+	m_szCrew	= szCrew;
+}
+
+QStringList cEpisode::crew()
+{
+	return(m_szCrew);
 }
 
 void cEpisode::setState(const State& state)
@@ -258,7 +227,7 @@ cEpisode::State cEpisode::state()
 {
 	return(m_state);
 }
-
+/*
 void cEpisode::setFileName(const QString& szFileName)
 {
 	m_szFileName	= szFileName;
@@ -288,7 +257,7 @@ qint16 cEpisode::thumbWidth()
 {
 	return(m_iThumbWidth);
 }
-
+*/
 bool cEpisode::isValid()
 {
 	if(m_iSeasonID != -1 && m_iEpisodeNumber != -1 && m_iSeasonNumber != -1)

@@ -1,7 +1,6 @@
 #include "csearch.h"
 #include "ui_csearch.h"
 
-#include "cthetvdbv2.h"
 #include "cthemoviedbv3.h"
 
 #include "cserie.h"
@@ -43,17 +42,15 @@ void cSearch::on_m_lpSearchButton_clicked()
 	lpDialog->setMessage("Searching");
 	lpDialog->show();
 
-	cTheTVDBV2			theTVDBV2;
 	cTheMovieDBV3		theMovieDBV3;
 
-	QList<cSerie*>		serieList2	= theTVDBV2.search(ui->m_lpSearch->text());
 	QList<cSerie*>		serieList3	= theMovieDBV3.searchSerie(ui->m_lpSearch->text(), -1, "de");
 
 	ui->m_lpResults->clear();
 
-	for(int z = 0;z < serieList2.count();z++)
+	for(int z = 0;z < serieList3.count();z++)
 	{
-		cSerie*	lpSerie	= serieList2.at(z);
+		cSerie*	lpSerie	= serieList3.at(z);
 		QTreeWidgetItem*	lpNew		= new QTreeWidgetItem(ui->m_lpResults);
 		lpNew->setText(0, lpSerie->seriesName());
 		lpNew->setText(2, QString("%1").arg(lpSerie->firstAired().year()));

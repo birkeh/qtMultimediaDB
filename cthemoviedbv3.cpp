@@ -305,15 +305,19 @@ cSerie* cTheMovieDBV3::loadSerie(const QString& szIMDBID)
 		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
 		QJsonObject		jsonObj			= jsonResponse.object();
 
+		QJsonArray		tmpArray;
 		QJsonObject		tmpObj;
 
 		delete reply;
 
-		tmpObj	= jsonObj["tv_results"].toObject();
-		iID		= tmpObj["id"].toInt();
+		tmpArray	= jsonObj["tv_results"].toArray();
+		tmpObj		= tmpArray.at(0).toObject();
+		iID			= tmpObj["id"].toInt();
 
 		return(loadSerie(iID, "de"));
 	}
+	else
+		qDebug() << reply->errorString();
 	return(0);
 }
 
@@ -351,6 +355,7 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 
 		lpSerie	= new cSerie;
 
+		lpSerie->setSeriesID(iID);
 		lpSerie->setBackdropPath(jsonObj["backdrop_path"].toString());
 		tmpArray	= jsonObj["created_by"].toArray();
 		for(int x = 0;x < tmpArray.count();x++)
@@ -371,8 +376,8 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 			tmpList.append(tmpArray.at(x).toObject()["name"].toString());
 		lpSerie->setNetworks(tmpList);
 		tmpList.clear();
-		lpSerie->setNrEpisodes(jsonObj["number_of_episodes"].toInt());
-		lpSerie->setNrSeasons(jsonObj["number_of_seasons"].toInt());
+		lpSerie->setEpisodes(jsonObj["number_of_episodes"].toInt());
+		lpSerie->setSeasons(jsonObj["number_of_seasons"].toInt());
 		tmpArray	= jsonObj["origin_country"].toArray();
 		for(int x = 0;x < tmpArray.count();x++) //!!!!!!!!!!
 			tmpList.append(tmpArray.at(x).toObject()["name"].toString());
@@ -433,7 +438,7 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 				szCrew.append(QString("%1,%2").arg(tmpObj["name"].toString()).arg(tmpObj["job"].toString()));
 			}
 			if(szCrew.count())
-				lpSeerie->setCrew(szCrew);
+				lpSerie->setCrew(szCrew);
 		}
 
 		tmpArray	= jsonObj["seasons"].toArray();
@@ -480,14 +485,13 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 					lpEpisode->setStillPath(tmpObj["still_path"].toString());
 					lpEpisode->setVoteAverage(tmpObj["vote_average"].toDouble());
 					lpEpisode->setVoteCount(tmpObj["vote_count"].toInt());
+					lpEpisode->setSeriesID(lpSerie->seriesID());
 
 					QJsonArray	jsonArrayCrew		= tmpObj["crew"].toArray();
 					QJsonArray	jsonArrayGuestStars	= tmpObj["guest_start"].toArray();
 
 					QStringList	szCrew;
 					QStringList	szGuestStars;
-
-					delete reply;
 
 					for(int x = 0;x < jsonArrayCrew.count();x++)
 					{

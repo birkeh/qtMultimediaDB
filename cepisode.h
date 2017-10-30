@@ -28,29 +28,19 @@ public:
 	void		setID(const qint32& iID);
 	qint32		id();
 
-	void		setDirector(const QString& szDirector);
-	void		setDirector(const QStringList& szDirector);
-	QStringList	director();
-
-	void		setEpisodeName(const QString& szEpisodeName);
-	QString		episodeName();
+	void		setName(const QString& szName);
+	QString		name();
 
 	void		setEpisodeNumber(const qint16& iEpisodeNumber);
 	qint16		episodeNumber();
 
-	void		setFirstAired(const QString& szFirstAired);
-	void		setFirstAired(const QDate& firstAired);
-	QDate		firstAired();
+	void		setAirDate(const QString& szAirDate);
+	void		setAirDate(const QDate& airDate);
+	QDate		airDate();
 
 	void		setGuestStars(const QString& szGuestStars);
 	void		setGuestStars(const QStringList& szGuestStars);
 	QStringList	guestStars();
-
-	void		setIMDBID(const QString& szIMDBID);
-	QString		imdbID();
-
-	void		setLanguage(const QString& szLanguage);
-	QString		language();
 
 	void		setOverview(const QString& szOverview);
 	QString		overview();
@@ -58,24 +48,27 @@ public:
 	void		setProductionCode(const QString& szProductionCode);
 	QString		productionCode();
 
-	void		setRating(const qreal& dRating);
-	qreal		rating();
-
-	void		setRatingCount(const qint32& iRatingCount);
-	qint32		ratingCount();
-
 	void		setSeasonNumber(const qint16& iSeasonNumber);
 	qint16		seasonNumber();
-
-	void		setWriter(const QString& szWriter);
-	void		setWriter(const QStringList& szWriter);
-	QStringList	writer();
 
 	void		setSeasonID(const qint32& iSeasonID);
 	qint32		seasonID();
 
 	void		setSeriesID(const qint32& iSeriesID);
 	qint32		seriesID();
+
+	void		setStillPath(const QString& szStillPath);
+	QString		stillPath();
+
+	void		setVoteAverage(const qreal& dVoteAverage);
+	qreal		voteAverage();
+
+	void		setVoteCount(const qint16& iVoteCount);
+	qint16		voteCount();
+
+	void		setCrew(const QString& szCrew);
+	void		setCrew(const QStringList& szCrew);
+	QStringList	crew();
 
 	void		setState(const State& state);
 	State		state();
@@ -100,26 +93,23 @@ public:
 	void		updateState();
 	void		deleteResources();
 private:
-	qint32		m_iID;
-	QStringList	m_szDirector;
-	QString		m_szEpisodeName;
-	qint16		m_iEpisodeNumber;
-	QDate		m_firstAired;
-	QStringList	m_szGuestStars;
-	QString		m_szIMDBID;
-	QString		m_szLanguage;
-	QString		m_szOverview;
-	QString		m_szProductionCode;
-	qreal		m_dRating;
-	qint32		m_iRatingCount;
-	qint16		m_iSeasonNumber;
-	QStringList	m_szWriter;
-	qint32		m_iSeasonID;
-	qint32		m_iSeriesID;
-	State		m_state;
-	QString		m_szFileName;
-	qint16		m_iThumbHeight;
-	qint16		m_iThumbWidth;
+	qint32			m_iID;
+	QString			m_szName;
+	qint16			m_iEpisodeNumber;
+	QDate			m_airDate;
+	QStringList		m_szGuestStars;
+	QString			m_szOverview;
+	QString			m_szProductionCode;
+	qint16			m_iSeasonNumber;
+	qint32			m_iSeasonID;
+	qint32			m_iSeriesID;
+	QString			m_szStillPath;
+	qreal			m_dVoteAverage;
+	qint16			m_iVoteCount;
+	QStringList		m_szCrew;
+	State			m_state;
+//	qint16			m_iThumbHeight;
+//	qint16			m_iThumbWidth;
 	QButtonGroup*	m_lpGroup;
 	QLabel*			m_lpLabel;
 	QRadioButton*	m_lpButton1;

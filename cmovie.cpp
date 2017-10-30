@@ -1,4 +1,5 @@
 #include "cmovie.h"
+#include "common.h"
 
 #include <QStringList>
 #include <QSqlQuery>
@@ -110,17 +111,6 @@ void cMovie::setGenres(const QString& szGenres)
 	m_szGenres	= szGenres.split(",");
 }
 
-QStringList	cleanList(const QStringList& list)
-{
-	QStringList	list1;
-
-	for(int x = 0;x < list.count();x++)
-	{
-		if(!list.at(x).isEmpty())
-			list1.append(list.at(x));
-	}
-	return(list1);
-}
 void cMovie::setGenres(const QStringList& szGenres)
 {
 	m_szGenres	= cleanList(szGenres);

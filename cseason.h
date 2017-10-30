@@ -31,6 +31,7 @@ public:
 	cEpisode*			addEpisode(qint16 iNumber);
 	cEpisode*			addEpisode(cEpisode* lpEpisode);
 	QList<cEpisode*>	episodeList();
+	cEpisode*			findEpisode(qint16 iNumber);
 
 	qint16				episodeCount();
 

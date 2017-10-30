@@ -24,7 +24,7 @@ cEpisodeDetails::~cEpisodeDetails()
 void cEpisodeDetails::setEpisode(cEpisode* lpEpisode)
 {
 	m_lpEpisode	= lpEpisode;
-	ui->m_lpEpisodeTitle->setText(lpEpisode->episodeName());
+	ui->m_lpEpisodeTitle->setText(lpEpisode->name());
 	ui->m_lpOverview->setText(lpEpisode->overview());
 }
 
@@ -40,11 +40,11 @@ void cEpisodeDetails::loadImages()
 	lpDialog->setTitle("Details");
 	lpDialog->setMessage("Loading Images");
 	lpDialog->show();
-
+/*
 	cImage	image;
 	QPixmap	pixmap	= image.getImage(m_lpEpisode->fileName()).scaledToHeight(200);
 	ui->m_lpEpisodeThumb->setPixmap(pixmap);
-
+*/
 	delete lpDialog;
 
 	m_bLoaded	= true;

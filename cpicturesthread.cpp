@@ -23,7 +23,7 @@ void cPicturesThread::stop()
 void cPicturesThread::run()
 {
 	qint16	iCurrent	= 0;
-
+/*
 	for(int z = 0;z < m_items.count();z++)
 	{
 		cSerie*	lpSerie	= m_items.at(z);
@@ -55,6 +55,7 @@ void cPicturesThread::run()
 			}
 		}
 	}
+*/
 }
 
 void cPicturesThread::setData(cMessageDialog* lpMessageDialog, const QList<cSerie *> &list)

@@ -55,7 +55,6 @@ private slots:
 	void				onActionUpdate();
 	void				onActionDelete();
 	void				onActionEdit();
-	void				onActionGotoIMDB();
 	void				onActionGotoDownload();
 	void				onActionCopyDownload();
 	void				onActionLoadPictures();
@@ -107,6 +106,9 @@ private:
 
 	void				initDB();
 	void				loadDB();
+
+	void				convertSeries();
+
 	void				loadSeriesDB();
 	void				loadMoviesDB();
 

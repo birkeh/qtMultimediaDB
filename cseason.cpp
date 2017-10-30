@@ -64,6 +64,16 @@ QList<cEpisode*> cSeason::episodeList()
 	return(m_episodeList);
 }
 
+cEpisode* cSeason::findEpisode(qint16 iNumber)
+{
+	for(int x = 0;x < m_episodeList.count();x++)
+	{
+		if(m_episodeList.at(x)->episodeNumber() == iNumber)
+			return(m_episodeList.at(x));
+	}
+	return(0);
+}
+
 qint16 cSeason::episodeCount()
 {
 	qint16	iTotal = -1;

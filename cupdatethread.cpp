@@ -1,7 +1,6 @@
 #include "cupdatethread.h"
 #include "cseason.h"
 #include "cepisode.h"
-#include "cthetvdbv2.h"
 #include "cmessagedialog.h"
 #include <QMessageBox>
 
@@ -26,7 +25,7 @@ void cUpdateThread::run()
 	QTime	timer;
 	timer.restart();
 	QString szFailed;
-
+/*
 	for(int x = 0;x < m_serieList.count();x++)
 	{
 		cSerie*	lpSerie	= m_serieList.at(x);
@@ -71,7 +70,6 @@ void cUpdateThread::run()
 			break;
 		msleep(10);
 	}
-/*
 	if(szFailed.length())
 	{
 		QMessageBox	msgBox;

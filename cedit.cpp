@@ -236,6 +236,7 @@ void cEdit::on_m_lpTabWidget_tabBarClicked(int index)
 	{
 		if(!m_bLoaded)
 		{
+/*
 			cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
 			lpDialog->setTitle("Edit");
 			lpDialog->setMessage("Loading");
@@ -271,6 +272,7 @@ void cEdit::on_m_lpTabWidget_tabBarClicked(int index)
 			delete lpDialog;
 
 			m_bLoaded = true;
+*/
 		}
 	}
 }

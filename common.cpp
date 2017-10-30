@@ -17,3 +17,15 @@ QString	rootPath()
 
 	return(szPath);
 }
+
+QStringList	cleanList(const QStringList& list)
+{
+	QStringList	list1;
+
+	for(int x = 0;x < list.count();x++)
+	{
+		if(!list.at(x).isEmpty())
+			list1.append(list.at(x));
+	}
+	return(list1);
+}

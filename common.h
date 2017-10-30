@@ -6,6 +6,7 @@
 
 
 QString	rootPath();
+QStringList	cleanList(const QStringList& list);
 
 
 #endif // COMMON_H

@@ -3,7 +3,6 @@
 #include "cmainwindow.h"
 #include "ui_cmainwindow.h"
 
-#include "cthetvdbv2.h"
 #include "cseasondelegate.h"
 #include "csearch.h"
 #include "cmoviesearch.h"
@@ -216,29 +215,23 @@ void cMainWindow::initDB()
 
 	if(!m_db.tables().contains("episode"))
 	{
-/*
 		query.exec("CREATE TABLE episode ("
-					"	episodeID      INTEGER,"
-					"	episodeName    STRING,"
+					"	id             INTEGER,"
+					"	name           STRING,"
 					"	episodeNumber  INTEGER,"
-					"	firstAired     DATE,"
-					"	imdbid         STRING,"
-					"	language       STRING,"
+					"	airDate        DATE,"
+					"	guestStars     STRING,"
 					"	overview       TEXT,"
 					"	productioncode STRING,"
-					"	rating         DOUBLE,"
-					"	ratingCount    INTEGER,"
 					"	seasonNumber   INTEGER,"
 					"	seasonID       INTEGER,"
 					"	seriesID       INTEGER,"
-					"	state          INT,"
-					"   filename       STRING,"
-					"   thumb_height   INT,"
-					"   thumb_width    INT,"
-					"   director       STRING,"
-					"   gueststars     STRING,"
-					"   episode_writer STRING);");
-*/
+					"   stillPath      STRING,"
+					"   voteAverage    DOUBLE,"
+					"   voteCount      INTEGER,"
+					"   crew           STRING,"
+					"	state          INT);");
+
 	}
 	if(!m_db.tables().contains("movie"))
 	{
@@ -276,8 +269,63 @@ void cMainWindow::initDB()
 
 void cMainWindow::loadDB()
 {
+//	convertSeries();
 	loadSeriesDB();
 	loadMoviesDB();
+}
+
+void cMainWindow::convertSeries()
+{
+	QSqlQuery		query;
+	QString			szOldIMDBID	= "";
+	cTheMovieDBV3	theMovieDB;
+	cSerie*			lpSerie		= 0;
+
+	if(query.exec("SELECT s.imdbid, s.download, s.cliffhanger, e.episodeNumber, e.seasonNumber, e.state FROM serie_old s LEFT JOIN episode_old e ON s.id = e.seriesID WHERE s.imdbid IS NOT NULL AND s.imdbid <> \"\" ORDER BY s.imdbid, e.seasonNumber, e.episodeNumber;"))
+	{
+		while(query.next())
+		{
+			QString	szIMDBID		= query.value("imdbid").toString();
+
+			if(!szIMDBID.isEmpty())
+			{
+				if(szIMDBID != szOldIMDBID)
+				{
+					if(lpSerie)
+					{
+						lpSerie->save(m_db);
+						delete lpSerie;
+						lpSerie	= 0;
+					}
+
+					szOldIMDBID	= szIMDBID;
+					lpSerie		= theMovieDB.loadSerie(szIMDBID);
+					if(lpSerie)
+					{
+						lpSerie->setDownload(query.value("download").toString());
+						lpSerie->setCliffhanger(query.value("cliffhanger").toBool());
+					}
+				}
+
+				if(lpSerie)
+				{
+					cSeason*		lpSeason	= lpSerie->findSeason(query.value("seasonNumber").toInt());
+					if(lpSeason)
+					{
+						cEpisode*	lpEpisode	= lpSeason->findEpisode(query.value("episodeNumber").toInt());
+						if(lpEpisode)
+							lpEpisode->setState((cEpisode::State)query.value("state").toInt());
+					}
+				}
+			}
+		}
+	}
+	if(lpSerie)
+	{
+		lpSerie->save(m_db);
+		delete lpSerie;
+		lpSerie	= 0;
+	}
 }
 
 void cMainWindow::loadSeriesDB()
@@ -286,19 +334,19 @@ void cMainWindow::loadSeriesDB()
 
 	QSqlQuery	query;
 
-	qint32		iOldSeriesID	= -1;
-	qint32		iOldSeasonID	= -1;
+	qint32		iOldSeriesID		= -1;
+	qint32		iOldSeasonNumber	= -1;
 	qint32		iSeriesID;
-	qint32		iSeasonID;
+	qint32		iSeasonNumber;
 	cSeason*	lpSeason;
 	cEpisode*	lpEpisode;
-/*
-    if(query.exec("SELECT serie.seriesID, serie.seriesName, serie.language, serie.banner, serie.overview, serie.firstAired, serie.network, serie.imdbid, serie.id, serie.contentRating, serie.rating, serie.ratingCount, serie.runtime, serie.status, serie.download, serie.cliffhanger, serie.actor, serie.genre, episode.episodeID, episode.episodeName, episode.episodeNumber, episode.firstAired, episode.imdbid, episode.language, episode.overview, episode.productioncode, episode.rating, episode.ratingCount, episode.seasonNumber, episode.seasonID, episode.seriesID, episode.state, episode.filename, episode.thumb_height, episode.thumb_width, episode.director, episode.gueststars, episode.episode_writer FROM serie LEFT JOIN episode ON serie.id = episode.seriesID ORDER BY serie.seriesName, episode.seasonNumber, episode.episodeNumber;"))
+
+	if(query.exec("SELECT serie.seriesID,serie.seriesName,serie.originalName,serie.backdropPath,serie.createdBy,serie.homepage,serie.lastAired,serie.networks,serie.nrEpisodes,serie.nrSeasons,serie.originCountries,serie.originalLanguage,serie.popularity,serie.posterPath,serie.productionCompanies,serie.type,serie.voteAverage,serie.voteCount,serie.overview,serie.firstAired,serie.cast,serie.crew,serie.genre,serie.status,serie.download,serie.cliffhanger,episode.id,episode.name,episode.episodeNumber,episode.airDate,episode.guestStars,episode.overview,episode.productioncode,episode.seasonNumber,episode.seasonID,episode.seriesID,episode.stillPath,episode.voteAverage,episode.voteCount,episode.crew,episode.state FROM serie LEFT JOIN episode ON serie.seriesID = episode.seriesID ORDER BY serie.seriesName, episode.seasonNumber, episode.episodeNumber;"))
 	{
 		while(query.next())
 		{
-			iSeriesID	= query.value( 8).toInt();
-			iSeasonID	= query.value(29).toInt();
+			iSeriesID		= query.value("seriesID").toInt();
+			iSeasonNumber	= query.value("seasonNumber").toInt();
 
 			if(iSeriesID != iOldSeriesID)
 			{
@@ -307,53 +355,57 @@ void cMainWindow::loadSeriesDB()
 			}
 
 			cSerie*	lpSerie	= m_serieList.add(iSeriesID);
-			lpSerie->setSeriesID(query.value(0).toInt());
-			lpSerie->setSeriesName(query.value(1).toString());
-			lpSerie->setLanguage(query.value(2).toString());
-			lpSerie->setBanner(query.value(3).toString());
-			lpSerie->setOverview(query.value(4).toString());
-			lpSerie->setFirstAired(query.value(5).toDate());
-			lpSerie->setNetwork(query.value(6).toString());
-			lpSerie->setIMDBID(query.value(7).toString());
-			lpSerie->setContentRating(query.value(9).toString());
-			lpSerie->setRating(query.value(10).toDouble());
-			lpSerie->setRatingCount(query.value(11).toInt());
-			lpSerie->setRuntime(query.value(12).toInt());
-			lpSerie->setStatus(query.value(13).toString());
-			lpSerie->setDownload(query.value(14).toString());
-			lpSerie->setCliffhanger(query.value(15).toBool());
-			lpSerie->setActors(query.value(16).toString().split("|"));
-			lpSerie->setGenre(query.value(17).toString().split(","));
+			lpSerie->setSeriesName(query.value("seriesName").toString());
+			lpSerie->setOriginalName(query.value("originalName").toString());
+			lpSerie->setBackdropPath(query.value("backdropPath").toString());
+			lpSerie->setCreatedBy(query.value("createdBy").toString());
+			lpSerie->setHomepage(query.value("homepage").toString());
+			lpSerie->setLastAired(query.value("lastAired").toString());
+			lpSerie->setNetworks(query.value("networks").toString());
+			lpSerie->setEpisodes(query.value("nrEpisodes").toInt());
+			lpSerie->setSeasons(query.value("nrSeasons").toInt());
+			lpSerie->setOriginCountries(query.value("originCountries").toString());
+			lpSerie->setOriginalLanguage(query.value("originalLanguage").toString());
+			lpSerie->setPopularity(query.value("popularity").toDouble());
+			lpSerie->setPosterPath(query.value("posterPath").toString());
+			lpSerie->setProductionCompanies(query.value("productionCompanies").toString());
+			lpSerie->setType(query.value("type").toString());
+			lpSerie->setVoteAverage(query.value("voteAverage").toDouble());
+			lpSerie->setVoteCount(query.value("voteCount").toInt());
+			lpSerie->setOverview(query.value("overview").toString());
+			lpSerie->setFirstAired(query.value("firstAired").toString());
+			lpSerie->setCast(query.value("cast").toString().split("|"));
+			lpSerie->setCrew(query.value("crew").toString().split("|"));
+			lpSerie->setGenre(query.value("genre").toString());
+			lpSerie->setStatus(query.value("status").toString());
+			lpSerie->setDownload(query.value("download").toString());
+			lpSerie->setCliffhanger(query.value("cliffhanger").toBool());
 
-			if(iSeasonID != iOldSeasonID)
+			if(iSeasonNumber != iOldSeasonNumber)
 			{
-				lpSeason		= lpSerie->addSeason(query.value(28).toInt());
-				iOldSeasonID	= iSeasonID;
+				lpSeason			= lpSerie->addSeason(query.value("seasonNumber").toInt());
+				iOldSeasonNumber	= iSeasonNumber;
 			}
 
-			lpEpisode	= lpSeason->addEpisode(query.value(20).toInt());
-			lpEpisode->setID(query.value(18).toInt());
-			lpEpisode->setEpisodeName(query.value(19).toString());
-			lpEpisode->setFirstAired(query.value(21).toDate());
-			lpEpisode->setIMDBID(query.value(22).toString());
-			lpEpisode->setLanguage(query.value(23).toString());
-			lpEpisode->setOverview(query.value(24).toString());
-			lpEpisode->setProductionCode(query.value(25).toString());
-			lpEpisode->setRating(query.value(26).toDouble());
-			lpEpisode->setRatingCount(query.value(27).toInt());
-			lpEpisode->setSeasonNumber(query.value(28).toInt());
-			lpEpisode->setSeasonID(query.value(29).toInt());
-			lpEpisode->setSeriesID(query.value(30).toInt());
-			lpEpisode->setState((cEpisode::State)query.value(31).toInt());
-			lpEpisode->setFileName(query.value(32).toString());
-			lpEpisode->setThumbHeight(query.value(33).toInt());
-			lpEpisode->setThumbWidth(query.value(34).toInt());
-			lpEpisode->setDirector(query.value(35).toString().split(","));
-			lpEpisode->setGuestStars(query.value(36).toString().split(","));
-			lpEpisode->setWriter(query.value(37).toString().split(","));
+			lpEpisode	= lpSeason->addEpisode(iSeasonNumber);
+
+			lpEpisode->setID(query.value("id").toInt());
+			lpEpisode->setName(query.value("name").toString());
+			lpEpisode->setEpisodeNumber(query.value("episodeNumber").toInt());
+			lpEpisode->setAirDate(query.value("airDate").toString());
+			lpEpisode->setGuestStars(query.value("guestStars").toString());
+			lpEpisode->setOverview(query.value("overview").toString());
+			lpEpisode->setProductionCode(query.value("productioncode").toString());
+			lpEpisode->setSeasonNumber(query.value("seasonNumber").toInt());
+			lpEpisode->setSeasonID(query.value("seasonID").toInt());
+			lpEpisode->setSeriesID(query.value("seriesID").toInt());
+			lpEpisode->setStillPath(query.value("stillPath").toString());
+			lpEpisode->setVoteAverage(query.value("voteAverage").toDouble());
+			lpEpisode->setVoteCount(query.value("voteCount").toInt());
+			lpEpisode->setCrew(query.value("crew").toString());
+			lpEpisode->setState((cEpisode::State)query.value("state").toInt());
 		}
 	}
-*/
 }
 
 void cMainWindow::loadMoviesDB()
@@ -701,10 +753,7 @@ void cMainWindow::showSeriesContextMenu(QTreeView* lpTreeView, const QPoint &pos
 			lpMenu->addAction("delete", this, SLOT(onActionDelete()));
 			lpMenu->addAction("edit", this, SLOT(onActionEdit()));
 			lpMenu->addSeparator();
-/*
-			if(!lpSerie->imdbID().isEmpty())
-				lpMenu->addAction("open IMDB", this, SLOT(onActionGotoIMDB()));
-*/
+
 			if(!lpSerie->download().isEmpty())
 			{
 				lpMenu->addAction("open download link", this, SLOT(onActionGotoDownload()));
@@ -942,11 +991,11 @@ void cMainWindow::onActionAdd()
 		if(id == -1)
 			return;
 
-		cTheTVDBV2		tvDB2;
+		cTheMovieDBV3		movieDB3;
 
-		lpSerie	= tvDB2.load(id, "de");
+		lpSerie	= movieDB3.loadSerie(id, "de");
 		if(!lpSerie)
-			lpSerie	= tvDB2.load(id, "en");
+			lpSerie	= movieDB3.loadSerie(id, "en");
 
 		delete lpDialog;
 

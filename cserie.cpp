@@ -1,4 +1,6 @@
 #include "cserie.h"
+#include "common.h"
+
 #include <QStringList>
 #include <QSqlQuery>
 #include <QVariant>
@@ -8,19 +10,18 @@ cSerie::cSerie() :
 	m_szSeriesName(""),
 	m_szOriginalName(""),
 	m_iSeriesID(-1),
-	m_szLanguage(""),
-	m_szBanner(""),
+	m_szBackdropPath(""),
+	m_szHomepage(""),
+	m_lastAired(QDate(1900, 1, 1)),
+	m_iEpisodes(-1),
+	m_iSeasons(-1),
+	m_szOriginalLanguage(""),
+	m_dPopularity(-1.0),
+	m_szType(""),
+	m_dVoteAverage(-1.0),
+	m_iVoteCount(-1),
 	m_szOverview(""),
 	m_firstAired(QDate(1900, 1, 1)),
-	m_szNetwork(""),
-	m_szIMDBID(""),
-	m_iID(-1),
-	m_szActors(),
-	m_szContentRating(""),
-	m_szGenre(),
-	m_dRating(-1.0),
-	m_iRatingCount(-1),
-	m_iRuntime(-1),
 	m_szStatus(""),
 	m_szDownload(""),
 	m_bCliffhanger(false)
@@ -36,9 +37,6 @@ QString cSerie::seriesName()
 {
 	return(m_szSeriesName);
 }
-
-void			setOriginalName(const QString& szOriginalName);		//New
-QString			originalName();
 
 void cSerie::setOriginalName(const QString& szOriginalName)
 {
@@ -60,76 +58,179 @@ qint32 cSerie::seriesID()
 	return(m_iSeriesID);
 }
 
-void			setBackdropPath(const QString& szBackdropPath);		//New
-QString			backdropPath();
-
-void			setCreatedBy(const QStringList& szCreatedBy);		//New
-void			setCreatedBy(const QString& szCreatedBy);
-QStringList		createdBy();
-
-void			setHomepage(const QString& szHomepage);				//New
-QString			homepage();
-
-void			setLastAired(const QString& szLAstAired);			//New
-void			setLastAired(const QDate& lastAired);
-QDate			lastAired();
-
-void			setNetworks(const QStringList& szNetworks);			//New
-void			setNetworks(const QString& szNetworks);
-QStringList		networks();
-
-void			setNrEpisodes(const qint16& iEpisodes);				//New
-qint16			nrEpisodes();
-
-void			setNrSeasons(const qint16& iSeasons);				//New
-qint16			nrSeasons();
-
-void			setOriginCountries(const QStringList& szOriginCountrues); //New
-void			setOriginCountries(const QString& szOriginCountries);
-QStringList		originCountries();
-
-void			setOriginalLanguage(const QString& szOriginalLanguage);	//New
-QString			originalLanguage();
-
-void			setPopularity(const qreal& dPopularity);			//New
-qreal			popularity();
-
-void			setPosterPath(const QString& szPosterPath);			//New
-QString			posterPath();
-
-void			setProductionCompanies(const QStringList& szProductionCompanies); //New
-void			setProductionCompanies(const QString& szProductionCompanies);
-QStringList		productionCompanies();
-
-void			setType(const QString& szType);						//New
-QString			type();
-
-void			setVoteAverage(const qreal& dVoteAverage);			//New
-qreal			voteAverage();
-
-void			setVoteCount(const qint16& iVoteCount);				//New
-qint16			voteCount();
-/*
-void cSerie::setLanguage(const QString& szLanguage)
+void cSerie::setBackdropPath(const QString& szBackdropPath)
 {
-	m_szLanguage	= szLanguage;
+	m_szBackdropPath	= szBackdropPath;
 }
 
-QString cSerie::language()
+QString cSerie::backdropPath()
 {
-	return(m_szLanguage);
+	return(m_szBackdropPath);
 }
 
-void cSerie::setBanner(const QString& szBanner)
+void cSerie::setCreatedBy(const QStringList& szCreatedBy)
 {
-	m_szBanner		= szBanner;
+	m_szCreatedBy	= cleanList(szCreatedBy);
 }
 
-QString cSerie::banner()
+void cSerie::setCreatedBy(const QString& szCreatedBy)
 {
-	return(m_szBanner);
+	m_szCreatedBy	= szCreatedBy.split(",");
 }
-*/
+
+QStringList cSerie::createdBy()
+{
+	return(m_szCreatedBy);
+}
+
+void cSerie::setHomepage(const QString& szHomepage)
+{
+	m_szHomepage	= szHomepage;
+}
+
+QString cSerie::homepage()
+{
+	return(m_szHomepage);
+}
+
+void cSerie::setLastAired(const QString& szLastAired)
+{
+	m_lastAired	= QDate::fromString(szLastAired, "yyyy-MM-dd");
+}
+
+void cSerie::setLastAired(const QDate& lastAired)
+{
+	m_lastAired		= lastAired;
+}
+
+QDate cSerie::lastAired()
+{
+	return(m_lastAired);
+}
+
+void cSerie::setNetworks(const QStringList& szNetworks)
+{
+	m_szNetworks	= cleanList(szNetworks);
+}
+void cSerie::setNetworks(const QString& szNetworks)
+{
+	m_szNetworks	= szNetworks.split(",");
+}
+
+QStringList cSerie::networks()
+{
+	return(m_szNetworks);
+}
+
+void cSerie::setEpisodes(const qint16& iEpisodes)
+{
+	m_iEpisodes	= iEpisodes;
+}
+
+qint16 cSerie::episodes()
+{
+	return(m_iEpisodes);
+}
+
+void cSerie::setSeasons(const qint16& iSeasons)
+{
+	m_iSeasons	= iSeasons;
+}
+
+qint16 cSerie::seasons()
+{
+	return(m_iSeasons);
+}
+
+void cSerie::setOriginCountries(const QStringList& szOriginCountries)
+{
+	m_szOriginCountries	= cleanList(szOriginCountries);
+}
+
+void cSerie::setOriginCountries(const QString& szOriginCountries)
+{
+	m_szOriginCountries	= szOriginCountries.split(",");
+}
+
+QStringList cSerie::originCountries()
+{
+	return(m_szOriginCountries);
+}
+
+void cSerie::setOriginalLanguage(const QString& szOriginalLanguage)
+{
+	m_szOriginalLanguage	= szOriginalLanguage;
+}
+
+QString	 cSerie::originalLanguage()
+{
+	return(m_szOriginalLanguage);
+}
+
+void cSerie::setPopularity(const qreal& dPopularity)
+{
+	m_dPopularity	= dPopularity;
+}
+
+qreal cSerie::popularity()
+{
+	return(m_dPopularity);
+}
+
+void cSerie::setPosterPath(const QString& szPosterPath)
+{
+	m_szPosterPath	= szPosterPath;
+}
+
+QString cSerie::posterPath()
+{
+	return(m_szPosterPath);
+}
+
+void cSerie::setProductionCompanies(const QStringList& szProductionCompanies)
+{
+	m_szProductionCompanies	= cleanList(szProductionCompanies);
+}
+
+void cSerie::setProductionCompanies(const QString& szProductionCompanies)
+{
+	m_szProductionCompanies	= szProductionCompanies.split(",");
+}
+
+QStringList cSerie::productionCompanies()
+{
+	return(m_szProductionCompanies);
+}
+
+void cSerie::setType(const QString& szType)
+{
+	m_szType	= szType;
+}
+QString cSerie::type()
+{
+	return(m_szType);
+}
+
+void cSerie::setVoteAverage(const qreal& dVoteAverage)
+{
+	m_dVoteAverage	= dVoteAverage;
+}
+
+qreal cSerie::voteAverage()
+{
+	return(m_dVoteAverage);
+}
+
+void cSerie::setVoteCount(const qint16& iVoteCount)
+{
+	m_iVoteCount	= iVoteCount;
+}
+
+qint16 cSerie::voteCount()
+{
+	return(m_iVoteCount);
+}
+
 void cSerie::setOverview(const QString& szOverview)
 {
 	m_szOverview	= szOverview;
@@ -154,70 +255,26 @@ QDate cSerie::firstAired()
 {
 	return(m_firstAired);
 }
-/*
-void cSerie::setNetwork(const QString& szNetwork)
+
+void cSerie::setCast(const QStringList& szCast)
 {
-	m_szNetwork		= szNetwork;
+	m_szCast	= szCast;
 }
 
-QString cSerie::network()
+QStringList cSerie::cast()
 {
-	return(m_szNetwork);
+	return(m_szCast);
 }
 
-void cSerie::setIMDBID(const QString& szIMDBID)
+void cSerie::setCrew(const QStringList& szCrew)
 {
-	m_szIMDBID		= szIMDBID;
+	m_szCrew	= szCrew;
 }
 
-QString cSerie::imdbID()
+QStringList cSerie::crew()
 {
-	return(m_szIMDBID);
+	return(m_szCrew);
 }
-
-void cSerie::setID(const qint32& iID)
-{
-	m_iID			= iID;
-}
-
-qint32 cSerie::id()
-{
-	return(m_iID);
-}
-
-void cSerie::setActors(const QString& szActors)
-{
-	m_szActors	= szActors.split("|");
-	m_szActors.removeAll("");
-}
-
-void cSerie::setActors(const QStringList& szActors)
-{
-	m_szActors	= szActors;
-	m_szActors.removeAll("");
-}
-
-QStringList cSerie::actors()
-{
-	return(m_szActors);
-}
-
-void cSerie::setContentRating(const QString& szContentRating)
-{
-	m_szContentRating	= szContentRating;
-}
-
-QString cSerie::contentRating()
-{
-	return(m_szContentRating);
-}
-*/
-
-void			setCast(const QStringList& szCast);					//New
-QStringList		cast();
-
-void			setCrew(const QStringList& szCrew);					//New
-QStringList		crew();
 
 void cSerie::setGenre(const QString& szGenre)
 {
@@ -235,37 +292,7 @@ QStringList cSerie::genre()
 {
 	return(m_szGenre);
 }
-/*
-void cSerie::setRating(const qreal& dRating)
-{
-	m_dRating	= dRating;
-}
 
-qreal cSerie::rating()
-{
-	return(m_dRating);
-}
-
-void cSerie::setRatingCount(const qint16& iRatingCount)
-{
-	m_iRatingCount	= iRatingCount;
-}
-
-qint16 cSerie::ratingCount()
-{
-	return(m_iRatingCount);
-}
-
-void cSerie::setRuntime(const qint16& iRuntime)
-{
-	m_iRuntime	= iRuntime;
-}
-
-qint16 cSerie::runime()
-{
-	return(m_iRuntime);
-}
-*/
 void cSerie::setStatus(const QString& szStatus)
 {
 	m_szStatus	= szStatus;
@@ -380,45 +407,53 @@ qint16 cSerie::maxEpisode()
 
 bool cSerie::save(QSqlDatabase &db)
 {
-/*
 	QSqlQuery	query;
 	QSqlQuery	querySerie;
 	QSqlQuery	queryEpisode;
 
-	querySerie.prepare("INSERT INTO serie (seriesID,seriesName,language,banner,overview,firstAired,network,imdbid,id,contentRating,rating,ratingCount,runtime,status,download,cliffhanger,actor,genre)"
-						  " VALUES (:seriesID,:seriesName,:language,:banner,:overview,:firstAired,:network,:imdbid,:id,:contentRating,:rating,:ratingCount,:runtime,:status,:download,:cliffhanger,:actor,:genre);");
-	queryEpisode.prepare("INSERT INTO episode (episodeID,episodeName,episodeNumber,firstAired,imdbid,language,overview,productioncode,rating,ratingCount,seasonNumber,seasonID,seriesID,state,filename,thumb_height,thumb_width,director,gueststars,episode_writer) VALUES (:episodeID,:episodeName,:episodeNumber,:firstAired,:imdbid,:language,:overview,:productioncode,:rating,:ratingCount,:seasonNumber,:seasonID,:seriesID,:state,:filename,:thumb_height,:thumb_width,:director,:gueststars,:episode_writer);");
+	querySerie.prepare("INSERT INTO serie (seriesID,seriesName,originalName,backdropPath,createdBy,homepage,lastAired,networks,nrEpisodes,nrSeasons,originCountries,originalLanguage,popularity,posterPath,productionCompanies,type,voteAverage,voteCount,overview,firstAired,cast,crew,genre,status,download,cliffhanger)"
+						" VALUES (:seriesID,:seriesName,:originalName,:backdropPath,:createdBy,:homepage,:lastAired,:networks,:nrEpisodes,:nrSeasons,:originCountries,:originalLanguage,:popularity,:posterPath,:productionCompanies,:type,:voteAverage,:voteCount,:overview,:firstAired,:cast,:crew,:genre,:status,:download,:cliffhanger);");
+	queryEpisode.prepare("INSERT INTO episode (id,name,episodeNumber,airDate,guestStars,overview,productioncode,seasonNumber,seasonID,seriesID,stillPath,voteAverage,voteCount,crew,state)"
+						 " VALUES (:id,:name,:episodeNumber,:airDate,:guestStars,:overview,:productioncode,:seasonNumber,:seasonID,:seriesID,:stillPath,:voteAverage,:voteCount,:crew,:state);");
 
 	db.transaction();
-	query.exec(QString("SELECT id FROM serie WHERE id=%1;").arg(id()));
+	query.exec(QString("SELECT seriesID FROM serie WHERE seriesID=%1;").arg(seriesID()));
 	if(!query.next())
 	{
-		query.prepare(QString("SELECT episodeID FROM episode WHERE episodeID=:episodeID"));
+		query.prepare(QString("SELECT id FROM episode WHERE id=:id"));
 
 		querySerie.bindValue(":seriesID", seriesID());
 		querySerie.bindValue(":seriesName", seriesName());
-		querySerie.bindValue(":language", language());
-		querySerie.bindValue(":banner", banner());
+		querySerie.bindValue(":originalName", originalName());
+		querySerie.bindValue(":backdropPath", backdropPath());
+		querySerie.bindValue(":createdBy", createdBy().join(","));
+		querySerie.bindValue(":homepage", homepage());
+		querySerie.bindValue(":lastAired", lastAired());
+		querySerie.bindValue(":networks", networks().join(","));
+		querySerie.bindValue(":nrEpisodes", episodes());
+		querySerie.bindValue(":nrSeasons", seasons());
+		querySerie.bindValue(":originCountries", originCountries().join(","));
+		querySerie.bindValue(":originalLanguage", originalLanguage());
+		querySerie.bindValue(":popularity", popularity());
+		querySerie.bindValue(":posterPath", posterPath());
+		querySerie.bindValue(":productionCompanies", productionCompanies().join(","));
+		querySerie.bindValue(":type", type());
+		querySerie.bindValue(":voteAverage", voteAverage());
+		querySerie.bindValue(":voteCount", voteCount());
 		querySerie.bindValue(":overview", overview());
 		querySerie.bindValue(":firstAired", firstAired());
-		querySerie.bindValue(":network", network());
-		querySerie.bindValue(":imdbid", imdbID());
-		querySerie.bindValue(":id", id());
-		querySerie.bindValue(":contentRating", contentRating());
-		querySerie.bindValue(":rating", rating());
-		querySerie.bindValue(":ratingCount", ratingCount());
-		querySerie.bindValue(":runtime", runime());
+		querySerie.bindValue(":cast", cast().join("|"));
+		querySerie.bindValue(":crew", crew().join("|"));
+		querySerie.bindValue(":genre", genre().join(","));
 		querySerie.bindValue(":status", status());
 		querySerie.bindValue(":download", download());
 		querySerie.bindValue(":cliffhanger", cliffhanger());
-		querySerie.bindValue(":actor", actors().join("|"));
-		querySerie.bindValue(":genre", genre().join(","));
 		if(querySerie.exec())
 		{
-			QList<cSeason*>	seasonList	= this->seasonList();
-			for(int season = 0;season < seasonList.count();season++)
+			QList<cSeason*>	seasonList1	= seasonList();
+			for(int season = 0;season < seasonList1.count();season++)
 			{
-				QList<cEpisode*>	episodeList	= seasonList.at(season)->episodeList();
+				QList<cEpisode*>	episodeList	= seasonList1.at(season)->episodeList();
 				for(int episode = 0;episode < episodeList.count();episode++)
 				{
 					cEpisode*	lpEpisode	= episodeList.at(episode);
@@ -427,26 +462,21 @@ bool cSerie::save(QSqlDatabase &db)
 					//query.exec();
 					//if(!query.next())
 					{
-						queryEpisode.bindValue(":episodeID", lpEpisode->id());
-						queryEpisode.bindValue(":episodeName", lpEpisode->episodeName());
+						queryEpisode.bindValue(":id", lpEpisode->id());
+						queryEpisode.bindValue(":name", lpEpisode->name());
 						queryEpisode.bindValue(":episodeNumber", lpEpisode->episodeNumber());
-						queryEpisode.bindValue(":firstAired", lpEpisode->firstAired());
-						queryEpisode.bindValue(":imdbid", lpEpisode->imdbID());
-						queryEpisode.bindValue(":language", lpEpisode->language());
+						queryEpisode.bindValue(":airDate", lpEpisode->airDate());
+						queryEpisode.bindValue(":guestStars", lpEpisode->guestStars().join("|"));
 						queryEpisode.bindValue(":overview", lpEpisode->overview());
 						queryEpisode.bindValue(":productioncode", lpEpisode->productionCode());
-						queryEpisode.bindValue(":rating", lpEpisode->rating());
-						queryEpisode.bindValue(":ratingCount", lpEpisode->ratingCount());
 						queryEpisode.bindValue(":seasonNumber", lpEpisode->seasonNumber());
 						queryEpisode.bindValue(":seasonID", lpEpisode->seasonID());
 						queryEpisode.bindValue(":seriesID", lpEpisode->seriesID());
+						queryEpisode.bindValue(":stillPath", lpEpisode->stillPath());
+						queryEpisode.bindValue(":voteAverage", lpEpisode->voteAverage());
+						queryEpisode.bindValue(":voteCount", lpEpisode->voteCount());
+						queryEpisode.bindValue(":crew", lpEpisode->crew().join("|"));
 						queryEpisode.bindValue(":state", lpEpisode->state());
-						queryEpisode.bindValue(":filename", lpEpisode->fileName());
-						queryEpisode.bindValue(":thumb_height", lpEpisode->thumbHeight());
-						queryEpisode.bindValue(":thumb_width", lpEpisode->thumbWidth());
-						queryEpisode.bindValue(":director", lpEpisode->director().join(","));
-						queryEpisode.bindValue(":gueststars", lpEpisode->guestStars().join(","));
-						queryEpisode.bindValue(":episode_writer", lpEpisode->writer().join(","));
 						if(queryEpisode.exec())
 						{
 						}
@@ -456,7 +486,7 @@ bool cSerie::save(QSqlDatabase &db)
 		}
 	}
 	db.commit();
-*/
+
 	return(true);
 }
 
