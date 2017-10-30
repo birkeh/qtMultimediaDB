@@ -1021,7 +1021,7 @@ void cMainWindow::onActionAdd()
 
 		qint32	iMax	= 0;
 		QSqlQuery	query;
-		if(query.exec("SELECT MAX(id) FROM serie;"))
+		if(query.exec("SELECT MAX(seriesID) FROM serie;"))
 		{
 			query.next();
 			if(query.isValid())
