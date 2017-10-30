@@ -192,6 +192,7 @@ void cMainWindow::initDB()
 					"   createdBy           STRING,"
 					"   homepage            STRING,"
 					"   lastAired           DATE,"
+					"   languages           STRING,"
 					"   networks            STRING,"
 					"   nrEpisodes          INTEGER,"
 					"   nrSeasons           INTEGER,"
@@ -341,7 +342,7 @@ void cMainWindow::loadSeriesDB()
 	cSeason*	lpSeason;
 	cEpisode*	lpEpisode;
 
-	if(query.exec("SELECT serie.seriesID,serie.seriesName,serie.originalName,serie.backdropPath,serie.createdBy,serie.homepage,serie.lastAired,serie.networks,serie.nrEpisodes,serie.nrSeasons,serie.originCountries,serie.originalLanguage,serie.popularity,serie.posterPath,serie.productionCompanies,serie.type,serie.voteAverage,serie.voteCount,serie.overview,serie.firstAired,serie.cast,serie.crew,serie.genre,serie.status,serie.download,serie.cliffhanger,episode.id,episode.name,episode.episodeNumber,episode.airDate,episode.guestStars,episode.overview,episode.productioncode,episode.seasonNumber,episode.seasonID,episode.seriesID,episode.stillPath,episode.voteAverage,episode.voteCount,episode.crew,episode.state FROM serie LEFT JOIN episode ON serie.seriesID = episode.seriesID ORDER BY serie.seriesName, episode.seasonNumber, episode.episodeNumber;"))
+	if(query.exec("SELECT serie.seriesID,serie.seriesName,serie.originalName,serie.backdropPath,serie.createdBy,serie.homepage,serie.lastAired,serie.languages,serie.networks,serie.nrEpisodes,serie.nrSeasons,serie.originCountries,serie.originalLanguage,serie.popularity,serie.posterPath,serie.productionCompanies,serie.type,serie.voteAverage,serie.voteCount,serie.overview,serie.firstAired,serie.cast,serie.crew,serie.genre,serie.status,serie.download,serie.cliffhanger,episode.id,episode.name,episode.episodeNumber,episode.airDate,episode.guestStars,episode.overview,episode.productioncode,episode.seasonNumber,episode.seasonID,episode.seriesID,episode.stillPath,episode.voteAverage,episode.voteCount,episode.crew,episode.state FROM serie LEFT JOIN episode ON serie.seriesID = episode.seriesID ORDER BY serie.seriesName, serie.firstAired, episode.seasonNumber, episode.episodeNumber;"))
 	{
 		while(query.next())
 		{
@@ -351,7 +352,8 @@ void cMainWindow::loadSeriesDB()
 			if(iSeriesID != iOldSeriesID)
 			{
 				m_serieList.add(iSeriesID);
-				iOldSeriesID	= iSeriesID;
+				iOldSeriesID		= iSeriesID;
+				iOldSeasonNumber	= -1;
 			}
 
 			cSerie*	lpSerie	= m_serieList.add(iSeriesID);
@@ -361,6 +363,7 @@ void cMainWindow::loadSeriesDB()
 			lpSerie->setCreatedBy(query.value("createdBy").toString());
 			lpSerie->setHomepage(query.value("homepage").toString());
 			lpSerie->setLastAired(query.value("lastAired").toString());
+			lpSerie->setLanguages(query.value("languages").toString());
 			lpSerie->setNetworks(query.value("networks").toString());
 			lpSerie->setEpisodes(query.value("nrEpisodes").toInt());
 			lpSerie->setSeasons(query.value("nrSeasons").toInt());
@@ -594,7 +597,8 @@ void cMainWindow::displaySeries()
 				lpItems.at(lpSeason->number()+3-iMin)->setToolTip(szTooltip);
 		}
 
-		if(lpSerie->status().compare("Ended", Qt::CaseInsensitive))
+		if(lpSerie->status().compare("Ended", Qt::CaseInsensitive) &&
+		   lpSerie->status().compare("canceled", Qt::CaseInsensitive))
 		{
 			lpItems.at(0)->setFont(font);
 			lpItems.at(1)->setFont(font);

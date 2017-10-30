@@ -2,6 +2,8 @@
 #include "cseason.h"
 #include "cepisode.h"
 #include "cmessagedialog.h"
+#include "cthemoviedbv3.h"
+
 #include <QMessageBox>
 
 #include <QDebug>
@@ -25,21 +27,21 @@ void cUpdateThread::run()
 	QTime	timer;
 	timer.restart();
 	QString szFailed;
-/*
+
 	for(int x = 0;x < m_serieList.count();x++)
 	{
 		cSerie*	lpSerie	= m_serieList.at(x);
 		if(lpSerie)
 		{
 			emit updateMessage(lpSerie->seriesName(), x);
-			cTheTVDBV2		tvDB;
+			cTheMovieDBV3	theMovieDB;
 			cSerie*			lpSerieNew;
 
 			if(lpSerie->seriesID() != -1)
 			{
-				lpSerieNew	= tvDB.load(lpSerie->id(), "de");
+				lpSerieNew	= theMovieDB.loadSerie(lpSerie->seriesID(), "de");
 				if(!lpSerieNew)
-					lpSerieNew = tvDB.load(lpSerie->id(), "en");
+					lpSerieNew = theMovieDB.loadSerie(lpSerie->seriesID(), "en");
 				if(!lpSerieNew)
 				{
 					if(szFailed.length())
@@ -76,7 +78,6 @@ void cUpdateThread::run()
 		msgBox.setText(szFailed + QString(" has failed to update."));
 		msgBox.exec();
 	}
-*/
 }
 
 void cUpdateThread::setData(cMessageDialog* lpMessageDialog, const cSerieList &serieList, const QSqlDatabase& db)

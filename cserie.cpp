@@ -3,7 +3,10 @@
 
 #include <QStringList>
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QVariant>
+
+#include <QDebug>
 
 
 cSerie::cSerie() :
@@ -106,6 +109,21 @@ void cSerie::setLastAired(const QDate& lastAired)
 QDate cSerie::lastAired()
 {
 	return(m_lastAired);
+}
+
+void cSerie::setLanguages(const QString& szLanguages)
+{
+	m_szLanguages	= szLanguages.split(",");
+}
+
+void cSerie::setLanguages(const QStringList& szLanguages)
+{
+	m_szLanguages	= szLanguages;
+}
+
+QStringList cSerie::languages()
+{
+	return(m_szLanguages);
 }
 
 void cSerie::setNetworks(const QStringList& szNetworks)
@@ -278,7 +296,7 @@ QStringList cSerie::crew()
 
 void cSerie::setGenre(const QString& szGenre)
 {
-	m_szGenre	= szGenre.split("|");
+	m_szGenre	= szGenre.split(",");
 	m_szGenre.removeAll("");
 }
 
@@ -411,8 +429,8 @@ bool cSerie::save(QSqlDatabase &db)
 	QSqlQuery	querySerie;
 	QSqlQuery	queryEpisode;
 
-	querySerie.prepare("INSERT INTO serie (seriesID,seriesName,originalName,backdropPath,createdBy,homepage,lastAired,networks,nrEpisodes,nrSeasons,originCountries,originalLanguage,popularity,posterPath,productionCompanies,type,voteAverage,voteCount,overview,firstAired,cast,crew,genre,status,download,cliffhanger)"
-						" VALUES (:seriesID,:seriesName,:originalName,:backdropPath,:createdBy,:homepage,:lastAired,:networks,:nrEpisodes,:nrSeasons,:originCountries,:originalLanguage,:popularity,:posterPath,:productionCompanies,:type,:voteAverage,:voteCount,:overview,:firstAired,:cast,:crew,:genre,:status,:download,:cliffhanger);");
+	querySerie.prepare("INSERT INTO serie (seriesID,seriesName,originalName,backdropPath,createdBy,homepage,lastAired,languages,networks,nrEpisodes,nrSeasons,originCountries,originalLanguage,popularity,posterPath,productionCompanies,type,voteAverage,voteCount,overview,firstAired,cast,crew,genre,status,download,cliffhanger)"
+						" VALUES (:seriesID,:seriesName,:originalName,:backdropPath,:createdBy,:homepage,:lastAired,:languages,:networks,:nrEpisodes,:nrSeasons,:originCountries,:originalLanguage,:popularity,:posterPath,:productionCompanies,:type,:voteAverage,:voteCount,:overview,:firstAired,:cast,:crew,:genre,:status,:download,:cliffhanger);");
 	queryEpisode.prepare("INSERT INTO episode (id,name,episodeNumber,airDate,guestStars,overview,productioncode,seasonNumber,seasonID,seriesID,stillPath,voteAverage,voteCount,crew,state)"
 						 " VALUES (:id,:name,:episodeNumber,:airDate,:guestStars,:overview,:productioncode,:seasonNumber,:seasonID,:seriesID,:stillPath,:voteAverage,:voteCount,:crew,:state);");
 
@@ -429,6 +447,7 @@ bool cSerie::save(QSqlDatabase &db)
 		querySerie.bindValue(":createdBy", createdBy().join(","));
 		querySerie.bindValue(":homepage", homepage());
 		querySerie.bindValue(":lastAired", lastAired());
+		querySerie.bindValue(":languages", languages().join(","));
 		querySerie.bindValue(":networks", networks().join(","));
 		querySerie.bindValue(":nrEpisodes", episodes());
 		querySerie.bindValue(":nrSeasons", seasons());
@@ -484,6 +503,8 @@ bool cSerie::save(QSqlDatabase &db)
 				}
 			}
 		}
+		else
+			qDebug() << querySerie.lastError().text();
 	}
 	db.commit();
 
@@ -499,7 +520,7 @@ bool cSerie::del(QSqlDatabase& db)
 	query.bindValue(":seriesID", seriesID());
 	query.exec();
 
-	query.prepare("DELETE FROM serie WHERE id=:seriesID;");
+	query.prepare("DELETE FROM serie WHERE seriesID=:seriesID;");
 	query.bindValue(":seriesID", seriesID());
 	query.exec();
 

@@ -37,6 +37,10 @@ public:
 	void			setLastAired(const QDate& lastAired);
 	QDate			lastAired();
 
+	void			setLanguages(const QString& szLanguages);
+	void			setLanguages(const QStringList& szLanguages);
+	QStringList		languages();
+
 	void			setNetworks(const QStringList& szNetworks);
 	void			setNetworks(const QString& szNetworks);
 	QStringList		networks();
@@ -134,6 +138,7 @@ private:
 	QStringList		m_szCreatedBy;
 	QString			m_szHomepage;
 	QDate			m_lastAired;
+	QStringList		m_szLanguages;
 	QStringList		m_szNetworks;
 	qint16			m_iEpisodes;
 	qint16			m_iSeasons;

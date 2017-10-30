@@ -370,6 +370,11 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 		tmpList.clear();
 		lpSerie->setHomepage(jsonObj["homepage"].toString());
 		lpSerie->setLastAired(jsonObj["last_air_date"].toString());
+		tmpArray	= jsonObj["languages"].toArray();
+		for(int x = 0;x < tmpArray.count();x++)
+			tmpList.append(tmpArray.at(x).toString());
+		lpSerie->setLanguages(tmpList);
+		tmpList.clear();
 		lpSerie->setSeriesName(jsonObj["name"].toString());
 		tmpArray	= jsonObj["networks"].toArray();
 		for(int x = 0;x < tmpArray.count();x++)
@@ -379,8 +384,8 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 		lpSerie->setEpisodes(jsonObj["number_of_episodes"].toInt());
 		lpSerie->setSeasons(jsonObj["number_of_seasons"].toInt());
 		tmpArray	= jsonObj["origin_country"].toArray();
-		for(int x = 0;x < tmpArray.count();x++) //!!!!!!!!!!
-			tmpList.append(tmpArray.at(x).toObject()["name"].toString());
+		for(int x = 0;x < tmpArray.count();x++)
+			tmpList.append(tmpArray.at(x).toString());
 		lpSerie->setOriginCountries(tmpList);
 		tmpList.clear();
 		lpSerie->setOriginalLanguage(jsonObj["original_language"].toString());
@@ -488,7 +493,7 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 					lpEpisode->setSeriesID(lpSerie->seriesID());
 
 					QJsonArray	jsonArrayCrew		= tmpObj["crew"].toArray();
-					QJsonArray	jsonArrayGuestStars	= tmpObj["guest_start"].toArray();
+					QJsonArray	jsonArrayGuestStars	= tmpObj["guest_stars"].toArray();
 
 					QStringList	szCrew;
 					QStringList	szGuestStars;
