@@ -39,7 +39,7 @@ void cUpdateThread::run()
 
 			if(lpSerie->seriesID() != -1)
 			{
-				lpSerieNew	= theMovieDB.loadSerie(lpSerie->seriesID(), "de");
+				lpSerieNew	= theMovieDB.loadSerie(lpSerie->seriesID(), "de-AT");
 				if(!lpSerieNew)
 					lpSerieNew = theMovieDB.loadSerie(lpSerie->seriesID(), "en");
 				if(!lpSerieNew)

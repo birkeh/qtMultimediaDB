@@ -119,7 +119,7 @@ cMainWindow::cMainWindow(QWidget *parent) :
 		move(iX, iY);
 
 	qint16	iWindowWidth	= iWidth;
-	qint16	iSubtract		= 20;
+	qint16	iSubtract		= 50;
 
 	if(settings.value("main/maximized").toBool())
 		iWindowWidth	= QApplication::desktop()->geometry().width();
@@ -997,7 +997,7 @@ void cMainWindow::onActionAdd()
 
 		cTheMovieDBV3		movieDB3;
 
-		lpSerie	= movieDB3.loadSerie(id, "de");
+		lpSerie	= movieDB3.loadSerie(id, "de-AT");
 		if(!lpSerie)
 			lpSerie	= movieDB3.loadSerie(id, "en");
 
@@ -1091,7 +1091,7 @@ void cMainWindow::onActionMovieAdd()
 
 		cTheMovieDBV3		movieDB3;
 
-		lpMovie	= movieDB3.loadMovie(id, "de");
+		lpMovie	= movieDB3.loadMovie(id, "de-AT");
 		if(!lpMovie)
 			lpMovie	= movieDB3.loadMovie(id, "en");
 

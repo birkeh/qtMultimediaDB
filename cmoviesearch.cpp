@@ -59,7 +59,7 @@ void cMovieSearch::on_m_lpSearchButton_clicked()
 		}
 	}
 
-	QList<cMovie*>		movieList	= theMovieDBV3.searchMovie(szSearchText, iYear, "de");
+	QList<cMovie*>		movieList	= theMovieDBV3.searchMovie(szSearchText, iYear, "de-AT");
 
 	ui->m_lpResults->clear();
 

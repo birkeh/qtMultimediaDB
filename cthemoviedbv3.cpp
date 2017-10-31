@@ -314,7 +314,7 @@ cSerie* cTheMovieDBV3::loadSerie(const QString& szIMDBID)
 		tmpObj		= tmpArray.at(0).toObject();
 		iID			= tmpObj["id"].toInt();
 
-		return(loadSerie(iID, "de"));
+		return(loadSerie(iID, "de-AT"));
 	}
 	else
 		qDebug() << reply->errorString();
