@@ -1273,7 +1273,10 @@ void cMainWindow::onActionMovieDelete()
 
 void cMainWindow::onActionEdit()
 {
-	cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(ui->m_lpSeriesList1->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>();
+	QModelIndex	index	= ui->m_lpSeriesList1->selectionModel()->selectedRows().at(0);
+
+//	cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(ui->m_lpSeriesList1->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>();
+	cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(index)->data(Qt::UserRole).value<cSerie*>();
 	if(!lpSerie)
 		return;
 
@@ -1292,9 +1295,7 @@ void cMainWindow::onActionEdit()
 	lpSerie->del(m_db);
 	lpSerie->save(m_db);
 
-	m_szOldSelected	= lpSerie->seriesName();
-	loadSeriesDB();
-	displaySeries();
+	emit m_lpSeriesListModel->layoutChanged();
 
 	delete lpDialog;
 }
