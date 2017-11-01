@@ -325,7 +325,7 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 {
 	cSerie*					lpSerie	= 0;
 	QNetworkAccessManager	networkManager;
-	QNetworkRequest			request(QUrl(QString("https://api.themoviedb.org/3/tv/%1?api_key=%2&language=%3").arg(iID).arg(m_szToken).arg(szLanguage)));
+	QNetworkRequest			request(QUrl(QString("https://api.themoviedb.org/3/tv/%1?api_key=%2&language=%3&append_to_response=credits,episodes").arg(iID).arg(m_szToken).arg(szLanguage)));
 
 	request.setRawHeader("Content-Type", "application/json");
 	request.setRawHeader("Authorization", QString("Bearer %1").arg(m_szToken).toUtf8());
@@ -403,31 +403,16 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 		lpSerie->setVoteAverage(jsonObj["vote_average"].toDouble());
 		lpSerie->setVoteCount(jsonObj["vote_count"].toInt());
 
-		request.setUrl(QUrl(QString("https://api.themoviedb.org/3/tv/%1/credits?api_key=%2").arg(iID).arg(m_szToken)));
+		QJsonObject	creditsObj		= jsonObj["credits"].toObject();
+		QJsonArray	seasonsArray	= jsonObj["seasons"].toArray();
 
-		request.setRawHeader("Content-Type", "application/json");
-		if(!szLanguage.contains("all"))
-			request.setRawHeader("Accept-Language", szLanguage.toUtf8());
-		else
-			request.setRawHeader("Accept-Language", "en");
-
-		reply   = networkManager.get(request);
-
-		QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-		loop.exec();
-
-		if (reply->error() == QNetworkReply::NoError)
+		if(!creditsObj.isEmpty())
 		{
-			strReply		= (QString)reply->readAll();
-			jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
-			QJsonObject		jsonCast		= jsonResponse.object();
-			QJsonArray		jsonArrayCast	= jsonCast["cast"].toArray();
-			QJsonArray		jsonArrayCrew	= jsonCast["crew"].toArray();
+			QJsonArray		jsonArrayCast	= creditsObj["cast"].toArray();
+			QJsonArray		jsonArrayCrew	= creditsObj["crew"].toArray();
 
 			QStringList		szCast;
 			QStringList		szCrew;
-
-			delete reply;
 
 			for(int x = 0;x < jsonArrayCast.count();x++)
 			{
