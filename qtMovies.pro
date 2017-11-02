@@ -21,7 +21,6 @@ SOURCES += main.cpp\
     csearch.cpp \
     cmessageanimatedialog.cpp \
     cedit.cpp \
-    cimage.cpp \
     cseasondetails.cpp \
     cverticallabel.cpp \
     cepisodedetails.cpp \
@@ -34,7 +33,9 @@ SOURCES += main.cpp\
     cmovieviewitemdelegate.cpp \
     common.cpp \
     cmovieedit.cpp \
-    cmovieimage.cpp
+    cmovieimage.cpp \
+    cscrollarea.cpp \
+    cpixmapwidget.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -44,7 +45,6 @@ HEADERS  += cmainwindow.h \
     csearch.h \
     cmessageanimatedialog.h \
     cedit.h \
-    cimage.h \
     cseasondetails.h \
     cverticallabel.h \
     cepisodedetails.h \
@@ -57,7 +57,9 @@ HEADERS  += cmainwindow.h \
     cmovieviewitemdelegate.h \
     common.h \
     cmovieedit.h \
-    cmovieimage.h
+    cmovieimage.h \
+    cscrollarea.h \
+    cpixmapwidget.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \

@@ -6,6 +6,8 @@
 
 #include "cmessageanimatedialog.h"
 
+#include "cmovieimage.h"
+
 #include <QDebug>
 
 
@@ -23,6 +25,13 @@ cSeasonDetails::~cSeasonDetails()
 
 void cSeasonDetails::setSeason(cSeason* lpSeason)
 {
+	ui->m_lpSeasonName->setText(lpSeason->name());
+	ui->m_lpSeasonOverview->setText(lpSeason->overview());
+
+	cMovieImage	image;
+	QPixmap		poster		= image.getImage(lpSeason->posterPath());
+	ui->m_lpSeasonPoster->setPixmap(poster.scaledToHeight(200));
+
 	for(int x = 0;x < lpSeason->episodeList().count();x++)
 	{
 		cEpisode*			lpEpisode			= lpSeason->episodeList().at(x);

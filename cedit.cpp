@@ -46,6 +46,11 @@ cEdit::cEdit(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	QPalette	palette	= ui->m_lpDownloadLinkLabel->palette();
+	QColor		col		= palette.color(QPalette::Window);
+	QString		color	= QString("background-color: rgb(%1,%2,%3,%4);").arg(col.red()).arg(col.green()).arg(col.blue()).arg(95);
+	ui->m_lpScrollArea->setStyleSheet(color);
+
 	connect(ui->m_lpAllInit, SIGNAL(clicked()), this, SLOT(lpAllInit_clicked()));
 	connect(ui->m_lpAllProgress, SIGNAL(clicked()), this, SLOT(lpAllProgress_clicked()));
 	connect(ui->m_lpAllDone, SIGNAL(clicked()), this, SLOT(lpAllDone_clicked()));
@@ -86,7 +91,6 @@ void cEdit::setSerie(cSerie* lpSerie)
 
 	if(!lpSerie)
 		return;
-
 	ui->m_lpName->setText(lpSerie->seriesName());
     ui->m_lpFirstAired->setDate(lpSerie->firstAired());
 	ui->m_lpCliffhanger->setChecked(lpSerie->cliffhanger());
@@ -132,6 +136,7 @@ void cEdit::setSerie(cSerie* lpSerie)
 			m_lpGroup	= new QButtonGroup(this);
 			lpEpisode->setGroup(m_lpGroup);
 			m_lpLabel	= new QLabel(QString("%1").arg(lpEpisode->episodeNumber()), m_lpGroupBox);
+
 			lpEpisode->setLabel(m_lpLabel);
 
 			if(bFirst)
@@ -190,6 +195,11 @@ void cEdit::setSerie(cSerie* lpSerie)
 
 	m_lpVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 	ui->m_lpGridLayoutScroll->addItem(m_lpVerticalSpacer, x+1, 0, 1, 1);
+
+	cMovieImage	image;
+	//QPixmap	backdrop	= image.getImage(m_lpSerie->backdropPath());
+	QPixmap	poster		= image.getImage(m_lpSerie->posterPath());
+	ui->m_lpProgressTab->setPixmap(poster);
 }
 
 void cEdit::lpAllInit_clicked()
@@ -242,11 +252,8 @@ void cEdit::on_m_lpTabWidget_tabBarClicked(int index)
 			lpDialog->show();
 
 			cMovieImage	image;
-			QPixmap	backdrop	= image.getImage(m_lpSerie->backdropPath());
-			//QPalette palette;
-			//palette.setBrush(this->backgroundRole(), QBrush(backdrop.toImage()));
-			//this->setPalette(palette);
-//			ui->m_lpDetailsBackdrop->setPixmap(backdrop);
+			QPixmap	poster		= image.getImage(m_lpSerie->posterPath());
+			ui->m_lpDetailsImage->setPixmap(poster.scaledToHeight(200));
 
 			ui->m_lpDetailsOverview->setText(m_lpSerie->overview());
 			ui->m_lpDetailsSeasonTab->clear();

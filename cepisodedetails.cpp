@@ -5,6 +5,7 @@
 #include "cmessageanimatedialog.h"
 
 #include <QDebug>
+#include <QTreeWidgetItem>
 
 
 cEpisodeDetails::cEpisodeDetails(QWidget *parent) :
@@ -26,6 +27,20 @@ void cEpisodeDetails::setEpisode(cEpisode* lpEpisode)
 	m_lpEpisode	= lpEpisode;
 	ui->m_lpEpisodeTitle->setText(lpEpisode->name());
 	ui->m_lpOverview->setText(lpEpisode->overview());
+
+	QTreeWidgetItem*	lpItem;
+	for(int x = 0;x < lpEpisode->guestStars().count();x++)
+	{
+		QStringList	tmp	= lpEpisode->guestStars().at(x).split(",");
+		lpItem			= new QTreeWidgetItem(ui->m_lpDetailsActors);
+		lpItem->setText(0, tmp.at(0));
+		if(tmp.count() > 1)
+			lpItem->setText(1, tmp.at(1));
+
+		ui->m_lpDetailsActors->addTopLevelItem(lpItem);
+	}
+	ui->m_lpDetailsActors->resizeColumnToContents(0);
+	ui->m_lpDetailsActors->resizeColumnToContents(1);
 }
 
 void cEpisodeDetails::loadImages()
@@ -42,7 +57,7 @@ void cEpisodeDetails::loadImages()
 	lpDialog->show();
 
 	cMovieImage	image;
-	QPixmap	pixmap	= image.getImage(m_lpEpisode->stillPath()).scaledToHeight(200);
+	QPixmap	pixmap	= image.getImage(m_lpEpisode->stillPath()).scaledToHeight(100);
 	ui->m_lpEpisodeThumb->setPixmap(pixmap);
 
 	delete lpDialog;

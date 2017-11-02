@@ -10,7 +10,6 @@
 #include "cmessagedialog.h"
 #include "cedit.h"
 #include "cmovieedit.h"
-#include "cimage.h"
 
 #include "cthemoviedbv3.h"
 
@@ -364,13 +363,71 @@ void cMainWindow::loadSeriesDB()
 	qint32		iSeasonNumber;
 	cSeason*	lpSeason;
 	cEpisode*	lpEpisode;
+	QString		szQuery	=
+			" SELECT	serie.seriesID seriesID,"
+			" 			serie.seriesName seriesName,"
+			" 			serie.originalName originalName,"
+			" 			serie.backdropPath backdropPath,"
+			" 			serie.createdBy createdBy,"
+			" 			serie.homepage homepage,"
+			" 			serie.lastAired lastAired,"
+			" 			serie.languages languages,"
+			" 			serie.networks networks,"
+			" 			serie.nrEpisodes nrEpisodes,"
+			" 			serie.nrSeasons nrSeasons,"
+			" 			serie.originCountries originCountries,"
+			" 			serie.originalLanguage originalLanguage,"
+			" 			serie.popularity popularity,"
+			" 			serie.posterPath posterPath,"
+			" 			serie.productionCompanies productionCompanies,"
+			" 			serie.type type,"
+			" 			serie.voteAverage voteAverage,"
+			" 			serie.voteCount voteCount,"
+			" 			serie.overview overview,"
+			" 			serie.firstAired firstAired,"
+			" 			serie.cast cast,"
+			" 			serie.crew crew,"
+			" 			serie.genre genre,"
+			" 			serie.status status,"
+			" 			serie.download download,"
+			" 			serie.cliffhanger cliffhanger,"
+			" 			season._id s__id,"
+			" 			season.airDate s_airDate,"
+			" 			season.name s_name,"
+			" 			season.overview s_overview,"
+			" 			season.id s_id,"
+			" 			season.posterPath s_posterPath,"
+			" 			season.seasonNumber s_seasonNumber,"
+			" 			season.seriesID s_seriesID,"
+			" 			episode.id e_id,"
+			" 			episode.name e_name,"
+			" 			episode.episodeNumber e_episodeNumber,"
+			" 			episode.airDate e_airDate,"
+			" 			episode.guestStars e_guestStars,"
+			" 			episode.overview e_overview,"
+			" 			episode.productioncode e_productioncode,"
+			" 			episode.seasonNumber e_seasonNumber,"
+			" 			episode.seasonID e_seasonID,"
+			" 			episode.seriesID e_seriesID,"
+			" 			episode.stillPath e_stillPath,"
+			" 			episode.voteAverage e_voteAverage,"
+			" 			episode.voteCount e_voteCount,"
+			" 			episode.crew e_crew,"
+			" 			episode.state e_state"
+			" FROM		serie"
+			" LEFT JOIN	season ON serie.seriesID = season.seriesID"
+			" LEFT JOIN	episode ON serie.seriesID = episode.seriesID AND season.seasonNumber = episode.seasonNumber"
+			" ORDER BY	serie.seriesName,"
+			" 			serie.firstAired,"
+			" 			season.seasonNumber,"
+			" 			episode.episodeNumber;";
 
-	if(query.exec("SELECT serie.seriesID,serie.seriesName,serie.originalName,serie.backdropPath,serie.createdBy,serie.homepage,serie.lastAired,serie.languages,serie.networks,serie.nrEpisodes,serie.nrSeasons,serie.originCountries,serie.originalLanguage,serie.popularity,serie.posterPath,serie.productionCompanies,serie.type,serie.voteAverage,serie.voteCount,serie.overview,serie.firstAired,serie.cast,serie.crew,serie.genre,serie.status,serie.download,serie.cliffhanger,episode.id eid,episode.name ename,episode.episodeNumber eepisodeNumber,episode.airDate eairDate,episode.guestStars eguestStars,episode.overview eoverview,episode.productioncode eproductioncode,episode.seasonNumber eseasonNumber,episode.seasonID eseasonID,episode.seriesID eseriesID,episode.stillPath estillPath,episode.voteAverage evoteAverage,episode.voteCount evoteCount,episode.crew ecrew,episode.state estate FROM serie LEFT JOIN episode ON serie.seriesID = episode.seriesID ORDER BY serie.seriesName, serie.firstAired, episode.seasonNumber, episode.episodeNumber;"))
+	if(query.exec(szQuery))
 	{
 		while(query.next())
 		{
 			iSeriesID		= query.value("seriesID").toInt();
-			iSeasonNumber	= query.value("eseasonNumber").toInt();
+			iSeasonNumber	= query.value("e_seasonNumber").toInt();
 
 			if(iSeriesID != iOldSeriesID)
 			{
@@ -409,27 +466,33 @@ void cMainWindow::loadSeriesDB()
 
 			if(iSeasonNumber != iOldSeasonNumber)
 			{
-				lpSeason			= lpSerie->addSeason(query.value("eseasonNumber").toInt());
+				lpSeason			= lpSerie->addSeason(query.value("s_seasonNumber").toInt());
+				lpSeason->set_ID(query.value("s__id").toInt());
+				lpSeason->setAirDate(query.value("s_airDate").toString());
+				lpSeason->setName(query.value("s_name").toString());
+				lpSeason->setOverview(query.value("s_overview").toString());
+				lpSeason->setID(query.value("s_id").toInt());
+				lpSeason->setPosterPath(query.value("s_posterPath").toString());
 				iOldSeasonNumber	= iSeasonNumber;
 			}
 
 			lpEpisode	= lpSeason->addEpisode(iSeasonNumber);
 
-			lpEpisode->setID(query.value("eid").toInt());
-			lpEpisode->setName(query.value("ename").toString());
-			lpEpisode->setEpisodeNumber(query.value("eepisodeNumber").toInt());
-			lpEpisode->setAirDate(query.value("eairDate").toString());
-			lpEpisode->setGuestStars(query.value("eguestStars").toString());
-			lpEpisode->setOverview(query.value("eoverview").toString());
-			lpEpisode->setProductionCode(query.value("eproductioncode").toString());
-			lpEpisode->setSeasonNumber(query.value("eseasonNumber").toInt());
-			lpEpisode->setSeasonID(query.value("eseasonID").toInt());
-			lpEpisode->setSeriesID(query.value("eseriesID").toInt());
-			lpEpisode->setStillPath(query.value("estillPath").toString());
-			lpEpisode->setVoteAverage(query.value("evoteAverage").toDouble());
-			lpEpisode->setVoteCount(query.value("evoteCount").toInt());
-			lpEpisode->setCrew(query.value("ecrew").toString());
-			lpEpisode->setState((cEpisode::State)query.value("estate").toInt());
+			lpEpisode->setID(query.value("e_id").toInt());
+			lpEpisode->setName(query.value("e_name").toString());
+			lpEpisode->setEpisodeNumber(query.value("e_episodeNumber").toInt());
+			lpEpisode->setAirDate(query.value("e_airDate").toString());
+			lpEpisode->setGuestStars(query.value("e_guestStars").toString());
+			lpEpisode->setOverview(query.value("e_overview").toString());
+			lpEpisode->setProductionCode(query.value("e_productioncode").toString());
+			lpEpisode->setSeasonNumber(query.value("e_seasonNumber").toInt());
+			lpEpisode->setSeasonID(query.value("e_seasonID").toInt());
+			lpEpisode->setSeriesID(query.value("e_seriesID").toInt());
+			lpEpisode->setStillPath(query.value("e_stillPath").toString());
+			lpEpisode->setVoteAverage(query.value("e_voteAverage").toDouble());
+			lpEpisode->setVoteCount(query.value("e_voteCount").toInt());
+			lpEpisode->setCrew(query.value("e_crew").toString());
+			lpEpisode->setState((cEpisode::State)query.value("e_state").toInt());
 		}
 	}
 }
