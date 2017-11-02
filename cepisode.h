@@ -108,8 +108,6 @@ private:
 	qint16			m_iVoteCount;
 	QStringList		m_szCrew;
 	State			m_state;
-//	qint16			m_iThumbHeight;
-//	qint16			m_iThumbWidth;
 	QButtonGroup*	m_lpGroup;
 	QLabel*			m_lpLabel;
 	QRadioButton*	m_lpButton1;

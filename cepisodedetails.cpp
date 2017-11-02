@@ -1,7 +1,7 @@
 #include "cepisodedetails.h"
 #include "ui_cepisodedetails.h"
 
-#include "cimage.h"
+#include "cmovieimage.h"
 #include "cmessageanimatedialog.h"
 
 #include <QDebug>
@@ -40,11 +40,11 @@ void cEpisodeDetails::loadImages()
 	lpDialog->setTitle("Details");
 	lpDialog->setMessage("Loading Images");
 	lpDialog->show();
-/*
-	cImage	image;
-	QPixmap	pixmap	= image.getImage(m_lpEpisode->fileName()).scaledToHeight(200);
+
+	cMovieImage	image;
+	QPixmap	pixmap	= image.getImage(m_lpEpisode->stillPath()).scaledToHeight(200);
 	ui->m_lpEpisodeThumb->setPixmap(pixmap);
-*/
+
 	delete lpDialog;
 
 	m_bLoaded	= true;

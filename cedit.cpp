@@ -1,7 +1,7 @@
 #include "cedit.h"
 #include "ui_cedit.h"
 
-#include "cimage.h"
+#include "cmovieimage.h"
 #include "cseasondetails.h"
 #include "cmessageanimatedialog.h"
 
@@ -236,26 +236,35 @@ void cEdit::on_m_lpTabWidget_tabBarClicked(int index)
 	{
 		if(!m_bLoaded)
 		{
-/*
 			cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
 			lpDialog->setTitle("Edit");
 			lpDialog->setMessage("Loading");
 			lpDialog->show();
 
-			cImage	image;
-			QPixmap	banner	= image.getImage(m_lpSerie->banner());
-			ui->m_lpDetailsBanner->setPixmap(banner);
+			cMovieImage	image;
+			QPixmap	backdrop	= image.getImage(m_lpSerie->backdropPath());
+			//QPalette palette;
+			//palette.setBrush(this->backgroundRole(), QBrush(backdrop.toImage()));
+			//this->setPalette(palette);
+//			ui->m_lpDetailsBackdrop->setPixmap(backdrop);
 
 			ui->m_lpDetailsOverview->setText(m_lpSerie->overview());
 			ui->m_lpDetailsSeasonTab->clear();
 
 			QTreeWidgetItem*	lpItem;
-			for(int x = 0;x < m_lpSerie->actors().count();x++)
+			for(int x = 0;x < m_lpSerie->cast().count();x++)
 			{
-				lpItem	= new QTreeWidgetItem(ui->m_lpDetailsActors);
-				lpItem->setText(0, m_lpSerie->actors().at(x));
+				QStringList	tmp	= m_lpSerie->cast().at(x).split(",");
+				lpItem			= new QTreeWidgetItem(ui->m_lpDetailsActors);
+				lpItem->setText(0, tmp.at(0));
+				if(tmp.count() > 1)
+					lpItem->setText(1, tmp.at(1));
+
 				ui->m_lpDetailsActors->addTopLevelItem(lpItem);
 			}
+			ui->m_lpDetailsActors->resizeColumnToContents(0);
+			ui->m_lpDetailsActors->resizeColumnToContents(1);
+
 			for(int x = 0;x < m_lpSerie->genre().count();x++)
 			{
 				lpItem	= new QTreeWidgetItem(ui->m_lpDetailsGenre);
@@ -269,10 +278,10 @@ void cEdit::on_m_lpTabWidget_tabBarClicked(int index)
 				ui->m_lpDetailsSeasonTab->addTab(lpSeasonDetails, QString("Season %1").arg(lpSeason->number()));
 				lpSeasonDetails->setSeason(lpSeason);
 			}
+
 			delete lpDialog;
 
 			m_bLoaded = true;
-*/
 		}
 	}
 }

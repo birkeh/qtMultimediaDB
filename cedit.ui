@@ -19,7 +19,7 @@
      <item>
       <widget class="QTabWidget" name="m_lpTabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -129,7 +129,7 @@
          <item row="0" column="0">
           <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,1,1">
            <item>
-            <widget class="QLabel" name="m_lpDetailsBanner">
+            <widget class="QLabel" name="m_lpDetailsBackdrop">
              <property name="minimumSize">
               <size>
                <width>758</width>
@@ -184,12 +184,20 @@
                      </item>
                      <item>
                       <widget class="QTreeWidget" name="m_lpDetailsActors">
+                       <property name="columnCount">
+                        <number>2</number>
+                       </property>
                        <attribute name="headerVisible">
                         <bool>false</bool>
                        </attribute>
                        <column>
                         <property name="text">
                          <string notr="true">1</string>
+                        </property>
+                       </column>
+                       <column>
+                        <property name="text">
+                         <string notr="true">2</string>
                         </property>
                        </column>
                       </widget>

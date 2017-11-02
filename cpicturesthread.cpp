@@ -3,7 +3,7 @@
 #include "cseason.h"
 #include "cepisode.h"
 #include "cmessagedialog.h"
-#include "cimage.h"
+#include "cmovieimage.h"
 
 #include <QDebug>
 
@@ -23,7 +23,7 @@ void cPicturesThread::stop()
 void cPicturesThread::run()
 {
 	qint16	iCurrent	= 0;
-/*
+
 	for(int z = 0;z < m_items.count();z++)
 	{
 		cSerie*	lpSerie	= m_items.at(z);
@@ -31,8 +31,9 @@ void cPicturesThread::run()
 		{
 			emit picturesMessage(lpSerie->seriesName(), iCurrent);
 
-			cImage	image;
-			image.getImage(lpSerie->banner());
+			cMovieImage	image;
+			image.getImage(lpSerie->backdropPath());
+			image.getImage(lpSerie->posterPath());
 
 			for(int y = 0;y < lpSerie->seasonList().count();y++)
 			{
@@ -44,7 +45,7 @@ void cPicturesThread::run()
 				for(int x = 0;x < lpSeason->episodeList().count();x++)
 				{
 					cEpisode*	lpEpisode	= lpSeason->episodeList().at(x);
-					image.getImage(lpEpisode->fileName());
+					image.getImage(lpEpisode->stillPath());
 					iCurrent++;
 
 					QMutexLocker	locker(&m_mutex);
@@ -55,7 +56,6 @@ void cPicturesThread::run()
 			}
 		}
 	}
-*/
 }
 
 void cPicturesThread::setData(cMessageDialog* lpMessageDialog, const QList<cSerie *> &list)

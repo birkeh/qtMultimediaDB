@@ -404,7 +404,6 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 		lpSerie->setVoteCount(jsonObj["vote_count"].toInt());
 
 		QJsonObject	creditsObj		= jsonObj["credits"].toObject();
-		QJsonArray	seasonsArray	= jsonObj["seasons"].toArray();
 
 		if(!creditsObj.isEmpty())
 		{
