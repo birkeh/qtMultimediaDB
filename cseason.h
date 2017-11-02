@@ -22,8 +22,27 @@ public:
 	cSeason();
 	~cSeason();
 
-	void				setNumber(const qint16& iNumber);
-	qint16				number();
+	void				set_ID(const qint16& _iID);
+	qint16				_id();
+
+	void				setAirDate(const QString& szAirDate);
+	void				setAirDate(const QDate&   airDate);
+	QDate				airDate();
+
+	void				setName(const QString& szName);
+	QString				name();
+
+	void				setOverview(const QString& szOverview);
+	QString				overview();
+
+	void				setID(const qint16& iID);
+	qint16				id();
+
+	void				setPosterPath(const QString& szPosterPath);
+	QString				posterPath();
+
+	void				setSeasonNumber(const qint16& iSeasonNumber);
+	qint16				seasonNumber();
 
 	void				setSerie(cSerie* lpSerie);
 	cSerie*				serie();
@@ -55,7 +74,13 @@ public:
 	QPushButton*		allProgressButton();
 	QPushButton*		allDoneButton();
 private:
-	qint16				m_iNumber;
+	qint16				m_i_ID;
+	QDate				m_airDate;
+	QString				m_szName;
+	QString				m_szOverview;
+	qint16				m_iID;
+	QString				m_szPosterPath;
+	qint16				m_iSeasonNumber;
 	QList<cEpisode*>	m_episodeList;
 	QGroupBox*			m_lpGroupBox;
 	QGridLayout*		m_lpGridLayout;
@@ -69,6 +94,5 @@ private:
 };
 
 Q_DECLARE_METATYPE(cSeason*)
-
 
 #endif // CSEASON_H

@@ -98,7 +98,7 @@ void cEdit::setSerie(cSerie* lpSerie)
 	{
 		cSeason*	lpSeason	= seasonList.at(x);
 
-		m_lpGroupBox	= new QGroupBox(QString("Season %1").arg(lpSeason->number()), ui->m_lpScrollAreaWidget);
+		m_lpGroupBox	= new QGroupBox(QString("Season %1").arg(lpSeason->seasonNumber()), ui->m_lpScrollAreaWidget);
 		lpSeason->setGroupBox(m_lpGroupBox);
 		m_lpGridLayout	= new QGridLayout(m_lpGroupBox);
 		lpSeason->setGridLayout(m_lpGridLayout);
@@ -275,7 +275,7 @@ void cEdit::on_m_lpTabWidget_tabBarClicked(int index)
 			{
 				cSeason*		lpSeason		= m_lpSerie->seasonList().at(x);
 				cSeasonDetails*	lpSeasonDetails	= new cSeasonDetails(ui->m_lpDetailsSeasonTab);
-				ui->m_lpDetailsSeasonTab->addTab(lpSeasonDetails, QString("Season %1").arg(lpSeason->number()));
+				ui->m_lpDetailsSeasonTab->addTab(lpSeasonDetails, QString("Season %1").arg(lpSeason->seasonNumber()));
 				lpSeasonDetails->setSeason(lpSeason);
 			}
 

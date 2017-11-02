@@ -344,7 +344,7 @@ bool cSerie::cliffhanger()
 cSeason* cSerie::addSeason(const qint16& iSeason)
 {
 	cSeason*	lpNew	= new cSeason;
-	lpNew->setNumber(iSeason);
+	lpNew->setSeasonNumber(iSeason);
 	lpNew->setSerie(this);
 	m_seasonList.append(lpNew);
 	return(lpNew);
@@ -354,7 +354,7 @@ cSeason* cSerie::findSeason(const qint16& iSeason)
 {
 	for(int z = 0;z < m_seasonList.count();z++)
 	{
-		if(m_seasonList.at(z)->number() == iSeason)
+		if(m_seasonList.at(z)->seasonNumber() == iSeason)
 			return(m_seasonList.at(z));
 	}
 	return(0);
@@ -370,8 +370,8 @@ qint16 cSerie::minSeason()
 	qint16	iMin	= 9999;
 	for(int z = 0;z < m_seasonList.count();z++)
 	{
-		if(m_seasonList.at(z)->number() < iMin)
-			iMin	= m_seasonList.at(z)->number();
+		if(m_seasonList.at(z)->seasonNumber() < iMin)
+			iMin	= m_seasonList.at(z)->seasonNumber();
 	}
 	if(iMin == 9999)
 		return(-1);
@@ -383,8 +383,8 @@ qint16 cSerie::maxSeason()
 	qint16	iMax	= -1;
 	for(int z = 0;z < m_seasonList.count();z++)
 	{
-		if(m_seasonList.at(z)->number() > iMax)
-			iMax	= m_seasonList.at(z)->number();
+		if(m_seasonList.at(z)->seasonNumber() > iMax)
+			iMax	= m_seasonList.at(z)->seasonNumber();
 	}
 	return(iMax);
 }
@@ -427,13 +427,14 @@ bool cSerie::save(QSqlDatabase &db)
 {
 	QSqlQuery	query;
 	QSqlQuery	querySerie;
+	QSqlQuery	querySeason;
 	QSqlQuery	queryEpisode;
 
 	querySerie.prepare("INSERT INTO serie (seriesID,seriesName,originalName,backdropPath,createdBy,homepage,lastAired,languages,networks,nrEpisodes,nrSeasons,originCountries,originalLanguage,popularity,posterPath,productionCompanies,type,voteAverage,voteCount,overview,firstAired,cast,crew,genre,status,download,cliffhanger)"
 						" VALUES (:seriesID,:seriesName,:originalName,:backdropPath,:createdBy,:homepage,:lastAired,:languages,:networks,:nrEpisodes,:nrSeasons,:originCountries,:originalLanguage,:popularity,:posterPath,:productionCompanies,:type,:voteAverage,:voteCount,:overview,:firstAired,:cast,:crew,:genre,:status,:download,:cliffhanger);");
+	querySeason.prepare("INSERT INTO season (_id,airDate,name,overview,id,posterPath,seasonNumber,seriesID) VALUES (:_id,:airDate,:name,:overview,:id,:posterPath,:seasonNumber,:seriesID);");
 	queryEpisode.prepare("INSERT INTO episode (id,name,episodeNumber,airDate,guestStars,overview,productioncode,seasonNumber,seasonID,seriesID,stillPath,voteAverage,voteCount,crew,state)"
 						 " VALUES (:id,:name,:episodeNumber,:airDate,:guestStars,:overview,:productioncode,:seasonNumber,:seasonID,:seriesID,:stillPath,:voteAverage,:voteCount,:crew,:state);");
-
 	db.transaction();
 	query.exec(QString("SELECT seriesID FROM serie WHERE seriesID=%1;").arg(seriesID()));
 	if(!query.next())
@@ -472,7 +473,20 @@ bool cSerie::save(QSqlDatabase &db)
 			QList<cSeason*>	seasonList1	= seasonList();
 			for(int season = 0;season < seasonList1.count();season++)
 			{
-				QList<cEpisode*>	episodeList	= seasonList1.at(season)->episodeList();
+				cSeason*	lpSeason	= seasonList1.at(season);
+
+				querySeason.bindValue(":_id", lpSeason->_id());
+				querySeason.bindValue(":airDate", lpSeason->airDate());
+				querySeason.bindValue(":name", lpSeason->name());
+				querySeason.bindValue(":overview", lpSeason->overview());
+				querySeason.bindValue(":id", lpSeason->id());
+				querySeason.bindValue(":posterPath", lpSeason->posterPath());
+				querySeason.bindValue(":seasonNumber", lpSeason->seasonNumber());
+				querySeason.bindValue(":seriesID", seriesID());
+				if(!querySeason.exec())
+					qDebug() << querySeason.lastError().text();
+
+				QList<cEpisode*>	episodeList	= lpSeason->episodeList();
 				for(int episode = 0;episode < episodeList.count();episode++)
 				{
 					cEpisode*	lpEpisode	= episodeList.at(episode);
@@ -517,6 +531,10 @@ bool cSerie::del(QSqlDatabase& db)
 
 	db.transaction();
 	query.prepare("DELETE FROM episode WHERE seriesID=:seriesID;");
+	query.bindValue(":seriesID", seriesID());
+	query.exec();
+
+	query.prepare("DELETE FROM season WHERE seriesID=:seriesID;");
 	query.bindValue(":seriesID", seriesID());
 	query.exec();
 

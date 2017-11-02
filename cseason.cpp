@@ -3,7 +3,13 @@
 #define DELETE(x) { if(x) delete x; x=0; }
 
 cSeason::cSeason() :
-	m_iNumber(-1),
+	m_i_ID(-1),
+	m_airDate(QDate(1900, 1, 1)),
+	m_szName(""),
+	m_szOverview(""),
+	m_iID(-1),
+	m_szPosterPath(""),
+	m_iSeasonNumber(-1),
 	m_lpGroupBox(0),
 	m_lpGridLayout(0),
 	m_lpGrid(0),
@@ -22,14 +28,78 @@ cSeason::~cSeason()
 	deleteResources();
 }
 
-void cSeason::setNumber(const qint16& iNumber)
+void cSeason::set_ID(const qint16& _iID)
 {
-	m_iNumber	= iNumber;
+	m_i_ID	= _iID;
+}
+qint16 cSeason::_id()
+{
+	return(m_i_ID);
 }
 
-qint16 cSeason::number()
+void cSeason::setAirDate(const QString& szAirDate)
 {
-	return(m_iNumber);
+	m_airDate	= QDate::fromString(szAirDate, "yyyy-MM-dd");
+}
+
+void cSeason::setAirDate(const QDate& airDate)
+{
+	m_airDate	= airDate;
+}
+
+QDate cSeason::airDate()
+{
+	return(m_airDate);
+}
+
+void cSeason::setName(const QString& szName)
+{
+	m_szName	= szName;
+}
+
+QString cSeason::name()
+{
+	return(m_szName);
+}
+
+void cSeason::setOverview(const QString& szOverview)
+{
+	m_szOverview	= szOverview;
+}
+
+QString cSeason::overview()
+{
+	return(m_szOverview);
+}
+
+void cSeason::setID(const qint16& iID)
+{
+	m_iID	= iID;
+}
+
+qint16 cSeason::id()
+{
+	return(m_iID);
+}
+
+void cSeason::setPosterPath(const QString& szPosterPath)
+{
+	m_szPosterPath	= szPosterPath;
+}
+
+QString cSeason::posterPath()
+{
+	return(m_szPosterPath);
+}
+
+void cSeason::setSeasonNumber(const qint16& iSeasonNumber)
+{
+	m_iSeasonNumber	= iSeasonNumber;
+}
+
+qint16 cSeason::seasonNumber()
+{
+	return(m_iSeasonNumber);
 }
 
 void cSeason::setSerie(cSerie* lpSerie)

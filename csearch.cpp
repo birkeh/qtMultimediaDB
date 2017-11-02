@@ -44,7 +44,7 @@ void cSearch::on_m_lpSearchButton_clicked()
 
 	cTheMovieDBV3		theMovieDBV3;
 
-	QList<cSerie*>		serieList3	= theMovieDBV3.searchSerie(ui->m_lpSearch->text(), -1, "de-AT");
+	QList<cSerie*>		serieList3	= theMovieDBV3.searchSerie(ui->m_lpSearch->text(), -1, "de-DE");
 
 	ui->m_lpResults->clear();
 

@@ -105,7 +105,7 @@ QSize cSeasonDelegate::sizeHint(const QStyleOptionViewItem &option, const QModel
 						iTotal	= lpEpisode->episodeNumber();
 				}
 			}
-			if(iTotal > 0 && lpSeason->number() != 0)
+			if(iTotal > 0 && lpSeason->seasonNumber() != 0)
 				return(QSize((iTotal+1)*FIELD_STEP, HEIGHT));
 				//return(QSize((iTotal+1)*FIELD_STEP, FIELD_HEIGHT));
 			else

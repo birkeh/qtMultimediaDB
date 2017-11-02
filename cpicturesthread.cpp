@@ -40,7 +40,7 @@ void cPicturesThread::run()
 				cSeason*	lpSeason;
 				lpSeason	= lpSerie->seasonList().at(y);
 
-				emit picturesMessage(QString("%1 - Season %2").arg(lpSerie->seriesName()).arg(lpSeason->number()), iCurrent);
+				emit picturesMessage(QString("%1 - Season %2").arg(lpSerie->seriesName()).arg(lpSeason->seasonNumber()), iCurrent);
 
 				for(int x = 0;x < lpSeason->episodeList().count();x++)
 				{

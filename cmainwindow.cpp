@@ -214,6 +214,19 @@ void cMainWindow::initDB()
 					"   cliffhanger         BOOL);");
 	}
 
+	if(!m_db.tables().contains("season"))
+	{
+		query.exec("CREATE TABLE season ("
+					"   _id                 INTEGER,"
+					"   airDate             DATE,"
+					"   name                STRING,"
+					"   overview            TEXT,"
+					"   id                  INTEGER,"
+					"   posterPath          STRING,"
+					"   seasonNumber        INTEGER,"
+					"   seriesID            INTEGER);");
+	}
+
 	if(!m_db.tables().contains("episode"))
 	{
 		query.exec("CREATE TABLE episode ("
@@ -234,6 +247,7 @@ void cMainWindow::initDB()
 					"	state          INT);");
 
 	}
+
 	if(!m_db.tables().contains("movie"))
 	{
 		query.exec("CREATE TABLE movie ("
@@ -328,6 +342,15 @@ void cMainWindow::convertSeries()
 		lpSerie	= 0;
 	}
 }
+/*
+	qint16				_id();
+	QDate				airDate();
+	QString				name();
+	QString				overview();
+	qint16				id();
+	QString				posterPath();
+	qint16				seasonNumber();
+*/
 
 void cMainWindow::loadSeriesDB()
 {
@@ -525,7 +548,7 @@ void cMainWindow::displaySeries()
 			QString		szDone		= "";
 
 			cSeason*	lpSeason	= seasonList.at(season);
-			lpItems.at(lpSeason->number()+3-iMin)->setData(QVariant::fromValue(lpSeason), Qt::UserRole);
+			lpItems.at(lpSeason->seasonNumber()+3-iMin)->setData(QVariant::fromValue(lpSeason), Qt::UserRole);
 
 			for(int y = 0;y < lpSeason->episodeList().count();y++)
 			{
@@ -538,7 +561,7 @@ void cMainWindow::displaySeries()
 					else
 						szInit.append(QString(", %1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
 
-					if(lpSeason->number())
+					if(lpSeason->seasonNumber())
 						bHasInit	= true;
 				}
 				else if(lpSeason->episodeList().at(y)->state() == cEpisode::StateProgress)
@@ -548,7 +571,7 @@ void cMainWindow::displaySeries()
 					else
 						szProg.append(QString(", %1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
 
-					if(lpSeason->number())
+					if(lpSeason->seasonNumber())
 						bHasProg	= true;
 				}
 				else if(lpSeason->episodeList().at(y)->state() == cEpisode::StateDone)
@@ -558,7 +581,7 @@ void cMainWindow::displaySeries()
 					else
 						szDone.append(QString(", %1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
 
-					if(lpSeason->number())
+					if(lpSeason->seasonNumber())
 						bHasDone	= true;
 				}
 			}
@@ -570,15 +593,15 @@ void cMainWindow::displaySeries()
 			else
 				szTooltip.append("open: " + szInit + "\n");
 
-			if(lpSeason->number())
+			if(lpSeason->seasonNumber())
 			{
 				if(szOpen.length())
 					szOpen	+= "\n";
 
 				if(szInit.isEmpty())
-					szOpen	+= QString("Season %1: none").arg(lpSeason->number(), 2, 10, QChar('0'));
+					szOpen	+= QString("Season %1: none").arg(lpSeason->seasonNumber(), 2, 10, QChar('0'));
 				else
-					szOpen	+= QString("Season %1: %2").arg(lpSeason->number(), 2, 10, QChar('0')).arg(szInit);
+					szOpen	+= QString("Season %1: %2").arg(lpSeason->seasonNumber(), 2, 10, QChar('0')).arg(szInit);
 			}
 
 			if(szProg.isEmpty())
@@ -592,9 +615,9 @@ void cMainWindow::displaySeries()
 				szTooltip.append("done: " + szDone);
 
 			if(szTooltip.isEmpty())
-				lpItems.at(lpSeason->number()+3-iMin)->setToolTip(szTooltip);
+				lpItems.at(lpSeason->seasonNumber()+3-iMin)->setToolTip(szTooltip);
 			else
-				lpItems.at(lpSeason->number()+3-iMin)->setToolTip(szTooltip);
+				lpItems.at(lpSeason->seasonNumber()+3-iMin)->setToolTip(szTooltip);
 		}
 
 		if(lpSerie->status().compare("Ended", Qt::CaseInsensitive) &&
@@ -997,7 +1020,7 @@ void cMainWindow::onActionAdd()
 
 		cTheMovieDBV3		movieDB3;
 
-		lpSerie	= movieDB3.loadSerie(id, "de-AT");
+		lpSerie	= movieDB3.loadSerie(id, "de-DE");
 		if(!lpSerie)
 			lpSerie	= movieDB3.loadSerie(id, "en");
 
@@ -1091,7 +1114,7 @@ void cMainWindow::onActionMovieAdd()
 
 		cTheMovieDBV3		movieDB3;
 
-		lpMovie	= movieDB3.loadMovie(id, "de-AT");
+		lpMovie	= movieDB3.loadMovie(id, "de-DE");
 		if(!lpMovie)
 			lpMovie	= movieDB3.loadMovie(id, "en");
 

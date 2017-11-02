@@ -314,7 +314,7 @@ cSerie* cTheMovieDBV3::loadSerie(const QString& szIMDBID)
 		tmpObj		= tmpArray.at(0).toObject();
 		iID			= tmpObj["id"].toInt();
 
-		return(loadSerie(iID, "de-AT"));
+		return(loadSerie(iID, "de-DE"));
 	}
 	else
 		qDebug() << reply->errorString();
@@ -325,7 +325,7 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 {
 	cSerie*					lpSerie	= 0;
 	QNetworkAccessManager	networkManager;
-	QNetworkRequest			request(QUrl(QString("https://api.themoviedb.org/3/tv/%1?api_key=%2&language=%3&append_to_response=credits,episodes").arg(iID).arg(m_szToken).arg(szLanguage)));
+	QNetworkRequest			request(QUrl(QString("https://api.themoviedb.org/3/tv/%1?api_key=%2&language=%3&append_to_response=credits").arg(iID).arg(m_szToken).arg(szLanguage)));
 
 	request.setRawHeader("Content-Type", "application/json");
 	request.setRawHeader("Authorization", QString("Bearer %1").arg(m_szToken).toUtf8());
@@ -459,6 +459,13 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 				QJsonArray		jsonArrayEpisodes	= jsonEpisodes["episodes"].toArray();
 
 				delete reply;
+
+				lpSeason->set_ID(jsonEpisodes["_id"].toInt());
+				lpSeason->setAirDate(jsonEpisodes["air_date"].toString());
+				lpSeason->setName(jsonEpisodes["name"].toString());
+				lpSeason->setOverview(jsonEpisodes["overview"].toString());
+				lpSeason->setID(jsonEpisodes["id"].toInt());
+				lpSeason->setPosterPath(jsonEpisodes["poster_path"].toString());
 
 				for(int x = 0;x < jsonArrayEpisodes.count();x++)
 				{

@@ -37,9 +37,9 @@ void cUpdateThread::run()
 			cTheMovieDBV3	theMovieDB;
 			cSerie*			lpSerieNew;
 
-			if(lpSerie->seriesID() != -1)
+			if(lpSerie->seriesID() != -1 && lpSerie->seriesID() < 1000000)
 			{
-				lpSerieNew	= theMovieDB.loadSerie(lpSerie->seriesID(), "de-AT");
+				lpSerieNew	= theMovieDB.loadSerie(lpSerie->seriesID(), "de-DE");
 				if(!lpSerieNew)
 					lpSerieNew = theMovieDB.loadSerie(lpSerie->seriesID(), "en");
 				if(!lpSerieNew)
