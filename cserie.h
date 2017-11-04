@@ -94,6 +94,21 @@ public:
 	void			setGenre(const QStringList& szGenre);
 	QStringList		genre();
 
+	void			setIMDBID(const QString& szIMDBID);
+	QString			IMDBID();
+
+	void			setFreebaseMID(const QString& szFreebaseMID);
+	QString			freebaseMID();
+
+	void			setFreebaseID(const QString& szFreebaseID);
+	QString			freebaseID();
+
+	void			setTVDBID(const qint16& iTVDBID);
+	qint16			tvdbID();
+
+	void			setTVRageID(const qint16& iTVRageID);
+	qint16			tvrageID();
+
 	void			setStatus(const QString& szStatus);
 	QString			status();
 
@@ -155,6 +170,11 @@ private:
 	QStringList		m_szCast;
 	QStringList		m_szCrew;
 	QStringList		m_szGenre;
+	QString			m_szIMDBID;
+	QString			m_szFreebaseMID;
+	QString			m_szFreebaseID;
+	qint16			m_iTVDBID;
+	qint16			m_iTVRageID;
 	QString			m_szStatus;
 	QString			m_szDownload;
 	bool			m_bCliffhanger;

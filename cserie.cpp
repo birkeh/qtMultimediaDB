@@ -25,6 +25,11 @@ cSerie::cSerie() :
 	m_iVoteCount(-1),
 	m_szOverview(""),
 	m_firstAired(QDate(1900, 1, 1)),
+	m_szIMDBID(""),
+	m_szFreebaseMID(""),
+	m_szFreebaseID(""),
+	m_iTVDBID(-1),
+	m_iTVRageID(-1),
 	m_szStatus(""),
 	m_szDownload(""),
 	m_bCliffhanger(false)
@@ -311,6 +316,56 @@ QStringList cSerie::genre()
 	return(m_szGenre);
 }
 
+void cSerie::setIMDBID(const QString& szIMDBID)
+{
+	m_szIMDBID	= szIMDBID;
+}
+
+QString cSerie::IMDBID()
+{
+	return(m_szIMDBID);
+}
+
+void cSerie::setFreebaseMID(const QString& szFreebaseMID)
+{
+	m_szFreebaseMID	= szFreebaseMID;
+}
+
+QString cSerie::freebaseMID()
+{
+	return(m_szFreebaseMID);
+}
+
+void cSerie::setFreebaseID(const QString& szFreebaseID)
+{
+	m_szFreebaseID	= szFreebaseID;
+}
+
+QString cSerie::freebaseID()
+{
+	return(m_szFreebaseID);
+}
+
+void cSerie::setTVDBID(const qint16& iTVDBID)
+{
+	m_iTVDBID	= iTVDBID;
+}
+
+qint16 cSerie::tvdbID()
+{
+	return(m_iTVDBID);
+}
+
+void cSerie::setTVRageID(const qint16& iTVRageID)
+{
+	m_iTVRageID	= iTVRageID;
+}
+
+qint16 cSerie::tvrageID()
+{
+	return(m_iTVRageID);
+}
+
 void cSerie::setStatus(const QString& szStatus)
 {
 	m_szStatus	= szStatus;
@@ -430,8 +485,8 @@ bool cSerie::save(QSqlDatabase &db)
 	QSqlQuery	querySeason;
 	QSqlQuery	queryEpisode;
 
-	querySerie.prepare("INSERT INTO serie (seriesID,seriesName,originalName,backdropPath,createdBy,homepage,lastAired,languages,networks,nrEpisodes,nrSeasons,originCountries,originalLanguage,popularity,posterPath,productionCompanies,type,voteAverage,voteCount,overview,firstAired,cast,crew,genre,status,download,cliffhanger)"
-						" VALUES (:seriesID,:seriesName,:originalName,:backdropPath,:createdBy,:homepage,:lastAired,:languages,:networks,:nrEpisodes,:nrSeasons,:originCountries,:originalLanguage,:popularity,:posterPath,:productionCompanies,:type,:voteAverage,:voteCount,:overview,:firstAired,:cast,:crew,:genre,:status,:download,:cliffhanger);");
+	querySerie.prepare("INSERT INTO serie (seriesID,seriesName,originalName,backdropPath,createdBy,homepage,lastAired,languages,networks,nrEpisodes,nrSeasons,originCountries,originalLanguage,popularity,posterPath,productionCompanies,type,voteAverage,voteCount,overview,firstAired,cast,crew,genre,imdbid,freebasemid,freebaseid,tvdbid,tvrageid,status,download,cliffhanger)"
+						" VALUES (:seriesID,:seriesName,:originalName,:backdropPath,:createdBy,:homepage,:lastAired,:languages,:networks,:nrEpisodes,:nrSeasons,:originCountries,:originalLanguage,:popularity,:posterPath,:productionCompanies,:type,:voteAverage,:voteCount,:overview,:firstAired,:cast,:crew,:genre,:imdbid,:freebasemid,:freebaseid,:tvdbid,:tvrageid,:status,:download,:cliffhanger);");
 	querySeason.prepare("INSERT INTO season (_id,airDate,name,overview,id,posterPath,seasonNumber,seriesID) VALUES (:_id,:airDate,:name,:overview,:id,:posterPath,:seasonNumber,:seriesID);");
 	queryEpisode.prepare("INSERT INTO episode (id,name,episodeNumber,airDate,guestStars,overview,productioncode,seasonNumber,seasonID,seriesID,stillPath,voteAverage,voteCount,crew,state)"
 						 " VALUES (:id,:name,:episodeNumber,:airDate,:guestStars,:overview,:productioncode,:seasonNumber,:seasonID,:seriesID,:stillPath,:voteAverage,:voteCount,:crew,:state);");
@@ -465,6 +520,11 @@ bool cSerie::save(QSqlDatabase &db)
 		querySerie.bindValue(":cast", cast().join("|"));
 		querySerie.bindValue(":crew", crew().join("|"));
 		querySerie.bindValue(":genre", genre().join(","));
+		querySerie.bindValue(":imdbid", IMDBID());
+		querySerie.bindValue(":freebasemid", freebaseMID());
+		querySerie.bindValue(":freebaseid", freebaseID());
+		querySerie.bindValue(":tvdbid", tvdbID());
+		querySerie.bindValue("tvrageid", tvrageID());
 		querySerie.bindValue(":status", status());
 		querySerie.bindValue(":download", download());
 		querySerie.bindValue(":cliffhanger", cliffhanger());

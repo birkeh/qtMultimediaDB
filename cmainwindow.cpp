@@ -208,6 +208,11 @@ void cMainWindow::initDB()
 					"   cast                STRING,"
 					"   crew                STRING,"
 					"   genre               STRING,"
+					"   imdbid              STRING,"
+					"   freebasemid         STRING,"
+					"   freebaseid          STRING,"
+					"   tvdbid              INTEGER,"
+					"   tvrageid			INTEGER,"
 					"   status              STRING,"
 					"   download            STRING,"
 					"   cliffhanger         BOOL);");
@@ -341,15 +346,6 @@ void cMainWindow::convertSeries()
 		lpSerie	= 0;
 	}
 }
-/*
-	qint16				_id();
-	QDate				airDate();
-	QString				name();
-	QString				overview();
-	qint16				id();
-	QString				posterPath();
-	qint16				seasonNumber();
-*/
 
 void cMainWindow::loadSeriesDB()
 {
@@ -388,6 +384,11 @@ void cMainWindow::loadSeriesDB()
 			" 			serie.cast cast,"
 			" 			serie.crew crew,"
 			" 			serie.genre genre,"
+			"           serie.imdbid imdbid,"
+			"			serie.freebasemid freebasemid,"
+			"			serie.freebaseid freebaseid,"
+			"			serie.tvdbid tvdbid,"
+			"			serie.tvrageid tvrageid,"
 			" 			serie.status status,"
 			" 			serie.download download,"
 			" 			serie.cliffhanger cliffhanger,"
@@ -460,6 +461,11 @@ void cMainWindow::loadSeriesDB()
 			lpSerie->setCast(query.value("cast").toString().split("|"));
 			lpSerie->setCrew(query.value("crew").toString().split("|"));
 			lpSerie->setGenre(query.value("genre").toString());
+			lpSerie->setIMDBID(query.value("imdbid").toString());
+			lpSerie->setFreebaseMID(query.value("freebasemid").toString());
+			lpSerie->setFreebaseID(query.value("freebaseid").toString());
+			lpSerie->setTVDBID(query.value("tvdbid").toInt());
+			lpSerie->setTVRageID(query.value("tvrageid").toInt());
 			lpSerie->setStatus(query.value("status").toString());
 			lpSerie->setDownload(query.value("download").toString());
 			lpSerie->setCliffhanger(query.value("cliffhanger").toBool());
@@ -1361,7 +1367,6 @@ void cMainWindow::onActionEdit()
 {
 	QModelIndex	index	= ui->m_lpSeriesList1->selectionModel()->selectedRows().at(0);
 
-//	cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(ui->m_lpSeriesList1->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>();
 	cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(index)->data(Qt::UserRole).value<cSerie*>();
 	if(!lpSerie)
 		return;
@@ -1381,8 +1386,9 @@ void cMainWindow::onActionEdit()
 	lpSerie->del(m_db);
 	lpSerie->save(m_db);
 
-	emit m_lpSeriesListModel->layoutChanged();
-
+//	emit m_lpSeriesListModel->layoutChanged();
+	emit ui->m_lpSeriesList1->model()->layoutChanged();
+	emit ui->m_lpSeriesList2->model()->layoutChanged();
 	delete lpDialog;
 }
 

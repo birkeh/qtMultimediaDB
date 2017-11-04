@@ -325,7 +325,7 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 {
 	cSerie*					lpSerie	= 0;
 	QNetworkAccessManager	networkManager;
-	QNetworkRequest			request(QUrl(QString("https://api.themoviedb.org/3/tv/%1?api_key=%2&language=%3&append_to_response=credits").arg(iID).arg(m_szToken).arg(szLanguage)));
+	QNetworkRequest			request(QUrl(QString("https://api.themoviedb.org/3/tv/%1?api_key=%2&language=%3&append_to_response=credits,external_ids").arg(iID).arg(m_szToken).arg(szLanguage)));
 
 	request.setRawHeader("Content-Type", "application/json");
 	request.setRawHeader("Authorization", QString("Bearer %1").arg(m_szToken).toUtf8());
@@ -403,8 +403,17 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 		lpSerie->setVoteAverage(jsonObj["vote_average"].toDouble());
 		lpSerie->setVoteCount(jsonObj["vote_count"].toInt());
 
-		QJsonObject	creditsObj		= jsonObj["credits"].toObject();
+		QJsonObject	idsObj			= jsonObj["external_ids"].toObject();
+		if(!idsObj.isEmpty())
+		{
+			lpSerie->setIMDBID(idsObj["imdb_id"].toString());
+			lpSerie->setFreebaseMID(idsObj["freebase_mid"].toString());
+			lpSerie->setFreebaseID(idsObj["freebase_id"].toString());
+			lpSerie->setTVDBID(idsObj["tvdb_id"].toInt());
+			lpSerie->setTVRageID(idsObj["tvrage_id"].toInt());
+		}
 
+		QJsonObject	creditsObj		= jsonObj["credits"].toObject();
 		if(!creditsObj.isEmpty())
 		{
 			QJsonArray		jsonArrayCast	= creditsObj["cast"].toArray();
