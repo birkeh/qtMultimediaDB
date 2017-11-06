@@ -307,13 +307,6 @@ void cMainWindow::loadDB()
 //	convertSeries();
 	loadSeriesDB();
 	loadMoviesDB();
-
-	cMovie*	lpMovie	= m_movieList.at(0);
-	lpMovie->loadFanart();
-	lpMovie->del(m_db);
-	lpMovie->save(m_db);
-
-	lpMovie = 0;
 }
 
 void cMainWindow::convertSeries()
@@ -604,6 +597,42 @@ void cMainWindow::loadMoviesDB()
 			lpMovie->setCast(query.value("cast").toString().split("|"));
 			lpMovie->setCrew(query.value("crew").toString().split("|"));
 			lpMovie->setState((cMovie::State)query.value("state").toInt());
+		}
+
+		qint32 iOldMovieID	= -1;
+		cFanartList	fanartList;
+
+		if(query.exec("SELECT id, type, url, language, likes, discType, disc, active, movieID FROM fanart ORDER BY movieID;"))
+		{
+			cMovie*	lpMovie	= 0;
+
+			while(query.next())
+			{
+				iMovieID		= query.value("movieID").toInt();
+
+				if(iMovieID != iOldMovieID)
+				{
+					if(lpMovie)
+						lpMovie->setFanartList(fanartList);
+
+					fanartList.clear();
+
+					lpMovie	= m_movieList.find(iMovieID);
+					iOldMovieID		= iMovieID;
+				}
+
+				cFanart*	lpFanart	= fanartList.add((cFanart::Type)query.value("type").toInt());
+				lpFanart->setActive(query.value("active").toBool());
+				lpFanart->setID(query.value("id").toInt());
+				lpFanart->setURL(query.value("url").toString());
+				lpFanart->setLanguage(query.value("language").toString());
+				lpFanart->setLikes(query.value("likes").toInt());
+				lpFanart->setDiscType(query.value("discType").toString());
+				lpFanart->setDisc(query.value("disc").toString());
+			}
+
+			if(lpMovie && fanartList.count())
+				lpMovie->setFanartList(fanartList);
 		}
 	}
 	else
@@ -1258,6 +1287,7 @@ void cMainWindow::onActionMovieAdd()
 		lpDialog->setMessage("Updating");
 		lpDialog->show();
 
+		lpMovie->loadFanart();
 		lpMovie->save(m_db);
 	}
 	else

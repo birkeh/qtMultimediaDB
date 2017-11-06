@@ -439,12 +439,9 @@ bool cMovie::del(QSqlDatabase& db)
 
 cMovie* cMovieList::add(const qint32& iID)
 {
-	for(int z = 0;z < count();z++)
-	{
-		if(at(z)->movieID() == iID)
-			return(at(z));
-	}
-	cMovie*	lpNew	= new cMovie;
+	cMovie*	lpNew	= find(iID);
+	if(!lpNew)
+		lpNew	= new cMovie;
 	lpNew->setMovieID(iID);
 	append(lpNew);
 	return(lpNew);
@@ -459,4 +456,14 @@ cMovie* cMovieList::add(cMovie* lpMovie)
 	}
 	append(lpMovie);
 	return(lpMovie);
+}
+
+cMovie* cMovieList::find(const qint32& iID)
+{
+	for(int z = 0;z < count();z++)
+	{
+		if(at(z)->movieID() == iID)
+			return(at(z));
+	}
+	return(0);
 }

@@ -158,6 +158,7 @@ class cMovieList : public QList<cMovie*>
 public:
 	cMovie*			add(const qint32& iID);
 	cMovie*			add(cMovie* lpMovie);
+	cMovie*			find(const qint32& iID);
 };
 
 #endif // CMOVIE_H
