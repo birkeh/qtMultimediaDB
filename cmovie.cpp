@@ -1,4 +1,5 @@
 #include "cmovie.h"
+#include "cfanarttv.h"
 #include "common.h"
 
 #include <QStringList>
@@ -326,13 +327,31 @@ cMovie::State cMovie::state()
 	return(m_iState);
 }
 
+void cMovie::loadFanart()
+{
+	cFanartTV	fanartTV;
+	m_fanartList	= fanartTV.loadFanartMovie(imdbID());
+}
+
+cFanartList cMovie::fanartList()
+{
+	return(m_fanartList);
+}
+
+void cMovie::setFanartList(const cFanartList& fanartList)
+{
+	m_fanartList	= fanartList;
+}
+
 bool cMovie::save(QSqlDatabase &db)
 {
 	QSqlQuery	query;
 	QSqlQuery	queryMovie;
+	QSqlQuery	queryFanart;
 
 	queryMovie.prepare("INSERT INTO movie (movieID,movieTitle,originalTitle,backdropPath,posterPath,overview,releaseDate,genre,imdbid,originalLanguage,popularity,productionCompanies,productionCountries,voteAverage,voteCount,adult,belongsToCollection,budget,homepage,revenue,runtime,spokenLanguages,status,tagline,video,cast,crew,state)"
 						  " VALUES (:movieID,:movieTitle,:originalTitle,:backdropPath,:posterPath,:overview,:releaseDate,:genre,:imdbid,:originalLanguage,:popularity,:productionCompanies,:productionCountries,:voteAverage,:voteCount,:adult,:belongsToCollection,:budget,:homepage,:revenue,:runtime,:spokenLanguages,:status,:tagline,:video,:cast,:crew,:state);");
+	queryFanart.prepare("INSERT INTO fanart (id,type,url,language,likes,discType,disc,active,movieID) VALUES (:id,:type,:url,:language,:likes,:discType,:disc,:active,:movieID);");
 
 	db.transaction();
 	query.exec(QString("SELECT movieID FROM movie WHERE movieID=%1;").arg(movieID()));
@@ -369,6 +388,24 @@ bool cMovie::save(QSqlDatabase &db)
 
 		if(queryMovie.exec())
 		{
+			for(int x = 0;x < m_fanartList.count();x++)
+			{
+				cFanart*	lpFanart	= m_fanartList.at(x);
+				queryFanart.bindValue(":id", lpFanart->id());
+				queryFanart.bindValue(":type", lpFanart->type());
+				queryFanart.bindValue(":url", lpFanart->url());
+				queryFanart.bindValue(":language", lpFanart->language());
+				queryFanart.bindValue(":likes", lpFanart->likes());
+				queryFanart.bindValue(":discType", lpFanart->discType());
+				queryFanart.bindValue(":disc", lpFanart->disc());
+				queryFanart.bindValue(":active", lpFanart->active());
+				queryFanart.bindValue(":movieID", movieID());
+				if(queryFanart.exec())
+				{
+				}
+				else
+					qDebug() << queryFanart.lastError().text();
+			}
 		}
 		else
 			qDebug() << queryMovie.lastError().text();
@@ -383,6 +420,14 @@ bool cMovie::del(QSqlDatabase& db)
 	QSqlQuery			query;
 
 	db.transaction();
+
+	if(m_fanartList.count())
+	{
+		query.prepare("DELETE FROM fanart WHERE movieID=:movieID;");
+		query.bindValue(":movieID", movieID());
+		query.exec();
+	}
+
 	query.prepare("DELETE FROM movie WHERE movieID=:movieID;");
 	query.bindValue(":movieID", movieID());
 	query.exec();

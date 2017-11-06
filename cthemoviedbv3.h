@@ -23,9 +23,6 @@ public:
 	cSerie*			loadSerie(const QString& szIMDBID);
 private:
 	QString			m_szToken;
-//	QStringList		getActors(const qint32& iID);
-//	void			getEpisodes(cSerie* lpSerie, const QString& szLanguage);
-//	cEpisode*		getEpisode(const qint32& iID, const QString& szLanguage);
 };
 
 #endif // CTHEMOVIEDBV3_H

@@ -2,6 +2,8 @@
 #define CMOVIE_H
 
 
+#include "cfanart.h"
+
 #include <QMetaType>
 #include <QDate>
 #include <QSqlDatabase>
@@ -112,6 +114,10 @@ public:
 
 	bool					save(QSqlDatabase& db);
 	bool					del(QSqlDatabase& db);
+
+	void					loadFanart();
+	void					setFanartList(const cFanartList& fanartList);
+	cFanartList				fanartList();
 private:
 	QString					m_szMovieTitle;
 	qint32					m_iID;
@@ -142,6 +148,7 @@ private:
 	QStringList				m_szCast;
 	QStringList				m_szCrew;
 	State					m_iState;
+	cFanartList				m_fanartList;
 };
 
 Q_DECLARE_METATYPE(cMovie*)

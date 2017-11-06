@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     cmovieedit.cpp \
     cmovieimage.cpp \
     cscrollarea.cpp \
-    cpixmapwidget.cpp
+    cpixmapwidget.cpp \
+    cfanart.cpp \
+    cfanarttv.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -59,7 +61,9 @@ HEADERS  += cmainwindow.h \
     cmovieedit.h \
     cmovieimage.h \
     cscrollarea.h \
-    cpixmapwidget.h
+    cpixmapwidget.h \
+    cfanart.h \
+    cfanarttv.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \

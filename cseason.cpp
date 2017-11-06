@@ -28,11 +28,12 @@ cSeason::~cSeason()
 	deleteResources();
 }
 
-void cSeason::set_ID(const qint16& _iID)
+void cSeason::set_ID(const qint32& _iID)
 {
 	m_i_ID	= _iID;
 }
-qint16 cSeason::_id()
+
+qint32 cSeason::_id()
 {
 	return(m_i_ID);
 }
@@ -72,12 +73,12 @@ QString cSeason::overview()
 	return(m_szOverview);
 }
 
-void cSeason::setID(const qint16& iID)
+void cSeason::setID(const qint32& iID)
 {
 	m_iID	= iID;
 }
 
-qint16 cSeason::id()
+qint32 cSeason::id()
 {
 	return(m_iID);
 }

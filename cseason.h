@@ -22,8 +22,8 @@ public:
 	cSeason();
 	~cSeason();
 
-	void				set_ID(const qint16& _iID);
-	qint16				_id();
+	void				set_ID(const qint32& _iID);
+	qint32				_id();
 
 	void				setAirDate(const QString& szAirDate);
 	void				setAirDate(const QDate&   airDate);
@@ -35,8 +35,8 @@ public:
 	void				setOverview(const QString& szOverview);
 	QString				overview();
 
-	void				setID(const qint16& iID);
-	qint16				id();
+	void				setID(const qint32& iID);
+	qint32				id();
 
 	void				setPosterPath(const QString& szPosterPath);
 	QString				posterPath();
@@ -74,11 +74,11 @@ public:
 	QPushButton*		allProgressButton();
 	QPushButton*		allDoneButton();
 private:
-	qint16				m_i_ID;
+	qint32				m_i_ID;
 	QDate				m_airDate;
 	QString				m_szName;
 	QString				m_szOverview;
-	qint16				m_iID;
+	qint32				m_iID;
 	QString				m_szPosterPath;
 	qint16				m_iSeasonNumber;
 	QList<cEpisode*>	m_episodeList;

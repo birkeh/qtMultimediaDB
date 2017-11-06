@@ -10,7 +10,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-using std::pair;
+//using std::pair;
 
 
 cTheMovieDBV3::cTheMovieDBV3()

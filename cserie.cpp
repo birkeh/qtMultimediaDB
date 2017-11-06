@@ -1,4 +1,5 @@
 #include "cserie.h"
+#include "cfanarttv.h"
 #include "common.h"
 
 #include <QStringList>
@@ -346,22 +347,22 @@ QString cSerie::freebaseID()
 	return(m_szFreebaseID);
 }
 
-void cSerie::setTVDBID(const qint16& iTVDBID)
+void cSerie::setTVDBID(const qint32& iTVDBID)
 {
 	m_iTVDBID	= iTVDBID;
 }
 
-qint16 cSerie::tvdbID()
+qint32 cSerie::tvdbID()
 {
 	return(m_iTVDBID);
 }
 
-void cSerie::setTVRageID(const qint16& iTVRageID)
+void cSerie::setTVRageID(const qint32& iTVRageID)
 {
 	m_iTVRageID	= iTVRageID;
 }
 
-qint16 cSerie::tvrageID()
+qint32 cSerie::tvrageID()
 {
 	return(m_iTVRageID);
 }
@@ -484,12 +485,15 @@ bool cSerie::save(QSqlDatabase &db)
 	QSqlQuery	querySerie;
 	QSqlQuery	querySeason;
 	QSqlQuery	queryEpisode;
+	QSqlQuery	queryFanart;
 
 	querySerie.prepare("INSERT INTO serie (seriesID,seriesName,originalName,backdropPath,createdBy,homepage,lastAired,languages,networks,nrEpisodes,nrSeasons,originCountries,originalLanguage,popularity,posterPath,productionCompanies,type,voteAverage,voteCount,overview,firstAired,cast,crew,genre,imdbid,freebasemid,freebaseid,tvdbid,tvrageid,status,download,cliffhanger)"
 						" VALUES (:seriesID,:seriesName,:originalName,:backdropPath,:createdBy,:homepage,:lastAired,:languages,:networks,:nrEpisodes,:nrSeasons,:originCountries,:originalLanguage,:popularity,:posterPath,:productionCompanies,:type,:voteAverage,:voteCount,:overview,:firstAired,:cast,:crew,:genre,:imdbid,:freebasemid,:freebaseid,:tvdbid,:tvrageid,:status,:download,:cliffhanger);");
 	querySeason.prepare("INSERT INTO season (_id,airDate,name,overview,id,posterPath,seasonNumber,seriesID) VALUES (:_id,:airDate,:name,:overview,:id,:posterPath,:seasonNumber,:seriesID);");
 	queryEpisode.prepare("INSERT INTO episode (id,name,episodeNumber,airDate,guestStars,overview,productioncode,seasonNumber,seasonID,seriesID,stillPath,voteAverage,voteCount,crew,state)"
 						 " VALUES (:id,:name,:episodeNumber,:airDate,:guestStars,:overview,:productioncode,:seasonNumber,:seasonID,:seriesID,:stillPath,:voteAverage,:voteCount,:crew,:state);");
+	queryFanart.prepare("INSERT INTO fanart (id,type,url,language,likes,season,active,seriesID) VALUES (:id,:type,:url,:language,:likes,:season,:active,:seriesID);");
+
 	db.transaction();
 	query.exec(QString("SELECT seriesID FROM serie WHERE seriesID=%1;").arg(seriesID()));
 	if(!query.next())
@@ -551,30 +555,43 @@ bool cSerie::save(QSqlDatabase &db)
 				{
 					cEpisode*	lpEpisode	= episodeList.at(episode);
 
-					//query.bindValue(":episodeID", lpEpisode->id());
-					//query.exec();
-					//if(!query.next())
+					queryEpisode.bindValue(":id", lpEpisode->id());
+					queryEpisode.bindValue(":name", lpEpisode->name());
+					queryEpisode.bindValue(":episodeNumber", lpEpisode->episodeNumber());
+					queryEpisode.bindValue(":airDate", lpEpisode->airDate());
+					queryEpisode.bindValue(":guestStars", lpEpisode->guestStars().join("|"));
+					queryEpisode.bindValue(":overview", lpEpisode->overview());
+					queryEpisode.bindValue(":productioncode", lpEpisode->productionCode());
+					queryEpisode.bindValue(":seasonNumber", lpEpisode->seasonNumber());
+					queryEpisode.bindValue(":seasonID", lpEpisode->seasonID());
+					queryEpisode.bindValue(":seriesID", lpEpisode->seriesID());
+					queryEpisode.bindValue(":stillPath", lpEpisode->stillPath());
+					queryEpisode.bindValue(":voteAverage", lpEpisode->voteAverage());
+					queryEpisode.bindValue(":voteCount", lpEpisode->voteCount());
+					queryEpisode.bindValue(":crew", lpEpisode->crew().join("|"));
+					queryEpisode.bindValue(":state", lpEpisode->state());
+					if(queryEpisode.exec())
 					{
-						queryEpisode.bindValue(":id", lpEpisode->id());
-						queryEpisode.bindValue(":name", lpEpisode->name());
-						queryEpisode.bindValue(":episodeNumber", lpEpisode->episodeNumber());
-						queryEpisode.bindValue(":airDate", lpEpisode->airDate());
-						queryEpisode.bindValue(":guestStars", lpEpisode->guestStars().join("|"));
-						queryEpisode.bindValue(":overview", lpEpisode->overview());
-						queryEpisode.bindValue(":productioncode", lpEpisode->productionCode());
-						queryEpisode.bindValue(":seasonNumber", lpEpisode->seasonNumber());
-						queryEpisode.bindValue(":seasonID", lpEpisode->seasonID());
-						queryEpisode.bindValue(":seriesID", lpEpisode->seriesID());
-						queryEpisode.bindValue(":stillPath", lpEpisode->stillPath());
-						queryEpisode.bindValue(":voteAverage", lpEpisode->voteAverage());
-						queryEpisode.bindValue(":voteCount", lpEpisode->voteCount());
-						queryEpisode.bindValue(":crew", lpEpisode->crew().join("|"));
-						queryEpisode.bindValue(":state", lpEpisode->state());
-						if(queryEpisode.exec())
-						{
-						}
 					}
 				}
+			}
+
+			for(int x = 0;x < m_fanartList.count();x++)
+			{
+				cFanart*	lpFanart	= m_fanartList.at(x);
+				queryFanart.bindValue(":id", lpFanart->id());
+				queryFanart.bindValue(":type", lpFanart->type());
+				queryFanart.bindValue(":url", lpFanart->url());
+				queryFanart.bindValue(":language", lpFanart->language());
+				queryFanart.bindValue(":likes", lpFanart->likes());
+				queryFanart.bindValue(":season", lpFanart->season());
+				queryFanart.bindValue(":active", lpFanart->active());
+				queryFanart.bindValue(":seriesID", seriesID());
+				if(queryFanart.exec())
+				{
+				}
+				else
+					qDebug() << queryFanart.lastError().text();
 			}
 		}
 		else
@@ -590,6 +607,14 @@ bool cSerie::del(QSqlDatabase& db)
 	QSqlQuery			query;
 
 	db.transaction();
+
+	if(m_fanartList.count())
+	{
+		query.prepare("DELETE FROM fanart WHERE seriesID=:seriesID;");
+		query.bindValue(":seriesID", seriesID());
+		query.exec();
+	}
+
 	query.prepare("DELETE FROM episode WHERE seriesID=:seriesID;");
 	query.bindValue(":seriesID", seriesID());
 	query.exec();
@@ -672,14 +697,27 @@ void cSerie::deleteResources()
 		m_seasonList.at(z)->deleteResources();
 }
 
+void cSerie::loadFanart()
+{
+	cFanartTV	fanartTV;
+	m_fanartList	= fanartTV.loadFanartSerie(tvdbID());
+}
+
+cFanartList cSerie::fanartList()
+{
+	return(m_fanartList);
+}
+
+void cSerie::setFanartList(const cFanartList& fanartList)
+{
+	m_fanartList	= fanartList;
+}
+
 cSerie* cSerieList::add(const qint32& iID)
 {
-	for(int z = 0;z < count();z++)
-	{
-		if(at(z)->seriesID() == iID)
-			return(at(z));
-	}
-	cSerie*	lpNew	= new cSerie;
+	cSerie*	lpNew	= find(iID);
+	if(!lpNew)
+		lpNew	= new cSerie;
 	lpNew->setSeriesID(iID);
 	append(lpNew);
 	return(lpNew);
@@ -694,6 +732,16 @@ cSerie* cSerieList::add(cSerie* lpSerie)
 	}
 	append(lpSerie);
 	return(lpSerie);
+}
+
+cSerie* cSerieList::find(const qint32& iID)
+{
+	for(int x = 0;x < count();x++)
+	{
+		if(at(x)->seriesID() == iID)
+			return(at(x));
+	}
+	return(0);
 }
 
 qint16 cSerieList::minSeason()

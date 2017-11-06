@@ -3,6 +3,7 @@
 
 
 #include "cseason.h"
+#include "cfanart.h"
 
 #include <QMetaType>
 #include <QDate>
@@ -103,11 +104,11 @@ public:
 	void			setFreebaseID(const QString& szFreebaseID);
 	QString			freebaseID();
 
-	void			setTVDBID(const qint16& iTVDBID);
-	qint16			tvdbID();
+	void			setTVDBID(const qint32& iTVDBID);
+	qint32			tvdbID();
 
-	void			setTVRageID(const qint16& iTVRageID);
-	qint16			tvrageID();
+	void			setTVRageID(const qint32& iTVRageID);
+	qint32			tvrageID();
 
 	void			setStatus(const QString& szStatus);
 	QString			status();
@@ -145,6 +146,10 @@ public:
 
 	void			updateState();
 	void			deleteResources();
+
+	void			loadFanart();
+	void			setFanartList(const cFanartList& fanartList);
+	cFanartList		fanartList();
 private:
 	QString			m_szSeriesName;
 	QString			m_szOriginalName;
@@ -173,11 +178,12 @@ private:
 	QString			m_szIMDBID;
 	QString			m_szFreebaseMID;
 	QString			m_szFreebaseID;
-	qint16			m_iTVDBID;
-	qint16			m_iTVRageID;
+	qint32			m_iTVDBID;
+	qint32			m_iTVRageID;
 	QString			m_szStatus;
 	QString			m_szDownload;
 	bool			m_bCliffhanger;
+	cFanartList		m_fanartList;
 	QList<cSeason*>	m_seasonList;
 };
 
@@ -188,6 +194,8 @@ class cSerieList : public QList<cSerie*>
 public:
 	cSerie*			add(const qint32& iID);
 	cSerie*			add(cSerie* lpSerie);
+
+	cSerie*			find(const qint32& iID);
 
 	qint16			minSeason();
 	qint16			maxSeason();

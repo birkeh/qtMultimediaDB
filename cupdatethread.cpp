@@ -49,6 +49,23 @@ void cUpdateThread::run()
 					szFailed += lpSerie->seriesName();
 					continue;
 				}
+				lpSerieNew->loadFanart();
+				cFanartList	fanartList		= lpSerie->fanartList();
+				cFanartList	fanartListNew	= lpSerieNew->fanartList();
+				for(int x = 0;x < fanartListNew.count();x++)
+				{
+					cFanart*	lpFanartNew	= fanartListNew.at(x);
+
+					for(int y = 0;y < fanartList.count();y++)
+					{
+						cFanart*	lpFanart	= fanartList.at(y);
+						if(lpFanartNew->id() == lpFanart->id())
+						{
+							lpFanartNew->setActive(lpFanart->active());
+							break;
+						}
+					}
+				}
 				lpSerieNew->setDownload(lpSerie->download());
 				for(int x = 0;x < lpSerieNew->seasonList().count();x++)
 				{
