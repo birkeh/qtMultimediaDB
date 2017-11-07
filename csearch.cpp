@@ -92,7 +92,7 @@ qint16 cSearch::year()
 	return(ui->m_lpYear->value());
 }
 
-void cSearch::on_m_lpResults_clicked(const QModelIndex &index)
+void cSearch::on_m_lpResults_clicked(const QModelIndex &/*index*/)
 {
 	setButtonBox();
 }

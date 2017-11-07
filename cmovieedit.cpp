@@ -38,6 +38,8 @@ void cMovieEdit::setMovie(cMovie *lpMovie)
 	case cMovie::StateDone:
 		ui->m_lpDone->setChecked(true);
 		break;
+	default:
+		break;
 	}
 
 	if(!m_lpMovie->backdropPath().isEmpty())

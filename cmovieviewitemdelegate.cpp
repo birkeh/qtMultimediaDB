@@ -55,6 +55,8 @@ void cMovieViewItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 					case cMovie::StateDone:
 						statusDone++;
 						break;
+					default:
+						break;
 					}
 				}
 				x++;

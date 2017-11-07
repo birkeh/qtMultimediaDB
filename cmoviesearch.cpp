@@ -28,7 +28,7 @@ cMovieSearch::~cMovieSearch()
 	delete ui;
 }
 
-void cMovieSearch::on_m_lpSearch_textChanged(const QString &arg1)
+void cMovieSearch::on_m_lpSearch_textChanged(const QString &/*arg1*/)
 {
 	if(ui->m_lpSearch->text().isEmpty())
 		ui->m_lpSearchButton->setEnabled(false);
@@ -107,17 +107,17 @@ qint16 cMovieSearch::year()
 	return(ui->m_lpYear->value());
 }
 
-void cMovieSearch::on_m_lpResults_clicked(const QModelIndex &index)
+void cMovieSearch::on_m_lpResults_clicked(const QModelIndex &/*index*/)
 {
 	setButtonBox();
 }
 
-void cMovieSearch::on_m_lpPlaceholderName_textChanged(const QString &arg1)
+void cMovieSearch::on_m_lpPlaceholderName_textChanged(const QString &/*arg1*/)
 {
 	setButtonBox();
 }
 
-void cMovieSearch::on_m_lpYear_valueChanged(int arg1)
+void cMovieSearch::on_m_lpYear_valueChanged(int /*arg1*/)
 {
 	setButtonBox();
 }

@@ -57,6 +57,7 @@ private slots:
 	void				onActionEdit();
 	void				onActionGotoDownload();
 	void				onActionCopyDownload();
+	void				onActionGotoIMDB();
 	void				onActionLoadPictures();
 
 	void				onActionMovieAdd();
@@ -122,6 +123,9 @@ private:
 	void				doUpdate(cSerieList& serieList);
 
 	void				showMoviesContextMenu(QTreeView* lpTreeView, const QPoint &pos);
+
+	void				setSeriesStyle(QList<QStandardItem *> lpItems);
+
 protected:
 	void				closeEvent(QCloseEvent *event);
 };

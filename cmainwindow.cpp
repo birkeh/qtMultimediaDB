@@ -641,6 +641,159 @@ void cMainWindow::loadMoviesDB()
 	}
 }
 
+void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
+{
+	cSerie*	lpSerie	= lpItems.at(0)->data(Qt::UserRole).value<cSerie*>();
+	if(!lpSerie)
+		return;
+
+	qint16		iMin		= m_serieList.minSeason();
+	qint16		iEpisodes	= 0;
+	bool		bHasInit	= false;
+	bool		bHasProg	= false;
+	bool		bHasDone	= false;
+
+	QString		szOpen;
+
+	QIcon		icon(":/128279.png");;
+	QFont		font	= ui->m_lpSeriesList1->font();
+	QFont		fontI	= ui->m_lpSeriesList1->font();
+
+	font.setBold(true);
+	fontI.setItalic(true);
+
+	lpItems.at(0)->setForeground(QBrush(Qt::black));
+	lpItems.at(1)->setForeground(QBrush(Qt::black));
+	lpItems.at(2)->setForeground(QBrush(Qt::black));
+
+	QList<cSeason*>	seasonList	= lpSerie->seasonList();
+	for(int season = 0;season < seasonList.count();season++)
+	{
+		QString		szInit		= "";
+		QString		szProg		= "";
+		QString		szDone		= "";
+
+		cSeason*	lpSeason	= seasonList.at(season);
+		lpItems.at(lpSeason->seasonNumber()+3-iMin)->setData(QVariant::fromValue(lpSeason), Qt::UserRole);
+
+		for(int y = 0;y < lpSeason->episodeList().count();y++)
+		{
+			iEpisodes++;
+
+			if(lpSeason->episodeList().at(y)->state() == cEpisode::StateInit)
+			{
+				if(szInit.isEmpty())
+					szInit.append(QString("%1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
+				else
+					szInit.append(QString(", %1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
+
+				if(lpSeason->seasonNumber())
+					bHasInit	= true;
+			}
+			else if(lpSeason->episodeList().at(y)->state() == cEpisode::StateProgress)
+			{
+				if(szProg.isEmpty())
+					szProg.append(QString("%1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
+				else
+					szProg.append(QString(", %1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
+
+				if(lpSeason->seasonNumber())
+					bHasProg	= true;
+			}
+			else if(lpSeason->episodeList().at(y)->state() == cEpisode::StateDone)
+			{
+				if(szDone.isEmpty())
+					szDone.append(QString("%1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
+				else
+					szDone.append(QString(", %1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
+
+				if(lpSeason->seasonNumber())
+					bHasDone	= true;
+			}
+		}
+
+		QString	szTooltip;
+
+		if(szInit.isEmpty())
+			szTooltip.append("open: none\n");
+		else
+			szTooltip.append("open: " + szInit + "\n");
+
+		if(lpSeason->seasonNumber())
+		{
+			if(szOpen.length())
+				szOpen	+= "\n";
+
+			if(szInit.isEmpty())
+				szOpen	+= QString("Season %1: none").arg(lpSeason->seasonNumber(), 2, 10, QChar('0'));
+			else
+				szOpen	+= QString("Season %1: %2").arg(lpSeason->seasonNumber(), 2, 10, QChar('0')).arg(szInit);
+		}
+
+		if(szProg.isEmpty())
+			szTooltip.append("in progress: none\n");
+		else
+			szTooltip.append("in progress: " + szProg + "\n");
+
+		if(szDone.isEmpty())
+			szTooltip.append("done: none");
+		else
+			szTooltip.append("done: " + szDone);
+
+		if(szTooltip.isEmpty())
+			lpItems.at(lpSeason->seasonNumber()+3-iMin)->setToolTip(szTooltip);
+		else
+			lpItems.at(lpSeason->seasonNumber()+3-iMin)->setToolTip(szTooltip);
+	}
+
+	if(lpSerie->status().compare("Ended", Qt::CaseInsensitive) &&
+	   lpSerie->status().compare("canceled", Qt::CaseInsensitive))
+	{
+		lpItems.at(0)->setFont(font);
+		lpItems.at(1)->setFont(font);
+		lpItems.at(2)->setFont(font);
+	}
+
+	if(lpSerie->cliffhanger())
+	{
+		lpItems.at(0)->setFont(fontI);
+		lpItems.at(1)->setFont(fontI);
+		lpItems.at(2)->setFont(fontI);
+		lpItems.at(0)->setForeground(QBrush(Qt::red));
+		lpItems.at(1)->setForeground(QBrush(Qt::red));
+		lpItems.at(2)->setForeground(QBrush(Qt::red));
+	}
+
+	if(bHasProg)
+	{
+		lpItems.at(0)->setForeground(QBrush(Qt::white));
+		lpItems.at(1)->setForeground(QBrush(Qt::white));
+		lpItems.at(2)->setForeground(QBrush(Qt::white));
+		lpItems.at(0)->setBackground(QBrush(Qt::blue));
+		lpItems.at(1)->setBackground(QBrush(Qt::blue));
+		lpItems.at(2)->setBackground(QBrush(Qt::blue));
+	}
+	else if(bHasInit)
+	{
+		lpItems.at(0)->setBackground(QBrush(Qt::lightGray));
+		lpItems.at(1)->setBackground(QBrush(Qt::lightGray));
+		lpItems.at(2)->setBackground(QBrush(Qt::lightGray));
+	}
+	else
+	{
+		lpItems.at(0)->setBackground(QBrush(Qt::green));
+		lpItems.at(1)->setBackground(QBrush(Qt::green));
+		lpItems.at(2)->setBackground(QBrush(Qt::green));
+	}
+
+	if(lpSerie->download().length())
+		lpItems.at(0)->setIcon(icon);
+
+	lpItems.at(0)->setToolTip(szOpen);
+	lpItems.at(1)->setToolTip(szOpen);
+	lpItems.at(2)->setToolTip(szOpen);
+}
+
 void cMainWindow::displaySeries()
 {
 	m_lpSeriesListModel->clear();
@@ -662,13 +815,6 @@ void cMainWindow::displaySeries()
 	m_lpSeriesListModel->setHorizontalHeaderLabels(header);
 	m_lpSeriesListModel->setHeaderData(0, Qt::Horizontal, QVariant(iMin), Qt::UserRole);
 
-	QFont	font	= ui->m_lpSeriesList1->font();
-	QFont	fontI	= ui->m_lpSeriesList1->font();
-
-	font.setBold(true);
-	fontI.setItalic(true);
-
-	QIcon		icon(":/128279.png");
 	QModelIndex	selected;
 
 	for(int serie = 0;serie < m_serieList.count();serie++)
@@ -692,135 +838,15 @@ void cMainWindow::displaySeries()
 		lpItems.at(2)->setText(lpSerie->firstAired().toString("yyyy"));
 		lpItems.at(2)->setTextAlignment(Qt::AlignRight);
 
-		bool		bHasInit	= false;
-		bool		bHasProg	= false;
-		bool		bHasDone	= false;
-
-		QString		szOpen;
-
 		QList<cSeason*>	seasonList	= lpSerie->seasonList();
 		for(int season = 0;season < seasonList.count();season++)
 		{
-			QString		szInit		= "";
-			QString		szProg		= "";
-			QString		szDone		= "";
-
 			cSeason*	lpSeason	= seasonList.at(season);
 			lpItems.at(lpSeason->seasonNumber()+3-iMin)->setData(QVariant::fromValue(lpSeason), Qt::UserRole);
-
-			for(int y = 0;y < lpSeason->episodeList().count();y++)
-			{
-				iEpisodes++;
-
-				if(lpSeason->episodeList().at(y)->state() == cEpisode::StateInit)
-				{
-					if(szInit.isEmpty())
-						szInit.append(QString("%1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
-					else
-						szInit.append(QString(", %1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
-
-					if(lpSeason->seasonNumber())
-						bHasInit	= true;
-				}
-				else if(lpSeason->episodeList().at(y)->state() == cEpisode::StateProgress)
-				{
-					if(szProg.isEmpty())
-						szProg.append(QString("%1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
-					else
-						szProg.append(QString(", %1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
-
-					if(lpSeason->seasonNumber())
-						bHasProg	= true;
-				}
-				else if(lpSeason->episodeList().at(y)->state() == cEpisode::StateDone)
-				{
-					if(szDone.isEmpty())
-						szDone.append(QString("%1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
-					else
-						szDone.append(QString(", %1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
-
-					if(lpSeason->seasonNumber())
-						bHasDone	= true;
-				}
-			}
-
-			QString	szTooltip;
-
-			if(szInit.isEmpty())
-				szTooltip.append("open: none\n");
-			else
-				szTooltip.append("open: " + szInit + "\n");
-
-			if(lpSeason->seasonNumber())
-			{
-				if(szOpen.length())
-					szOpen	+= "\n";
-
-				if(szInit.isEmpty())
-					szOpen	+= QString("Season %1: none").arg(lpSeason->seasonNumber(), 2, 10, QChar('0'));
-				else
-					szOpen	+= QString("Season %1: %2").arg(lpSeason->seasonNumber(), 2, 10, QChar('0')).arg(szInit);
-			}
-
-			if(szProg.isEmpty())
-				szTooltip.append("in progress: none\n");
-			else
-				szTooltip.append("in progress: " + szProg + "\n");
-
-			if(szDone.isEmpty())
-				szTooltip.append("done: none");
-			else
-				szTooltip.append("done: " + szDone);
-
-			if(szTooltip.isEmpty())
-				lpItems.at(lpSeason->seasonNumber()+3-iMin)->setToolTip(szTooltip);
-			else
-				lpItems.at(lpSeason->seasonNumber()+3-iMin)->setToolTip(szTooltip);
 		}
 
-		if(lpSerie->status().compare("Ended", Qt::CaseInsensitive) &&
-		   lpSerie->status().compare("canceled", Qt::CaseInsensitive))
-		{
-			lpItems.at(0)->setFont(font);
-			lpItems.at(1)->setFont(font);
-			lpItems.at(2)->setFont(font);
-		}
-
-		if(lpSerie->cliffhanger())
-		{
-			lpItems.at(0)->setFont(fontI);
-			lpItems.at(1)->setFont(fontI);
-			lpItems.at(2)->setFont(fontI);
-			lpItems.at(0)->setForeground(QBrush(Qt::red));
-			lpItems.at(1)->setForeground(QBrush(Qt::red));
-			lpItems.at(2)->setForeground(QBrush(Qt::red));
-		}
-
-		if(bHasProg)
-		{
-			lpItems.at(0)->setForeground(QBrush(Qt::white));
-			lpItems.at(1)->setForeground(QBrush(Qt::white));
-			lpItems.at(2)->setForeground(QBrush(Qt::white));
-			lpItems.at(0)->setBackground(QBrush(Qt::blue));
-			lpItems.at(1)->setBackground(QBrush(Qt::blue));
-			lpItems.at(2)->setBackground(QBrush(Qt::blue));
-		}
-		else if(bHasInit)
-		{
-			lpItems.at(0)->setBackground(QBrush(Qt::lightGray));
-			lpItems.at(1)->setBackground(QBrush(Qt::lightGray));
-			lpItems.at(2)->setBackground(QBrush(Qt::lightGray));
-		}
-		else
-		{
-			lpItems.at(0)->setBackground(QBrush(Qt::green));
-			lpItems.at(1)->setBackground(QBrush(Qt::green));
-			lpItems.at(2)->setBackground(QBrush(Qt::green));
-		}
-
-		if(lpSerie->download().length())
-			lpItems.at(0)->setIcon(icon);
 		m_lpSeriesListModel->appendRow(lpItems);
+		setSeriesStyle(lpItems);
 
 		if(!m_szOldSelected.isEmpty())
 		{
@@ -830,10 +856,6 @@ void cMainWindow::displaySeries()
 				ui->m_lpSeriesList1->selectionModel()->select(selected, QItemSelectionModel::Select | QItemSelectionModel::Rows);
 			}
 		}
-
-		lpItems.at(0)->setToolTip(szOpen);
-		lpItems.at(1)->setToolTip(szOpen);
-		lpItems.at(2)->setToolTip(szOpen);
 	}
 
 	for(int z = 3;z < m_lpSeriesListModel->columnCount();z++)
@@ -938,6 +960,9 @@ void cMainWindow::showSeriesContextMenu(QTreeView* lpTreeView, const QPoint &pos
 			lpMenu->addAction("delete", this, SLOT(onActionDelete()));
 			lpMenu->addAction("edit", this, SLOT(onActionEdit()));
 			lpMenu->addSeparator();
+
+			if(!lpSerie->IMDBID().isEmpty())
+				lpMenu->addAction("open IMDB", this, SLOT(onActionGotoIMDB()));
 
 			if(!lpSerie->download().isEmpty())
 			{
@@ -1477,9 +1502,20 @@ void cMainWindow::onActionEdit()
 	lpSerie->del(m_db);
 	lpSerie->save(m_db);
 
-//	emit m_lpSeriesListModel->layoutChanged();
-	emit ui->m_lpSeriesList1->model()->layoutChanged();
-	emit ui->m_lpSeriesList2->model()->layoutChanged();
+	QList<QStandardItem*>	lpItems;
+	QStandardItem*			lpItem;
+	int						iColumn	= 0;
+
+	while((lpItem =  m_lpSeriesListModel->itemFromIndex(ui->m_lpSeriesList1->selectionModel()->selectedRows(iColumn).at(0))))
+	{
+		lpItems.append(lpItem);
+		iColumn++;
+	}
+
+	setSeriesStyle(lpItems);
+
+	emit m_lpSeriesListModel->layoutChanged();
+
 	delete lpDialog;
 }
 
@@ -1518,11 +1554,11 @@ void cMainWindow::on_m_lpSeriesList2_doubleClicked(const QModelIndex &/*index*/)
 	onActionEdit();
 }
 
-void cMainWindow::on_m_lpMoviesList_doubleClicked(const QModelIndex &index)
+void cMainWindow::on_m_lpMoviesList_doubleClicked(const QModelIndex&/*index*/)
 {
 	onActionMovieEdit();
 }
-/*
+
 void cMainWindow::onActionGotoIMDB()
 {
 	if(ui->m_lpSeriesList1->selectionModel()->selectedRows().count())
@@ -1530,12 +1566,12 @@ void cMainWindow::onActionGotoIMDB()
 		cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(ui->m_lpSeriesList1->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>();
 		if(lpSerie)
 		{
-			QString	link	= QString("http://www.imdb.com/title/%1").arg(lpSerie->imdbID());
+			QString	link	= QString("http://www.imdb.com/title/%1").arg(lpSerie->IMDBID());
 			QDesktopServices::openUrl(QUrl(link));
 		}
 	}
 }
-*/
+
 void cMainWindow::onActionMovieGotoIMDB()
 {
 	if(ui->m_lpMoviesList->selectionModel()->selectedRows().count())
