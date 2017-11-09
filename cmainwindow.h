@@ -68,6 +68,8 @@ private slots:
 	void				onActionMovieGotoIMDB();
 	void				onActionMovieLoadPictures();
 
+	void				onActionExport();
+
 	void				onActionAddGlobal();
 
 	void				updateMessage(const QString& szMessage, const qint32 &iProgress);

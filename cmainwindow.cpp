@@ -37,6 +37,8 @@
 #include <QScrollBar>
 #include <QDesktopWidget>
 
+#include <QXmlStreamWriter>
+
 
 static bool serieSort(cSerie* s1, cSerie* s2)
 {
@@ -981,6 +983,9 @@ void cMainWindow::showSeriesContextMenu(QTreeView* lpTreeView, const QPoint &pos
 		lpMenu->addAction("load images", this, SLOT(onActionLoadPictures()));
 	}
 
+	lpMenu->addSeparator();
+	lpMenu->addAction("export...", this, SLOT(onActionExport()));
+
 	lpMenu->popup(lpTreeView->viewport()->mapToGlobal(pos));
 }
 
@@ -1027,6 +1032,9 @@ void cMainWindow::showMoviesContextMenu(QTreeView* lpTreeView, const QPoint &pos
 		lpMenu->addSeparator();
 		lpMenu->addAction("load images", this, SLOT(onActionLoadMoviePictures()));
 	}
+
+	lpMenu->addSeparator();
+	lpMenu->addAction("export...", this, SLOT(onActionExport()));
 
 	lpMenu->popup(lpTreeView->viewport()->mapToGlobal(pos));
 }
@@ -1384,6 +1392,61 @@ void cMainWindow::onActionUpdate()
 
 void cMainWindow::onActionMovieUpdate()
 {
+}
+
+void cMainWindow::onActionExport()
+{
+	QFile				fileSerie("C:\\Temp\\export\\series.xml");
+	fileSerie.open(QIODevice::WriteOnly);
+	QXmlStreamWriter	xmlWriterSerie(&fileSerie);
+
+	xmlWriterSerie.setAutoFormatting(true);
+	xmlWriterSerie.writeStartDocument();
+
+	xmlWriterSerie.writeStartElement("series");
+
+	for(int x = 0;x < m_serieList.count();x++)
+	{
+		cSerie*	lpSerie	= m_serieList.at(x);
+
+		xmlWriterSerie.writeStartElement("serie");
+		xmlWriterSerie.writeTextElement("seriesName", lpSerie->seriesName());
+		xmlWriterSerie.writeTextElement("seriesID", QString("%1").arg(lpSerie->seriesID()));
+		xmlWriterSerie.writeTextElement("seriesOverview", lpSerie->overview());
+		xmlWriterSerie.writeTextElement("seriesYear", QString("%1").arg(lpSerie->firstAired().year()));
+
+		xmlWriterSerie.writeEndElement();
+	}
+
+	xmlWriterSerie.writeEndElement();
+	fileSerie.close();
+
+
+	QFile				fileMovie("C:\\Temp\\export\\movies.xml");
+	fileMovie.open(QIODevice::WriteOnly);
+	QXmlStreamWriter	xmlWriterMovie(&fileMovie);
+
+	xmlWriterMovie.setAutoFormatting(true);
+	xmlWriterMovie.writeStartDocument();
+
+	xmlWriterMovie.writeStartElement("movies");
+
+	for(int x = 0;x < m_movieList.count();x++)
+	{
+		cMovie*	lpMovie	= m_movieList.at(x);
+
+		xmlWriterMovie.writeStartElement("movie");
+		xmlWriterMovie.writeTextElement("movieTitle", lpMovie->movieTitle());
+		xmlWriterMovie.writeTextElement("movieID", QString("%1").arg(lpMovie->movieID()));
+		xmlWriterMovie.writeTextElement("movieOverview", lpMovie->overview());
+		xmlWriterMovie.writeTextElement("movieYear", QString("%1").arg(lpMovie->releaseDate().year()));
+
+		xmlWriterMovie.writeEndElement();
+	}
+
+	xmlWriterMovie.writeEndElement();
+
+	fileMovie.close();
 }
 
 void cMainWindow::doUpdate(cSerieList& serieList)
