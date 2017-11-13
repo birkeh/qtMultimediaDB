@@ -150,6 +150,8 @@ public:
 	void			loadFanart();
 	void			setFanartList(const cFanartList& fanartList);
 	cFanartList		fanartList();
+
+	QString			fanartBanner();
 private:
 	QString			m_szSeriesName;
 	QString			m_szOriginalName;

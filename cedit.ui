@@ -13,258 +13,263 @@
   <property name="windowTitle">
    <string>Edit</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QTabWidget" name="m_lpTabWidget">
-       <property name="currentIndex">
-        <number>1</number>
-       </property>
-       <widget class="cPixmapWidget" name="m_lpProgressTab">
-        <attribute name="title">
-         <string>Progress</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <layout class="QVBoxLayout" name="m_lpVerticalLayout">
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_6">
-               <item>
-                <widget class="QLineEdit" name="m_lpName">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_4">
-                 <property name="text">
-                  <string>Year:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QDateEdit" name="m_lpFirstAired"/>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="m_lpCliffhanger">
-                 <property name="text">
-                  <string>Cliffhanger</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
-               <item>
-                <widget class="QLabel" name="m_lpDownloadLinkLabel">
-                 <property name="text">
-                  <string>Download Link:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="m_lpDownloadLink"/>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout">
-               <item>
-                <widget class="QPushButton" name="m_lpAllInit">
-                 <property name="text">
-                  <string>all Init</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="m_lpAllProgress">
-                 <property name="text">
-                  <string>all Progress</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="m_lpAllDone">
-                 <property name="text">
-                  <string>all Done</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QScrollArea" name="m_lpScrollArea">
-               <property name="widgetResizable">
-                <bool>true</bool>
-               </property>
-               <widget class="QWidget" name="m_lpScrollAreaWidget">
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>0</y>
-                  <width>1123</width>
-                  <height>546</height>
-                 </rect>
-                </property>
-                <property name="autoFillBackground">
+  <widget class="QWidget" name="">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QTabWidget" name="m_lpTabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="cPixmapWidget" name="m_lpProgressTab">
+       <attribute name="title">
+        <string>Progress</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QLabel" name="m_lpBanner">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="m_lpVerticalLayout">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QLineEdit" name="m_lpName">
+                <property name="readOnly">
                  <bool>true</bool>
                 </property>
-                <layout class="QGridLayout" name="m_lpGridLayoutScroll"/>
                </widget>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="m_lpDetailsTab">
-        <attribute name="title">
-         <string>Details</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
-          <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="6">
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <item>
-              <widget class="cVerticalLabel" name="label_2">
-               <property name="text">
-                <string>Actors</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QTreeWidget" name="m_lpDetailsActors">
-               <property name="columnCount">
-                <number>2</number>
-               </property>
-               <attribute name="headerVisible">
-                <bool>false</bool>
-               </attribute>
-               <column>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_4">
                 <property name="text">
-                 <string notr="true">1</string>
+                 <string>Year:</string>
                 </property>
-               </column>
-               <column>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDateEdit" name="m_lpFirstAired"/>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="m_lpCliffhanger">
                 <property name="text">
-                 <string notr="true">2</string>
+                 <string>Cliffhanger</string>
                 </property>
-               </column>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="5" rowspan="2">
-            <widget class="QTextEdit" name="m_lpDetailsOverview">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="6">
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <item>
-              <widget class="cVerticalLabel" name="label_3">
-               <property name="text">
-                <string>Genre</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QTreeWidget" name="m_lpDetailsGenre">
-               <attribute name="headerVisible">
-                <bool>false</bool>
-               </attribute>
-               <column>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="m_lpDownloadLinkLabel">
                 <property name="text">
-                 <string notr="true">1</string>
+                 <string>Download Link:</string>
                 </property>
-               </column>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="m_lpDownloadLink"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QPushButton" name="m_lpAllInit">
+                <property name="text">
+                 <string>all Init</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="m_lpAllProgress">
+                <property name="text">
+                 <string>all Progress</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="m_lpAllDone">
+                <property name="text">
+                 <string>all Done</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QScrollArea" name="m_lpScrollArea">
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="m_lpScrollAreaWidget">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>581</width>
+                 <height>334</height>
+                </rect>
+               </property>
+               <property name="autoFillBackground">
+                <bool>true</bool>
+               </property>
+               <layout class="QGridLayout" name="m_lpGridLayoutScroll"/>
               </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="0" rowspan="2">
-            <layout class="QVBoxLayout" name="verticalLayout_3">
-             <item>
-              <widget class="QLabel" name="m_lpDetailsImage">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="frameShape">
-                <enum>QFrame::Box</enum>
-               </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="m_lpDetailsTab">
+       <attribute name="title">
+        <string>Details</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="6">
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="cVerticalLabel" name="label_2">
+              <property name="text">
+               <string>Actors</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTreeWidget" name="m_lpDetailsActors">
+              <property name="columnCount">
+               <number>2</number>
+              </property>
+              <attribute name="headerVisible">
+               <bool>false</bool>
+              </attribute>
+              <column>
                <property name="text">
-                <string/>
+                <string notr="true">1</string>
                </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
+              </column>
+              <column>
+               <property name="text">
+                <string notr="true">2</string>
                </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-         <item row="1" column="0">
-          <widget class="QTabWidget" name="m_lpDetailsSeasonTab">
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <widget class="QWidget" name="tab_3">
-            <attribute name="title">
-             <string>Tab 1</string>
-            </attribute>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="5" rowspan="2">
+           <widget class="QTextEdit" name="m_lpDetailsOverview">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
            </widget>
+          </item>
+          <item row="1" column="6">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="cVerticalLabel" name="label_3">
+              <property name="text">
+               <string>Genre</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTreeWidget" name="m_lpDetailsGenre">
+              <attribute name="headerVisible">
+               <bool>false</bool>
+              </attribute>
+              <column>
+               <property name="text">
+                <string notr="true">1</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0" rowspan="2">
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QLabel" name="m_lpDetailsImage">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::Box</enum>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0">
+         <widget class="QTabWidget" name="m_lpDetailsSeasonTab">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab_3">
+           <attribute name="title">
+            <string>Tab 1</string>
+           </attribute>
           </widget>
-         </item>
-        </layout>
-       </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
-     </item>
-     <item>
-      <widget class="QDialogButtonBox" name="m_lpButtonBox">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-  </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QDialogButtonBox" name="m_lpButtonBox">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="standardButtons">
+       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>

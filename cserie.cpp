@@ -713,6 +713,17 @@ void cSerie::setFanartList(const cFanartList& fanartList)
 	m_fanartList	= fanartList;
 }
 
+QString cSerie::fanartBanner()
+{
+	for(int x = 0;x < m_fanartList.count();x++)
+	{
+		cFanart*	lpFanartTV	= m_fanartList.at(x);
+		if(lpFanartTV->type() == cFanart::TypeTVBanner)
+			return(lpFanartTV->url());
+	}
+	return("");
+}
+
 cSerie* cSerieList::add(const qint32& iID)
 {
 	cSerie*	lpNew	= find(iID);

@@ -2,6 +2,8 @@
 #include "ui_cedit.h"
 
 #include "cmovieimage.h"
+#include "cfanartimage.h"
+
 #include "cseasondetails.h"
 #include "cmessageanimatedialog.h"
 
@@ -95,6 +97,17 @@ void cEdit::setSerie(cSerie* lpSerie)
     ui->m_lpFirstAired->setDate(lpSerie->firstAired());
 	ui->m_lpCliffhanger->setChecked(lpSerie->cliffhanger());
 	ui->m_lpDownloadLink->setText(lpSerie->download());
+
+	QString			szBanner	= lpSerie->fanartBanner();
+	{
+		if(!szBanner.isEmpty())
+		{
+			cFanartImage	banner;
+			QPixmap			pixmap		= banner.getImage(szBanner);
+			if(!pixmap.isNull())
+				ui->m_lpBanner->setPixmap(pixmap);
+		}
+	}
 
 	int	x;
 	QList<cSeason*>	seasonList	= lpSerie->seasonList();
