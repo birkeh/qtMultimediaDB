@@ -180,6 +180,29 @@ void cSeason::setLabel1(QLabel* lpLabel1)
 	m_lpLabel1	= lpLabel1;
 }
 
+
+bool cSeason::hasProgress()
+{
+	for(int x = 0;x < m_episodeList.count();x++)
+	{
+		cEpisode*	lpEpisode	= m_episodeList.at(x);
+		if(lpEpisode->state() == cEpisode::StateProgress)
+			return(true);
+	}
+	return(false);
+}
+
+bool cSeason::hasDone()
+{
+	for(int x = 0;x < m_episodeList.count();x++)
+	{
+		cEpisode*	lpEpisode	= m_episodeList.at(x);
+		if(lpEpisode->state() == cEpisode::StateDone)
+			return(true);
+	}
+	return(false);
+}
+
 void cSeason::setAllInit(QPushButton* lpAllInit)
 {
 	m_lpAllInit	= lpAllInit;

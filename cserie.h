@@ -133,6 +133,9 @@ public:
 
 	bool			isValid();
 
+	bool			hasProgress();
+	bool			hasDone();
+
 	bool			save(QSqlDatabase& db);
 	bool			del(QSqlDatabase& db);
 

@@ -1414,13 +1414,16 @@ void cMainWindow::onActionExport()
 		xmlWriterSerie.writeTextElement("seriesID", QString("%1").arg(lpSerie->seriesID()));
 		xmlWriterSerie.writeTextElement("seriesOverview", lpSerie->overview());
 		xmlWriterSerie.writeTextElement("seriesYear", QString("%1").arg(lpSerie->firstAired().year()));
+		if(lpSerie->hasProgress() || lpSerie->hasDone())
+			xmlWriterSerie.writeTextElement("seriesStarted", "true");
+		else
+			xmlWriterSerie.writeTextElement("seriesStarted", "false");
 
 		xmlWriterSerie.writeEndElement();
 	}
 
 	xmlWriterSerie.writeEndElement();
 	fileSerie.close();
-
 
 	QFile				fileMovie("C:\\Temp\\export\\movies.xml");
 	fileMovie.open(QIODevice::WriteOnly);
@@ -1440,6 +1443,10 @@ void cMainWindow::onActionExport()
 		xmlWriterMovie.writeTextElement("movieID", QString("%1").arg(lpMovie->movieID()));
 		xmlWriterMovie.writeTextElement("movieOverview", lpMovie->overview());
 		xmlWriterMovie.writeTextElement("movieYear", QString("%1").arg(lpMovie->releaseDate().year()));
+		if(lpMovie->state() == cMovie::StateDone || lpMovie->state() == cMovie::StateProgress)
+			xmlWriterMovie.writeTextElement("movieStarted", "true");
+		else
+			xmlWriterMovie.writeTextElement("movieStarted", "false");
 
 		xmlWriterMovie.writeEndElement();
 	}

@@ -479,6 +479,34 @@ qint16 cSerie::maxEpisode()
 	return(iMax);
 }
 
+bool cSerie::hasProgress()
+{
+	for(int x = 0;x < m_seasonList.count();x++)
+	{
+		if(!x)
+			continue;
+
+		cSeason*	lpSeason	= m_seasonList.at(x);
+		if(lpSeason->hasProgress())
+			return(true);
+	}
+	return(false);
+}
+
+bool cSerie::hasDone()
+{
+	for(int x = 0;x < m_seasonList.count();x++)
+	{
+		if(!x)
+			continue;
+
+		cSeason*	lpSeason	= m_seasonList.at(x);
+		if(lpSeason->hasDone())
+			return(true);
+	}
+	return(false);
+}
+
 bool cSerie::save(QSqlDatabase &db)
 {
 	QSqlQuery	query;
