@@ -483,10 +483,10 @@ bool cSerie::hasProgress()
 {
 	for(int x = 0;x < m_seasonList.count();x++)
 	{
-		if(!x)
+		cSeason*	lpSeason	= m_seasonList.at(x);
+		if(!lpSeason->seasonNumber())
 			continue;
 
-		cSeason*	lpSeason	= m_seasonList.at(x);
 		if(lpSeason->hasProgress())
 			return(true);
 	}
@@ -497,10 +497,10 @@ bool cSerie::hasDone()
 {
 	for(int x = 0;x < m_seasonList.count();x++)
 	{
-		if(!x)
+		cSeason*	lpSeason	= m_seasonList.at(x);
+		if(!lpSeason->seasonNumber())
 			continue;
 
-		cSeason*	lpSeason	= m_seasonList.at(x);
 		if(lpSeason->hasDone())
 			return(true);
 	}
