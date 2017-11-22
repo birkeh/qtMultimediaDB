@@ -1285,7 +1285,7 @@ void cMainWindow::onActionMovieAdd()
 	settings.setValue("movieSearch/x", QVariant::fromValue(lpSearch->x()));
 	settings.setValue("movieSearch/y", QVariant::fromValue(lpSearch->y()));
 
-	qint32	id				= lpSearch->id();
+	QList<qint32>	idList	= lpSearch->id();
 	QString	szPlaceholder	= lpSearch->placeholderName();
 	bool	bPlaceholder	= lpSearch->placeholder();
 	qint16	iYear			= lpSearch->year();
@@ -1294,37 +1294,49 @@ void cMainWindow::onActionMovieAdd()
 
 	cMovie*	lpMovie			= 0;
 
-	cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
-	lpDialog->setTitle("Refresh");
-	lpDialog->setMessage("Loading");
-	lpDialog->show();
-
 	if(!bPlaceholder)
 	{
-		if(id == -1)
-			return;
+		for(int x = 0;x < idList.count();x++)
+		{
+			qint32	id	= idList.at(x);
+			if(id != -1)
+			{
+				cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
+				lpDialog->setTitle("Refresh");
+				lpDialog->setMessage("Loading");
+				lpDialog->show();
 
-		cTheMovieDBV3		movieDB3;
+				cTheMovieDBV3		movieDB3;
 
-		lpMovie	= movieDB3.loadMovie(id, "de-DE");
-		if(!lpMovie)
-			lpMovie	= movieDB3.loadMovie(id, "en");
+				lpMovie	= movieDB3.loadMovie(id, "de-DE");
+				if(!lpMovie)
+					lpMovie	= movieDB3.loadMovie(id, "en");
 
-		delete lpDialog;
+				delete lpDialog;
 
-		if(!runMovieEdit(lpMovie))
-			return;
+				if(runMovieEdit(lpMovie))
+				{
+					lpDialog	= new cMessageAnimateDialog(this);
+					lpDialog->setTitle("Update");
+					lpDialog->setMessage("Updating");
+					lpDialog->show();
 
-		lpDialog	= new cMessageAnimateDialog(this);
-		lpDialog->setTitle("Update");
-		lpDialog->setMessage("Updating");
-		lpDialog->show();
+					lpMovie->loadFanart();
+					lpMovie->save(m_db);
 
-		lpMovie->loadFanart();
-		lpMovie->save(m_db);
+					delete lpDialog;
+				}
+				delete lpMovie;
+			}
+		}
 	}
 	else
 	{
+		cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
+		lpDialog->setTitle("Refresh");
+		lpDialog->setMessage("Loading");
+		lpDialog->show();
+
 		lpMovie	= new cMovie;
 		lpMovie->setMovieTitle(szPlaceholder);
 
@@ -1343,12 +1355,12 @@ void cMainWindow::onActionMovieAdd()
 		lpMovie->setMovieID(iMax);
 		lpMovie->setReleaseDate(QString("%1-01-01").arg(iYear));
 		lpMovie->save(m_db);
+
+		delete lpDialog;
 	}
 
 	loadMoviesDB();
 	displayMovies();
-
-	delete lpDialog;
 }
 
 void cMainWindow::onActionUpdateAll()

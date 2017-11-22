@@ -54,6 +54,9 @@
            </item>
            <item>
             <widget class="QTreeWidget" name="m_lpResults">
+             <property name="selectionMode">
+              <enum>QAbstractItemView::ExtendedSelection</enum>
+             </property>
              <property name="columnCount">
               <number>3</number>
              </property>

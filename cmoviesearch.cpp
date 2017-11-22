@@ -80,16 +80,23 @@ void cMovieSearch::on_m_lpSearchButton_clicked()
 	delete lpDialog;
 }
 
-qint32 cMovieSearch::id()
+QList<qint32> cMovieSearch::id()
 {
+	QList<qint32>	idList;
+
 	if(!ui->m_lpResults->selectedItems().count())
 	{
 		qint32	iID	= ui->m_lpSearch->text().toInt();
 		if(iID)
-			return(iID);
-		return(-1);
+			idList.append(iID);
+		return(idList);
 	}
-	return(ui->m_lpResults->selectedItems().at(0)->data(0, Qt::UserRole).toInt());
+	else
+	{
+		for(int x = 0;x < ui->m_lpResults->selectedItems().count();x++)
+			idList.append(ui->m_lpResults->selectedItems().at(x)->data(0, Qt::UserRole).toInt());
+	}
+	return(idList);
 }
 
 QString cMovieSearch::placeholderName()
