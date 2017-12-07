@@ -180,6 +180,16 @@ void cSeason::setLabel1(QLabel* lpLabel1)
 	m_lpLabel1	= lpLabel1;
 }
 
+bool cSeason::hasInit()
+{
+	for(int x = 0;x < m_episodeList.count();x++)
+	{
+		cEpisode*	lpEpisode	= m_episodeList.at(x);
+		if(lpEpisode->state() == cEpisode::StateInit)
+			return(true);
+	}
+	return(false);
+}
 
 bool cSeason::hasProgress()
 {

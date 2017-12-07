@@ -66,6 +66,7 @@ public:
 	void				updateState();
 	void				deleteResources();
 
+	bool				hasInit();
 	bool				hasProgress();
 	bool				hasDone();
 

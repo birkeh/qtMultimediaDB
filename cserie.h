@@ -133,6 +133,7 @@ public:
 
 	bool			isValid();
 
+	bool			hasInit();
 	bool			hasProgress();
 	bool			hasDone();
 

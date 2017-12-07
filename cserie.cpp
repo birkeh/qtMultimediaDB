@@ -479,6 +479,20 @@ qint16 cSerie::maxEpisode()
 	return(iMax);
 }
 
+bool cSerie::hasInit()
+{
+	for(int x = 0;x < m_seasonList.count();x++)
+	{
+		cSeason*	lpSeason	= m_seasonList.at(x);
+		if(!lpSeason->seasonNumber())
+			continue;
+
+		if(lpSeason->hasInit())
+			return(true);
+	}
+	return(false);
+}
+
 bool cSerie::hasProgress()
 {
 	for(int x = 0;x < m_seasonList.count();x++)

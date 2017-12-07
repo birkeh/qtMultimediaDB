@@ -80,13 +80,28 @@ cMainWindow::cMainWindow(QWidget *parent) :
 {
 	m_timer.start();
 
+	QSettings				settings;
+
 	cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
 	lpDialog->setTitle("Initializing");
 	lpDialog->setMessage("Initializing");
 	lpDialog->show();
 
 	ui->setupUi(this);
+
 	ui->m_lpMainTab->setCurrentIndex(0);
+	ui->m_lpSeriesFilter->setChecked(settings.value("seriesFilter/enabled", QVariant::fromValue(false)).toBool());
+	ui->m_lpSeriesFilterInitialized->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasInit", (uint)Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterProgress->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasProgress", (uint)Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterDone->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasDone", (uint)Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterWithLink->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasLink", (uint)Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterNotFinished->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasNotFinished", (uint)Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterCliffhanger->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/isCliffhanger", (uint)Qt::PartiallyChecked).toUInt()));
+
+	ui->m_lpMoviesFilter->setChecked(settings.value("movieFilter/enabled", QVariant::fromValue(false)).toBool());
+	ui->m_lpMoviesFilterInitialized->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasInit", (uint)Qt::PartiallyChecked).toUInt()));
+	ui->m_lpMoviesFilterProgress->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasProgress", (uint)Qt::PartiallyChecked).toUInt()));
+	ui->m_lpMoviesFilterDone->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasDone", (uint)Qt::PartiallyChecked).toUInt()));
 
 	m_lpSeriesListModel	= new QStandardItemModel(0, 3);
 	initDB();
@@ -108,7 +123,6 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	displaySeries();
 	displayMovies();
 
-	QSettings	settings;
 	qint16		iX		= settings.value("main/x", QVariant::fromValue(-1)).toInt();
 	qint16		iY		= settings.value("main/y", QVariant::fromValue(-1)).toInt();
 	qint16		iWidth	= settings.value("main/width", QVariant::fromValue(-1)).toInt();
@@ -146,6 +160,9 @@ cMainWindow::cMainWindow(QWidget *parent) :
 
 	m_lpShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_A), this, SLOT(onActionAddGlobal()));
 	m_lpShortcut->setAutoRepeat(false);
+
+	applySeriesFilter();
+	applyMoviesFilter();
 }
 
 cMainWindow::~cMainWindow()
@@ -796,6 +813,11 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 	lpItems.at(2)->setToolTip(szOpen);
 }
 
+void cMainWindow::setMovieStyle(QStandardItem* lpItem)
+{
+
+}
+
 void cMainWindow::displaySeries()
 {
 	m_lpSeriesListModel->clear();
@@ -1255,6 +1277,7 @@ void cMainWindow::onActionAdd()
 
 	m_szOldSelected	= lpSerie->seriesName();
 	displaySeries();
+	applySeriesFilter();
 
 	delete lpDialog;
 }
@@ -1361,6 +1384,7 @@ void cMainWindow::onActionMovieAdd()
 
 	loadMoviesDB();
 	displayMovies();
+	applyMoviesFilter();
 }
 
 void cMainWindow::onActionUpdateAll()
@@ -1511,6 +1535,7 @@ void cMainWindow::updateDone()
 
 	loadDB();
 	displaySeries();
+	applySeriesFilter();
 
 	if(m_lpMessageDialog)
 		delete m_lpMessageDialog;
@@ -1535,6 +1560,7 @@ void cMainWindow::onActionDelete()
 
 	loadDB();
 	displaySeries();
+	applySeriesFilter();
 
 	delete lpDialog;
 }
@@ -1557,6 +1583,7 @@ void cMainWindow::onActionMovieDelete()
 
 	loadMoviesDB();
 	displayMovies();
+	applyMoviesFilter();
 
 	delete lpDialog;
 }
@@ -1595,8 +1622,9 @@ void cMainWindow::onActionEdit()
 	}
 
 	setSeriesStyle(lpItems);
-
 	emit m_lpSeriesListModel->layoutChanged();
+
+	applySeriesFilter();
 
 	delete lpDialog;
 }
@@ -1607,7 +1635,6 @@ void cMainWindow::onActionMovieEdit()
 	if(!lpMovie)
 		return;
 
-	QString	szDownload;
 	if(!runMovieEdit(lpMovie))
 		return;
 
@@ -1618,10 +1645,17 @@ void cMainWindow::onActionMovieEdit()
 
 	lpMovie->del(m_db);
 	lpMovie->save(m_db);
-
+/*
 	m_szOldSelected	= lpMovie->movieTitle();
 	loadMoviesDB();
 	displayMovies();
+*/
+
+	QStandardItem*	lpItem	= m_lpMoviesListModel->itemFromIndex(ui->m_lpMoviesList->selectionModel()->selectedRows().at(0));
+	setMovieStyle(lpItem);
+	emit m_lpMoviesListModel->layoutChanged();
+
+	applyMoviesFilter();
 
 	delete lpDialog;
 }
@@ -1867,4 +1901,215 @@ void cMainWindow::scrollbarValueChanged2(int value)
 	ui->m_lpSeriesList1->verticalScrollBar()->setValue(value);
 
 	m_bProcessing	= false;
+}
+
+void cMainWindow::on_m_lpSeriesFilter_clicked()
+{
+	ui->m_lpSeriesFilterCliffhanger->setEnabled(ui->m_lpSeriesFilter->isChecked());
+	ui->m_lpSeriesFilterDone->setEnabled(ui->m_lpSeriesFilter->isChecked());
+	ui->m_lpSeriesFilterInitialized->setEnabled(ui->m_lpSeriesFilter->isChecked());
+	ui->m_lpSeriesFilterNotFinished->setEnabled(ui->m_lpSeriesFilter->isChecked());
+	ui->m_lpSeriesFilterProgress->setEnabled(ui->m_lpSeriesFilter->isChecked());
+	ui->m_lpSeriesFilterWithLink->setEnabled(ui->m_lpSeriesFilter->isChecked());
+
+	applySeriesFilter();
+}
+
+void cMainWindow::on_m_lpMoviesFilter_clicked()
+{
+	ui->m_lpMoviesFilterDone->setEnabled(ui->m_lpMoviesFilter->isChecked());
+	ui->m_lpMoviesFilterInitialized->setEnabled(ui->m_lpMoviesFilter->isChecked());
+	ui->m_lpMoviesFilterProgress->setEnabled(ui->m_lpMoviesFilter->isChecked());
+
+	applyMoviesFilter();
+}
+
+void cMainWindow::on_m_lpSeriesFilterInitialized_clicked()
+{
+	applySeriesFilter();
+}
+
+void cMainWindow::on_m_lpSeriesFilterProgress_clicked()
+{
+	applySeriesFilter();
+}
+
+void cMainWindow::on_m_lpSeriesFilterDone_clicked()
+{
+	applySeriesFilter();
+}
+
+void cMainWindow::on_m_lpSeriesFilterWithLink_clicked()
+{
+	applySeriesFilter();
+}
+
+void cMainWindow::on_m_lpSeriesFilterCliffhanger_clicked()
+{
+	applySeriesFilter();
+}
+
+void cMainWindow::on_m_lpSeriesFilterNotFinished_clicked()
+{
+	applySeriesFilter();
+}
+
+void cMainWindow::on_m_lpMoviesFilterInitialized_clicked()
+{
+	applyMoviesFilter();
+}
+
+void cMainWindow::on_m_lpMoviesFilterProgress_clicked()
+{
+	applyMoviesFilter();
+}
+
+void cMainWindow::on_m_lpMoviesFilterDone_clicked()
+{
+	applyMoviesFilter();
+}
+
+void cMainWindow::applySeriesFilter()
+{
+	QSettings	settings;
+
+	settings.setValue("seriesFilter/enabled", QVariant::fromValue(ui->m_lpSeriesFilter->isChecked()));
+	settings.setValue("seriesFilter/hasInit", (uint)ui->m_lpSeriesFilterInitialized->checkState());
+	settings.setValue("seriesFilter/hasProgress", (uint)ui->m_lpSeriesFilterProgress->checkState());
+	settings.setValue("seriesFilter/hasDone", (uint)ui->m_lpSeriesFilterDone->checkState());
+	settings.setValue("seriesFilter/hasLink", (uint)ui->m_lpSeriesFilterWithLink->checkState());
+	settings.setValue("seriesFilter/hasNotFinished", (uint)ui->m_lpSeriesFilterNotFinished->checkState());
+	settings.setValue("seriesFilter/isCliffhanger", (uint)ui->m_lpSeriesFilterCliffhanger->checkState());
+
+	for(int x = 0;x < m_lpSeriesListModel->rowCount();x++)
+	{
+		bool	bDisplay			= false;
+
+		if(ui->m_lpSeriesFilter->isChecked())
+		{
+			QStandardItem*	lpItem	= m_lpSeriesListModel->item(x);
+			cSerie*			lpSerie	= lpItem->data(Qt::UserRole).value<cSerie*>();
+
+			bool	bHasInit			= lpSerie->hasInit();
+			bool	bHasProgress		= lpSerie->hasProgress();
+			bool	bHasDone			= lpSerie->hasDone();
+			bool	bHasDownloadLink	= !lpSerie->download().isEmpty();
+			bool	bIsCliffhanger		= lpSerie->cliffhanger();
+			bool	bNotFinished		= true;
+
+			if(lpSerie->status().compare("Ended", Qt::CaseInsensitive) &&
+			   lpSerie->status().compare("canceled", Qt::CaseInsensitive))
+				bNotFinished			= false;
+
+			bHasInit			= checkState(ui->m_lpSeriesFilterInitialized->checkState(), bHasInit);
+			bHasProgress		= checkState(ui->m_lpSeriesFilterProgress->checkState(), bHasProgress);
+			bHasDone			= checkState(ui->m_lpSeriesFilterDone->checkState(), bHasDone);
+			bHasDownloadLink	= checkState(ui->m_lpSeriesFilterWithLink->checkState(), bHasDownloadLink);
+			bIsCliffhanger		= checkState(ui->m_lpSeriesFilterCliffhanger->checkState(), bIsCliffhanger);
+			bNotFinished		= checkState(ui->m_lpSeriesFilterNotFinished->checkState(), bNotFinished);
+
+			if(bHasInit && bHasProgress && bHasDone && bHasDownloadLink && bIsCliffhanger && bNotFinished)
+				bDisplay		= true;
+		}
+		else
+			bDisplay	= true;
+
+		ui->m_lpSeriesList1->setRowHidden(x, m_lpSeriesListModel->invisibleRootItem()->index(), !bDisplay);
+		ui->m_lpSeriesList2->setRowHidden(x, m_lpSeriesListModel->invisibleRootItem()->index(), !bDisplay);
+	}
+}
+
+void cMainWindow::applyMoviesFilter()
+{
+	QSettings	settings;
+
+	settings.setValue("movieFilter/enabled", QVariant::fromValue(ui->m_lpMoviesFilter->isChecked()));
+	settings.setValue("movieFilter/hasInit", (uint)ui->m_lpMoviesFilterInitialized->checkState());
+	settings.setValue("movieFilter/hasProgress", (uint)ui->m_lpMoviesFilterProgress->checkState());
+	settings.setValue("movieFilter/hasDone", (uint)ui->m_lpMoviesFilterDone->checkState());
+
+	for(int x = 0;x < m_lpMoviesListModel->rowCount();x++)
+	{
+		QStandardItem*	lpItem	= m_lpMoviesListModel->item(x);
+		cMovie*			lpMovie	= lpItem->data(Qt::UserRole).value<cMovie*>();
+
+		if(lpMovie)
+			applyMoviesFilter(x, lpMovie);
+		else
+			applyMoviesFilter(lpItem);
+	}
+}
+
+bool cMainWindow::applyMoviesFilter(qint16 i, cMovie* lpMovie)
+{
+	bool	bDisplay			= false;
+
+	if(ui->m_lpMoviesFilter->isChecked())
+	{
+		bool	bHasInit			= (lpMovie->state() == cMovie::StateInit);
+		bool	bHasProgress		= (lpMovie->state() == cMovie::StateProgress);
+		bool	bHasDone			= (lpMovie->state() == cMovie::StateDone);
+
+		bHasInit			= checkState(ui->m_lpMoviesFilterInitialized->checkState(), bHasInit);
+		bHasProgress		= checkState(ui->m_lpMoviesFilterProgress->checkState(), bHasProgress);
+		bHasDone			= checkState(ui->m_lpMoviesFilterDone->checkState(), bHasDone);
+
+		if(bHasInit && bHasProgress && bHasDone)
+			bDisplay		= true;
+	}
+	else
+		bDisplay	= true;
+
+	ui->m_lpMoviesList->setRowHidden(i, m_lpMoviesListModel->invisibleRootItem()->index(), !bDisplay);
+
+	return(bDisplay);
+}
+
+void cMainWindow::applyMoviesFilter(QStandardItem* lpParent)
+{
+	bool			bParent		= false;
+	bool			bDisplay	= false;
+
+	for(int x = 0;x < lpParent->rowCount();x++)
+	{
+		QStandardItem*	lpItem		= lpParent->child(x);
+		cMovie*			lpMovie		= lpItem->data(Qt::UserRole).value<cMovie*>();
+
+		if(ui->m_lpMoviesFilter->isChecked())
+		{
+			bool	bHasInit			= (lpMovie->state() == cMovie::StateInit);
+			bool	bHasProgress		= (lpMovie->state() == cMovie::StateProgress);
+			bool	bHasDone			= (lpMovie->state() == cMovie::StateDone);
+
+			bHasInit			= checkState(ui->m_lpMoviesFilterInitialized->checkState(), bHasInit);
+			bHasProgress		= checkState(ui->m_lpMoviesFilterProgress->checkState(), bHasProgress);
+			bHasDone			= checkState(ui->m_lpMoviesFilterDone->checkState(), bHasDone);
+
+			if(bHasInit && bHasProgress && bHasDone)
+				bDisplay		= true;
+		}
+		else
+			bDisplay	= true;
+
+		ui->m_lpMoviesList->setRowHidden(x, lpParent->index(), !bDisplay);
+
+		if(bDisplay)
+			bParent = true;
+	}
+
+	ui->m_lpMoviesList->setRowHidden(lpParent->row(), m_lpMoviesListModel->invisibleRootItem()->index(), !bParent);
+}
+
+bool cMainWindow::checkState(const Qt::CheckState& state, bool bDesiredState)
+{
+	if(state == Qt::PartiallyChecked)
+		return(true);
+
+	if(state == Qt::Checked && bDesiredState)
+		return(true);
+
+	if(state == Qt::Unchecked && !bDesiredState)
+		return(true);
+
+	return(false);
 }

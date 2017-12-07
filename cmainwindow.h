@@ -86,6 +86,19 @@ private slots:
 	void				scrollbarValueChanged1(int value);
 	void				scrollbarValueChanged2(int value);
 
+	void				on_m_lpSeriesFilterInitialized_clicked();
+	void				on_m_lpSeriesFilterProgress_clicked();
+	void				on_m_lpSeriesFilterDone_clicked();
+	void				on_m_lpSeriesFilterWithLink_clicked();
+	void				on_m_lpSeriesFilterCliffhanger_clicked();
+	void				on_m_lpSeriesFilterNotFinished_clicked();
+	void				on_m_lpMoviesFilterInitialized_clicked();
+	void				on_m_lpMoviesFilterProgress_clicked();
+	void				on_m_lpMoviesFilterDone_clicked();
+
+	void				on_m_lpSeriesFilter_clicked();
+	void				on_m_lpMoviesFilter_clicked();
+
 private:
 	Ui::cMainWindow*	ui;
 	cSerieList			m_serieList;
@@ -127,7 +140,14 @@ private:
 	void				showMoviesContextMenu(QTreeView* lpTreeView, const QPoint &pos);
 
 	void				setSeriesStyle(QList<QStandardItem *> lpItems);
+	void				setMovieStyle(QStandardItem* lpItem);
 
+	void				applySeriesFilter();
+	void				applyMoviesFilter();
+	bool				applyMoviesFilter(qint16 i, cMovie* lpMovie);
+	void				applyMoviesFilter(QStandardItem* lpParent);
+
+	bool				checkState(const Qt::CheckState &state, bool bDesiredState);
 protected:
 	void				closeEvent(QCloseEvent *event);
 };
