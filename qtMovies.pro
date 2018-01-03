@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = qtMovies
 TEMPLATE = app
-
+RC_ICONS = qtMovies.ico
 
 SOURCES += main.cpp\
         cmainwindow.cpp \
@@ -77,7 +77,8 @@ FORMS    += cmainwindow.ui \
     cmoviesearch.ui \
     cmovieedit.ui
 
-DISTFILES +=
+DISTFILES += \
+    qtMovies.ico
 
 RESOURCES += \
     resource.qrc
