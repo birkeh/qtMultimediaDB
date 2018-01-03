@@ -60,6 +60,9 @@ private slots:
 	void				onActionGotoIMDB();
 	void				onActionLoadPictures();
 
+	void				onActionGotoAllDownload();
+	void				onActionGotoAllDownloadOpen();
+
 	void				onActionMovieAdd();
 	void				onActionMovieUpdateAll();
 	void				onActionMovieUpdate();

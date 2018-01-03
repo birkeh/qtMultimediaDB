@@ -993,6 +993,8 @@ void cMainWindow::showSeriesContextMenu(QTreeView* lpTreeView, const QPoint &pos
 				lpMenu->addAction("open download link", this, SLOT(onActionGotoDownload()));
 				lpMenu->addAction("copy download link", this, SLOT(onActionCopyDownload()));
 			}
+			lpMenu->addAction("open all download links", this, SLOT(onActionGotoAllDownload()));
+			lpMenu->addAction("open all download links (open)", this, SLOT(onActionGotoAllDownloadOpen()));
 			lpMenu->addSeparator();
 			lpMenu->addAction("load images", this, SLOT(onActionLoadPictures()));
 		}
@@ -1710,6 +1712,37 @@ void cMainWindow::onActionGotoDownload()
 		{
 			QString	link	= lpSerie->download();
 			QDesktopServices::openUrl(QUrl(link));
+		}
+	}
+}
+
+void cMainWindow::onActionGotoAllDownload()
+{
+	for(int x = 0;x < m_lpSeriesListModel->rowCount();x++)
+	{
+		cSerie*	lpSerie	= m_lpSeriesListModel->item(x, 0)->data(Qt::UserRole).value<cSerie*>();
+		if(lpSerie)
+		{
+			QString	link	= lpSerie->download();
+			if(!link.isEmpty())
+				QDesktopServices::openUrl(QUrl(link));
+		}
+	}
+}
+
+void cMainWindow::onActionGotoAllDownloadOpen()
+{
+	for(int x = 0;x < m_lpSeriesListModel->rowCount();x++)
+	{
+		cSerie*	lpSerie	= m_lpSeriesListModel->item(x, 0)->data(Qt::UserRole).value<cSerie*>();
+		if(lpSerie)
+		{
+			if(lpSerie->hasInit())
+			{
+				QString	link	= lpSerie->download();
+				if(!link.isEmpty())
+					QDesktopServices::openUrl(QUrl(link));
+			}
 		}
 	}
 }
