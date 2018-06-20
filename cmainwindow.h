@@ -59,6 +59,8 @@ private slots:
 	void				onActionCopyDownload();
 	void				onActionGotoIMDB();
 	void				onActionLoadPictures();
+	void				onActionFind();
+	void				onActionFindAgain();
 
 	void				onActionGotoAllDownload();
 	void				onActionGotoAllDownloadOpen();
@@ -70,10 +72,13 @@ private slots:
 	void				onActionMovieEdit();
 	void				onActionMovieGotoIMDB();
 	void				onActionMovieLoadPictures();
-
+	void				onActionMovieFind();
+	void				onActionMovieFindAgain();
 	void				onActionExport();
 
 	void				onActionAddGlobal();
+	void				onActionFindGlobal();
+	void				onActionFindAgainGlobal();
 
 	void				updateMessage(const QString& szMessage, const qint32 &iProgress);
 	void				updateAppendMessage(const QString& szMessage);
@@ -121,7 +126,12 @@ private:
 
 	bool				m_bProcessing;
 
-	QShortcut*			m_lpShortcut;
+	QShortcut*			m_lpShortcutAdd;
+	QShortcut*			m_lpShortcutFind;
+	QShortcut*			m_lpShortcutFindAgain;
+
+	QString				m_szFind;
+	QString				m_szFindMovie;
 
 	void				initDB();
 	void				loadDB();
@@ -151,6 +161,9 @@ private:
 	void				applyMoviesFilter(QStandardItem* lpParent);
 
 	bool				checkState(const Qt::CheckState &state, bool bDesiredState);
+
+	void				find();
+	void				findMovie();
 protected:
 	void				closeEvent(QCloseEvent *event);
 };

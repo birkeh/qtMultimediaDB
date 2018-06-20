@@ -18,7 +18,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="m_lpMainTab">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="m_lpTVShowsTab">
        <attribute name="title">
@@ -401,6 +401,14 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="m_lpFind">
+   <property name="text">
+    <string>&amp;find...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

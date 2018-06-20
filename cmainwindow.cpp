@@ -39,6 +39,8 @@
 
 #include <QXmlStreamWriter>
 
+#include <QInputDialog>
+
 
 static bool serieSort(cSerie* s1, cSerie* s2)
 {
@@ -76,7 +78,10 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	m_lpUpdateThread(0),
 	m_lpPicturesThread(0),
 	m_bProcessing(false),
-	m_lpShortcut(0)
+	m_lpShortcutAdd(0),
+	m_lpShortcutFind(0),
+	m_szFind(""),
+	m_szFindMovie("")
 {
 	m_timer.start();
 
@@ -158,8 +163,14 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	connect(ui->m_lpSeriesList1->verticalScrollBar(), &QScrollBar::valueChanged, this, &cMainWindow::scrollbarValueChanged1);
 	connect(ui->m_lpSeriesList2->verticalScrollBar(), &QScrollBar::valueChanged, this, &cMainWindow::scrollbarValueChanged2);
 
-	m_lpShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_A), this, SLOT(onActionAddGlobal()));
-	m_lpShortcut->setAutoRepeat(false);
+	m_lpShortcutAdd			= new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_A), this, SLOT(onActionAddGlobal()));
+	m_lpShortcutAdd->setAutoRepeat(false);
+
+	m_lpShortcutFind		= new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this, SLOT(onActionFindGlobal()));
+	m_lpShortcutFind->setAutoRepeat(false);
+
+	m_lpShortcutFindAgain	= new QShortcut(QKeySequence(Qt::Key_F3), this, SLOT(onActionFindAgainGlobal()));
+	m_lpShortcutFindAgain->setAutoRepeat(false);
 
 	applySeriesFilter();
 	applyMoviesFilter();
@@ -167,8 +178,12 @@ cMainWindow::cMainWindow(QWidget *parent) :
 
 cMainWindow::~cMainWindow()
 {
-	if(m_lpShortcut)
-		delete m_lpShortcut;
+	if(m_lpShortcutAdd)
+		delete m_lpShortcutAdd;
+	if(m_lpShortcutFind)
+		delete m_lpShortcutFind;
+	if(m_lpShortcutFindAgain)
+		delete m_lpShortcutFindAgain;
 
 	delete ui;
 }
@@ -2145,4 +2160,160 @@ bool cMainWindow::checkState(const Qt::CheckState& state, bool bDesiredState)
 		return(true);
 
 	return(false);
+}
+
+void cMainWindow::onActionFindGlobal()
+{
+	if(ui->m_lpMainTab->currentIndex() == 0)
+		onActionFind();
+	else
+		onActionMovieFind();
+}
+
+void cMainWindow::onActionFindAgainGlobal()
+{
+	if(ui->m_lpMainTab->currentIndex() == 0)
+		onActionFindAgain();
+	else
+		onActionMovieFindAgain();
+}
+
+void cMainWindow::onActionFind()
+{
+	bool	ok;
+	QString	szText	= QInputDialog::getText(this, tr("Find"), tr("Find:"), QLineEdit::Normal, m_szFind, &ok);
+
+	if(ok && !szText.isEmpty())
+	{
+		m_szFind	= szText;
+		find();
+	}
+}
+
+void cMainWindow::onActionFindAgain()
+{
+	if(m_szFind.isEmpty())
+		onActionFind();
+	else
+		find();
+}
+
+void cMainWindow::onActionMovieFind()
+{
+	bool	ok;
+	QString	szText	= QInputDialog::getText(this, tr("Find"), tr("Find:"), QLineEdit::Normal, m_szFindMovie, &ok);
+
+	if(ok && !szText.isEmpty())
+	{
+		m_szFindMovie	= szText;
+		findMovie();
+	}
+}
+
+void cMainWindow::onActionMovieFindAgain()
+{
+	if(m_szFindMovie.isEmpty())
+		onActionMovieFind();
+	else
+		findMovie();
+}
+
+void cMainWindow::find()
+{
+	if(m_szFind.isEmpty())
+		return;
+
+	if(!m_lpSeriesListModel->rowCount())
+		return;
+
+	QModelIndex	index		= ui->m_lpSeriesList1->currentIndex();
+	qint32		iSelected	= -1;
+
+	if(index.isValid())
+		iSelected	= index.row();
+
+	iSelected++;
+	if(iSelected == m_lpSeriesListModel->rowCount())
+		iSelected	= 0;
+
+	qint32		iFirst		= iSelected;
+
+	for(int x = iSelected;x < m_lpSeriesListModel->rowCount();x++)
+	{
+		QStandardItem*	lpItem	= m_lpSeriesListModel->item(x, 1);
+		if(lpItem->text().contains(m_szFind, Qt::CaseInsensitive))
+		{
+			ui->m_lpSeriesList1->selectionModel()->setCurrentIndex(lpItem->index(), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+			ui->m_lpSeriesList1->scrollTo(lpItem->index());
+			ui->m_lpSeriesList1->setFocus();
+			return;
+		}
+	}
+
+	if(iFirst)
+	{
+		for(int x = 0;x < iFirst;x++)
+		{
+			QStandardItem*	lpItem	= m_lpSeriesListModel->item(x, 1);
+			if(lpItem->text().contains(m_szFind, Qt::CaseInsensitive))
+			{
+				ui->m_lpSeriesList1->selectionModel()->setCurrentIndex(lpItem->index(), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+				ui->m_lpSeriesList1->scrollTo(lpItem->index());
+				ui->m_lpSeriesList1->setFocus();
+				return;
+			}
+		}
+	}
+
+	QMessageBox::information(this, "Find", "Nothing found.");
+}
+
+void cMainWindow::findMovie()
+{
+	if(m_szFindMovie.isEmpty())
+		return;
+
+	if(!m_lpMoviesListModel->rowCount())
+		return;
+
+	QModelIndex	index		= ui->m_lpMoviesList->currentIndex();
+	qint32		iSelected	= -1;
+
+	if(index.isValid())
+		iSelected	= index.row();
+
+	iSelected++;
+	if(iSelected == m_lpMoviesListModel->rowCount())
+		iSelected	= 0;
+
+	qint32		iFirst		= iSelected;
+
+	for(int x = iSelected;x < m_lpMoviesListModel->rowCount();x++)
+	{
+		QStandardItem*	lpItem	= m_lpMoviesListModel->item(x, 0);
+		if(lpItem->text().contains(m_szFindMovie, Qt::CaseInsensitive))
+		{
+			ui->m_lpMoviesList->selectionModel()->setCurrentIndex(lpItem->index(), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+			ui->m_lpMoviesList->scrollTo(lpItem->index());
+			ui->m_lpMoviesList->setFocus();
+			return;
+		}
+	}
+
+	if(iFirst)
+	{
+		for(int x = 0;x < iFirst;x++)
+		{
+			QStandardItem*	lpItem	= m_lpMoviesListModel->item(x, 0);
+			if(lpItem->text().contains(m_szFindMovie, Qt::CaseInsensitive))
+			{
+				ui->m_lpMoviesList->selectionModel()->setCurrentIndex(lpItem->index(), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+				ui->m_lpMoviesList->scrollTo(lpItem->index());
+				ui->m_lpMoviesList->setFocus();
+				return;
+			}
+		}
+	}
+
+	QMessageBox::information(this, "Find", "Nothing found.");
 }
