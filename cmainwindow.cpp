@@ -40,6 +40,7 @@
 #include <QXmlStreamWriter>
 
 #include <QInputDialog>
+#include <QFileDialog>
 
 
 static bool serieSort(cSerie* s1, cSerie* s2)
@@ -75,7 +76,7 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	ui(new Ui::cMainWindow),
 	m_szOldSelected(""),
 	m_lpMessageDialog(0),
-	m_lpUpdateThread(0),
+//	m_lpUpdateThread(0),
 	m_lpPicturesThread(0),
 	m_bProcessing(false),
 	m_lpShortcutAdd(0),
@@ -828,7 +829,7 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 	lpItems.at(2)->setToolTip(szOpen);
 }
 
-void cMainWindow::setMovieStyle(QStandardItem* lpItem)
+void cMainWindow::setMovieStyle(QStandardItem* /*lpItem*/)
 {
 
 }
@@ -1449,7 +1450,16 @@ void cMainWindow::onActionMovieUpdate()
 
 void cMainWindow::onActionExport()
 {
-	QFile				fileSerie("C:\\Temp\\export\\series.xml");
+	QSettings			settings;
+	QString				szExportSerie	= settings.value("exportSerie", QDir::homePath()).toString();
+	QString				szFileSerie		= QFileDialog::getSaveFileName(this, tr("export Serie"), szExportSerie, tr("XML Files (*.xml)"));
+
+	if(szFileSerie.isEmpty())
+			return;
+
+	settings.setValue("exportSerie", szFileSerie);
+
+	QFile				fileSerie(szFileSerie);
 	fileSerie.open(QIODevice::WriteOnly);
 	QXmlStreamWriter	xmlWriterSerie(&fileSerie);
 
@@ -1478,7 +1488,15 @@ void cMainWindow::onActionExport()
 	xmlWriterSerie.writeEndElement();
 	fileSerie.close();
 
-	QFile				fileMovie("C:\\Temp\\export\\movies.xml");
+	QString				szExportMovie	= settings.value("exportMovie", QDir::homePath()).toString();
+	QString				szFileMovie		= QFileDialog::getSaveFileName(this, tr("export Movie"), szExportMovie, tr("XML Files (*.xml)"));
+	QFile				fileMovie(szFileMovie);
+
+	if(szFileMovie.isEmpty())
+			return;
+
+	settings.setValue("exportMovie", szFileMovie);
+
 	fileMovie.open(QIODevice::WriteOnly);
 	QXmlStreamWriter	xmlWriterMovie(&fileMovie);
 
@@ -1522,14 +1540,89 @@ void cMainWindow::doUpdate(cSerieList& serieList)
 		m_lpMessageDialog->setProgress(0, serieList.count());
 		m_lpMessageDialog->show();
 
-		m_lpUpdateThread		= new cUpdateThread;
-		m_lpUpdateThread->setData(m_lpMessageDialog, serieList, m_db);
+//*****************************************************************************************************************
+		QString szFailed;
 
-		connect(m_lpUpdateThread, SIGNAL(finished()), this, SLOT(updateDone()));
-		connect(m_lpUpdateThread, SIGNAL(updateMessage(QString,qint32)), this, SLOT(updateMessage(QString,qint32)));
-		connect(m_lpUpdateThread, SIGNAL(updateAppendMessage(QString)), this, SLOT(updateAppendMessage(QString)));
+		for(int x = 0;x < serieList.count();x++)
+		{
+			cSerie*	lpSerie	= serieList.at(x);
+			if(lpSerie)
+			{
+				updateMessage(lpSerie->seriesName(), x);
+				cTheMovieDBV3	theMovieDB;
+				cSerie*			lpSerieNew;
 
-		m_lpUpdateThread->start();
+				if(lpSerie->seriesID() != -1 && lpSerie->seriesID() < 1000000)
+				{
+					lpSerieNew	= theMovieDB.loadSerie(lpSerie->seriesID(), "de-DE");
+					if(!lpSerieNew)
+						lpSerieNew = theMovieDB.loadSerie(lpSerie->seriesID(), "en");
+					if(!lpSerieNew)
+					{
+						if(szFailed.length())
+							szFailed += ", ";
+						szFailed += lpSerie->seriesName();
+						continue;
+					}
+					lpSerieNew->loadFanart();
+					cFanartList	fanartList		= lpSerie->fanartList();
+					cFanartList	fanartListNew	= lpSerieNew->fanartList();
+					for(int x = 0;x < fanartListNew.count();x++)
+					{
+						cFanart*	lpFanartNew	= fanartListNew.at(x);
+
+						for(int y = 0;y < fanartList.count();y++)
+						{
+							cFanart*	lpFanart	= fanartList.at(y);
+							if(lpFanartNew->id() == lpFanart->id())
+							{
+								lpFanartNew->setActive(lpFanart->active());
+								break;
+							}
+						}
+					}
+					lpSerieNew->setDownload(lpSerie->download());
+					for(int x = 0;x < lpSerieNew->seasonList().count();x++)
+					{
+						cSeason*	lpSeasonNew	= lpSerieNew->seasonList().at(x);
+						for(int y = 0;y < lpSeasonNew->episodeList().count();y++)
+						{
+							cEpisode*	lpEpisodeNew	= lpSeasonNew->episodeList().at(y);
+							cEpisode*	lpEpisode		= lpSerie->findEpisode(lpEpisodeNew->id());
+							if(lpEpisode)
+								lpEpisodeNew->setState(lpEpisode->state());
+						}
+					}
+					lpSerieNew->setCliffhanger(lpSerie->cliffhanger());
+					if(!m_db.isOpen())
+						m_db.open();
+					lpSerie->del(m_db);
+					lpSerieNew->save(m_db);
+				}
+			}
+
+//			if(m_bStop)
+//				break;
+//			msleep(10);
+		}
+		if(szFailed.length())
+		{
+			QMessageBox	msgBox;
+			msgBox.setText(szFailed + QString(" has failed to update."));
+			msgBox.exec();
+		}
+
+
+		updateDone();
+
+//		m_lpUpdateThread		= new cUpdateThread;
+//		m_lpUpdateThread->setData(m_lpMessageDialog, serieList, m_db);
+
+//		connect(m_lpUpdateThread, SIGNAL(finished()), this, SLOT(updateDone()));
+//		connect(m_lpUpdateThread, SIGNAL(updateMessage(QString,qint32)), this, SLOT(updateMessage(QString,qint32)));
+//		connect(m_lpUpdateThread, SIGNAL(updateAppendMessage(QString)), this, SLOT(updateAppendMessage(QString)));
+
+//		m_lpUpdateThread->start();
 	}
 }
 
@@ -1537,18 +1630,20 @@ void cMainWindow::updateMessage(const QString& szMessage, const qint32& iProgres
 {
 	m_lpMessageDialog->setMessage(szMessage);
 	m_lpMessageDialog->setProgress(iProgress);
+	qApp->processEvents();
 }
 
 void cMainWindow::updateAppendMessage(const QString& szMessage)
 {
 	m_lpMessageDialog->addMessage(szMessage);
+	qApp->processEvents();
 }
 
 void cMainWindow::updateDone()
 {
-	if(m_lpUpdateThread)
-		delete m_lpUpdateThread;
-	m_lpUpdateThread	= 0;
+//	if(m_lpUpdateThread)
+//		delete m_lpUpdateThread;
+//	m_lpUpdateThread	= 0;
 
 	loadDB();
 	displaySeries();

@@ -79,6 +79,8 @@ void cUpdateThread::run()
 					}
 				}
                 lpSerieNew->setCliffhanger(lpSerie->cliffhanger());
+				if(!m_db.isOpen())
+					m_db.open();
 				lpSerie->del(m_db);
 				lpSerieNew->save(m_db);
 			}

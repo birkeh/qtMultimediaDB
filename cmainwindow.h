@@ -5,7 +5,7 @@
 #include "cserie.h"
 #include "cmovie.h"
 
-#include "cupdatethread.h"
+//#include "cupdatethread.h"
 #include "cpicturesthread.h"
 
 #include <QMainWindow>
@@ -116,7 +116,7 @@ private:
 	QString				m_szOldSelected;
 
 	cMessageDialog*		m_lpMessageDialog;
-	cUpdateThread*		m_lpUpdateThread;
+//	cUpdateThread*		m_lpUpdateThread;
 	cPicturesThread*	m_lpPicturesThread;
 
 	QTime				m_timer;
