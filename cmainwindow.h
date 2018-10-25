@@ -107,6 +107,8 @@ private slots:
 	void				on_m_lpSeriesFilter_clicked();
 	void				on_m_lpMoviesFilter_clicked();
 
+	void				onActionExit();
+
 private:
 	Ui::cMainWindow*	ui;
 	cSerieList			m_serieList;
@@ -119,7 +121,7 @@ private:
 //	cUpdateThread*		m_lpUpdateThread;
 	cPicturesThread*	m_lpPicturesThread;
 
-	QTime				m_timer;
+//	QTime				m_timer;
 
 	QStandardItemModel*	m_lpSeriesListModel;
 	QStandardItemModel*	m_lpMoviesListModel;
@@ -132,6 +134,10 @@ private:
 
 	QString				m_szFind;
 	QString				m_szFindMovie;
+
+	QMenu*				m_lpFileMenu;
+	QAction*			m_lpFileExportAction;
+	QAction*			m_lpFileExitAction;
 
 	void				initDB();
 	void				loadDB();

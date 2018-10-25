@@ -15,6 +15,8 @@
 
 #include "cmovieviewitemdelegate.h"
 
+#include "cexportdialog.h"
+
 #include <QTreeWidgetItem>
 #include <QDir>
 #include <QFile>
@@ -82,9 +84,12 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	m_lpShortcutAdd(0),
 	m_lpShortcutFind(0),
 	m_szFind(""),
-	m_szFindMovie("")
+	m_szFindMovie(""),
+	m_lpFileMenu(0),
+	m_lpFileExportAction(0),
+	m_lpFileExitAction(0)
 {
-	m_timer.start();
+//	m_timer.start();
 
 	QSettings				settings;
 
@@ -94,6 +99,14 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	lpDialog->show();
 
 	ui->setupUi(this);
+
+	m_lpFileMenu			= menuBar()->addMenu(tr("&File"));
+
+	m_lpFileExportAction	= m_lpFileMenu->addAction(tr("&Export"), this, &cMainWindow::onActionExport);
+	m_lpFileExportAction->setShortcut(Qt::CTRL + Qt::Key_E);
+
+	m_lpFileExportAction	= m_lpFileMenu->addAction(tr("E&xit"), this, &cMainWindow::onActionExit);
+	m_lpFileExportAction->setShortcut(Qt::CTRL + Qt::Key_X);
 
 	ui->m_lpMainTab->setCurrentIndex(0);
 	ui->m_lpSeriesFilter->setChecked(settings.value("seriesFilter/enabled", QVariant::fromValue(false)).toBool());
@@ -185,6 +198,15 @@ cMainWindow::~cMainWindow()
 		delete m_lpShortcutFind;
 	if(m_lpShortcutFindAgain)
 		delete m_lpShortcutFindAgain;
+
+	if(m_lpFileExportAction)
+		delete m_lpFileExportAction;
+
+	if(m_lpFileExitAction)
+		delete m_lpFileExitAction;
+
+	if(m_lpFileMenu)
+		delete m_lpFileMenu;
 
 	delete ui;
 }
@@ -1450,81 +1472,96 @@ void cMainWindow::onActionMovieUpdate()
 
 void cMainWindow::onActionExport()
 {
-	QSettings			settings;
-	QString				szExportSerie	= settings.value("exportSerie", QDir::homePath()).toString();
-	QString				szFileSerie		= QFileDialog::getSaveFileName(this, tr("export Serie"), szExportSerie, tr("XML Files (*.xml)"));
+	cExportDialog*		lpExportDialog	= new cExportDialog(this);
 
-	if(szFileSerie.isEmpty())
-			return;
+	int x;
 
-	settings.setValue("exportSerie", szFileSerie);
-
-	QFile				fileSerie(szFileSerie);
-	fileSerie.open(QIODevice::WriteOnly);
-	QXmlStreamWriter	xmlWriterSerie(&fileSerie);
-
-	xmlWriterSerie.setAutoFormatting(true);
-	xmlWriterSerie.writeStartDocument();
-
-	xmlWriterSerie.writeStartElement("series");
-
-	for(int x = 0;x < m_serieList.count();x++)
+	if(x = lpExportDialog->exec() == QDialog::Rejected)
 	{
-		cSerie*	lpSerie	= m_serieList.at(x);
+		delete lpExportDialog;
+		return;
+	}
 
-		xmlWriterSerie.writeStartElement("serie");
-		xmlWriterSerie.writeTextElement("seriesName", lpSerie->seriesName());
-		xmlWriterSerie.writeTextElement("seriesID", QString("%1").arg(lpSerie->seriesID()));
-		xmlWriterSerie.writeTextElement("seriesOverview", lpSerie->overview());
-		xmlWriterSerie.writeTextElement("seriesYear", QString("%1").arg(lpSerie->firstAired().year()));
-		if(lpSerie->hasProgress() || lpSerie->hasDone())
-			xmlWriterSerie.writeTextElement("seriesStarted", "true");
-		else
-			xmlWriterSerie.writeTextElement("seriesStarted", "false");
+	QSettings			settings;
+	bool				bExportSerie;
+	QString				szFileSerie;
+	bool				bExportMovie;
+	QString				szFileMovie;
+
+	lpExportDialog->values(bExportSerie, szFileSerie, bExportMovie, szFileMovie);
+	delete lpExportDialog;
+
+	settings.setValue("exportSeriePath", szFileSerie);
+	settings.setValue("exportMoviePath", szFileMovie);
+	settings.setValue("exportSerie", bExportSerie);
+	settings.setValue("exportMovie", bExportMovie);
+
+	if(!szFileSerie.isEmpty() && bExportSerie)
+	{
+		QFile				fileSerie(szFileSerie);
+		fileSerie.open(QIODevice::WriteOnly);
+		QXmlStreamWriter	xmlWriterSerie(&fileSerie);
+
+		xmlWriterSerie.setAutoFormatting(true);
+		xmlWriterSerie.writeStartDocument();
+
+		xmlWriterSerie.writeStartElement("series");
+
+		for(int x = 0;x < m_serieList.count();x++)
+		{
+			cSerie*	lpSerie	= m_serieList.at(x);
+
+			xmlWriterSerie.writeStartElement("serie");
+			xmlWriterSerie.writeTextElement("seriesName", lpSerie->seriesName());
+			xmlWriterSerie.writeTextElement("seriesID", QString("%1").arg(lpSerie->seriesID()));
+			xmlWriterSerie.writeTextElement("seriesOverview", lpSerie->overview());
+			xmlWriterSerie.writeTextElement("seriesYear", QString("%1").arg(lpSerie->firstAired().year()));
+			if(lpSerie->hasProgress() || lpSerie->hasDone())
+				xmlWriterSerie.writeTextElement("seriesStarted", "true");
+			else
+				xmlWriterSerie.writeTextElement("seriesStarted", "false");
+
+			xmlWriterSerie.writeEndElement();
+		}
 
 		xmlWriterSerie.writeEndElement();
+		fileSerie.close();
 	}
 
-	xmlWriterSerie.writeEndElement();
-	fileSerie.close();
-
-	QString				szExportMovie	= settings.value("exportMovie", QDir::homePath()).toString();
-	QString				szFileMovie		= QFileDialog::getSaveFileName(this, tr("export Movie"), szExportMovie, tr("XML Files (*.xml)"));
-	QFile				fileMovie(szFileMovie);
-
-	if(szFileMovie.isEmpty())
-			return;
-
-	settings.setValue("exportMovie", szFileMovie);
-
-	fileMovie.open(QIODevice::WriteOnly);
-	QXmlStreamWriter	xmlWriterMovie(&fileMovie);
-
-	xmlWriterMovie.setAutoFormatting(true);
-	xmlWriterMovie.writeStartDocument();
-
-	xmlWriterMovie.writeStartElement("movies");
-
-	for(int x = 0;x < m_movieList.count();x++)
+	if(!szFileMovie.isEmpty() && bExportMovie)
 	{
-		cMovie*	lpMovie	= m_movieList.at(x);
+		QFile				fileMovie(szFileMovie);
+		fileMovie.open(QIODevice::WriteOnly);
+		QXmlStreamWriter	xmlWriterMovie(&fileMovie);
 
-		xmlWriterMovie.writeStartElement("movie");
-		xmlWriterMovie.writeTextElement("movieTitle", lpMovie->movieTitle());
-		xmlWriterMovie.writeTextElement("movieID", QString("%1").arg(lpMovie->movieID()));
-		xmlWriterMovie.writeTextElement("movieOverview", lpMovie->overview());
-		xmlWriterMovie.writeTextElement("movieYear", QString("%1").arg(lpMovie->releaseDate().year()));
-		if(lpMovie->state() == cMovie::StateDone || lpMovie->state() == cMovie::StateProgress)
-			xmlWriterMovie.writeTextElement("movieStarted", "true");
-		else
-			xmlWriterMovie.writeTextElement("movieStarted", "false");
+		xmlWriterMovie.setAutoFormatting(true);
+		xmlWriterMovie.writeStartDocument();
+
+		xmlWriterMovie.writeStartElement("movies");
+
+		for(int x = 0;x < m_movieList.count();x++)
+		{
+			cMovie*	lpMovie	= m_movieList.at(x);
+
+			xmlWriterMovie.writeStartElement("movie");
+			xmlWriterMovie.writeTextElement("movieTitle", lpMovie->movieTitle());
+			xmlWriterMovie.writeTextElement("movieID", QString("%1").arg(lpMovie->movieID()));
+			xmlWriterMovie.writeTextElement("movieOverview", lpMovie->overview());
+			xmlWriterMovie.writeTextElement("movieYear", QString("%1").arg(lpMovie->releaseDate().year()));
+			if(lpMovie->state() == cMovie::StateDone || lpMovie->state() == cMovie::StateProgress)
+				xmlWriterMovie.writeTextElement("movieStarted", "true");
+			else
+				xmlWriterMovie.writeTextElement("movieStarted", "false");
+
+			xmlWriterMovie.writeEndElement();
+		}
 
 		xmlWriterMovie.writeEndElement();
+
+		fileMovie.close();
 	}
 
-	xmlWriterMovie.writeEndElement();
-
-	fileMovie.close();
+	QMessageBox::information(this, "Export", "export done");
 }
 
 void cMainWindow::doUpdate(cSerieList& serieList)
@@ -2411,4 +2448,9 @@ void cMainWindow::findMovie()
 	}
 
 	QMessageBox::information(this, "Find", "Nothing found.");
+}
+
+void cMainWindow::onActionExit()
+{
+	qApp->exit();
 }

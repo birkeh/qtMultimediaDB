@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     cpixmapwidget.cpp \
     cfanart.cpp \
     cfanarttv.cpp \
-    cfanartimage.cpp
+    cfanartimage.cpp \
+    cexportdialog.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -65,7 +66,8 @@ HEADERS  += cmainwindow.h \
     cpixmapwidget.h \
     cfanart.h \
     cfanarttv.h \
-    cfanartimage.h
+    cfanartimage.h \
+    cexportdialog.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \
@@ -75,7 +77,8 @@ FORMS    += cmainwindow.ui \
     cepisodedetails.ui \
     cmessagedialog.ui \
     cmoviesearch.ui \
-    cmovieedit.ui
+    cmovieedit.ui \
+    cexportdialog.ui
 
 DISTFILES += \
     qtMovies.ico
