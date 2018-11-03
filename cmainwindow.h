@@ -61,6 +61,7 @@ private slots:
 	void				onActionLoadPictures();
 	void				onActionFind();
 	void				onActionFindAgain();
+	void				onActionDiscover();
 
 	void				onActionGotoAllDownload();
 	void				onActionGotoAllDownloadOpen();
@@ -74,6 +75,7 @@ private slots:
 	void				onActionMovieLoadPictures();
 	void				onActionMovieFind();
 	void				onActionMovieFindAgain();
+	void				onActionMovieDiscover();
 	void				onActionExport();
 
 	void				onActionAddGlobal();

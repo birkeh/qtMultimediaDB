@@ -39,7 +39,11 @@ SOURCES += main.cpp\
     cfanart.cpp \
     cfanarttv.cpp \
     cfanartimage.cpp \
-    cexportdialog.cpp
+    cexportdialog.cpp \
+    cdiscover.cpp \
+    cmoviediscover.cpp \
+    qxtspanslider.cpp \
+    ccheckboxitemdelegate.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -67,7 +71,12 @@ HEADERS  += cmainwindow.h \
     cfanart.h \
     cfanarttv.h \
     cfanartimage.h \
-    cexportdialog.h
+    cexportdialog.h \
+    cdiscover.h \
+    cmoviediscover.h \
+    qxtspanslider.h \
+    qxtspanslider_p.h \
+    ccheckboxitemdelegate.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \
@@ -78,7 +87,9 @@ FORMS    += cmainwindow.ui \
     cmessagedialog.ui \
     cmoviesearch.ui \
     cmovieedit.ui \
-    cexportdialog.ui
+    cexportdialog.ui \
+    cdiscover.ui \
+    cmoviediscover.ui
 
 DISTFILES += \
     qtMovies.ico

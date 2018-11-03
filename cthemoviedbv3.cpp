@@ -524,3 +524,202 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 	}
 	return(lpSerie);
 }
+
+QMap<qint32, QString> cTheMovieDBV3::genresMovie(const QString& szLanguage)
+{
+	QMap<qint32, QString>	genres;
+	QNetworkAccessManager	networkManager;
+	QString					szRequest	= QString("https://api.themoviedb.org/3/genre/movie/list?api_key=%1").arg(m_szToken);
+
+	if(!szLanguage.contains("all"))
+		szRequest.append(QString("&language=%1").arg(szLanguage));
+
+	QNetworkReply*			reply   = networkManager.get(QNetworkRequest(QUrl(szRequest)));
+	QEventLoop				loop;
+
+	QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	loop.exec();
+
+	if(reply->error() == QNetworkReply::NoError)
+	{
+		QString			strReply		= (QString)reply->readAll();
+		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+		QJsonObject		jsonObj			= jsonResponse.object();
+		QJsonArray		jsonArray		= jsonObj["genres"].toArray();
+
+		for(int z = 0;z < jsonArray.count();z++)
+		{
+			QJsonObject	genre			= jsonArray[z].toObject();
+
+			genres.insert(genre["id"].toInt(), genre["name"].toString());
+		}
+	}
+	else
+	{
+		qDebug() << reply->errorString();
+		delete reply;
+	}
+
+	delete reply;
+
+	return(genres);
+}
+
+QList<cMovie*> cTheMovieDBV3::discoverMovie(const QString& szText, const bool& bAdult, const qint16& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage)
+{
+	if(m_genres.isEmpty())
+		m_genres	= genresMovie("de-DE");
+
+	QList<cMovie*>			movieList;
+	QNetworkAccessManager	networkManager;
+	QString					szRequest	= QString("https://api.themoviedb.org/3/discover/movie?api_key=%1").arg(m_szToken);
+	qint16					page		= 1;
+
+	if(!szLanguage.contains("all"))
+		szRequest.append(QString("&language=%1").arg(szLanguage));
+
+	if(!szText.isEmpty())
+		szRequest.append(QString("&with_keywords=%1").arg(szText));
+	szRequest.append(QString("&include_adult=%1").arg(bAdult?"true":"false"));
+	szRequest.append(QString("&include_video=false"));
+	if(iYear != -1)
+		szRequest.append(QString("&year=%1").arg(iYear));
+	if(genres.count())
+	{
+		QString	tmp	= QString::number(genres[0]);
+
+		for(int x = 1;x < genres.count();x++)
+			tmp.append(QString(",%1").arg(genres[x]));
+		szRequest.append(QString("&with_genres=%1").arg(tmp));
+	}
+	szRequest.append(QString("&vote_average.gte=%1").arg(voteMin));
+	szRequest.append(QString("&vote_average.lte=%1").arg(voteMax));
+
+	szRequest.append("&include_adult=false");
+
+	for(;;)
+	{
+		QNetworkRequest			request(QUrl(QString("%1&page=%2").arg(szRequest).arg(page)));
+
+		QNetworkReply*			reply   = networkManager.get(request);
+		QEventLoop				loop;
+
+		QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+		loop.exec();
+
+		if (reply->error() == QNetworkReply::NoError)
+		{
+			QString			strReply		= (QString)reply->readAll();
+			QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+			QJsonObject		jsonObj			= jsonResponse.object();
+			QJsonArray		jsonArray		= jsonObj["results"].toArray();
+
+			for(int z = 0;z < jsonArray.count();z++)
+			{
+				QJsonObject	movie			= jsonArray[z].toObject();
+				cMovie*		lpMovie			= new cMovie;
+				lpMovie->setMovieTitle(movie["title"].toString());
+				lpMovie->setMovieID(movie["id"].toInt());
+				lpMovie->setOriginalTitle(movie["original_title"].toString());
+				lpMovie->setReleaseDate(movie["release_date"].toString());
+				lpMovie->setVoteCount(movie["vote_count"].toInt());
+				lpMovie->setVideo(movie["video"].toBool());
+				lpMovie->setVoteAverage(movie["vote_average"].toDouble());
+				lpMovie->setPopularity(movie["popularity"].toDouble());
+				lpMovie->setPosterPath(movie["poster_path"].toString());
+				lpMovie->setOriginalLanguage(movie["original_language"].toString());
+
+				QJsonArray	genresArray		= movie["genre_ids"].toArray();
+				QList<qint32>	genresIDs;
+				for(int y = 0;y < genresArray.count();y++)
+					genresIDs.append(genresArray[y].toInt());
+				if(genresIDs.count())
+					lpMovie->setGenres(genresFromID(genresIDs));
+				lpMovie->setBackdropPath(movie["backdrop_path"].toString());
+				lpMovie->setAdult(movie["adult"].toBool());
+				lpMovie->setOverview(movie["overview"].toString());
+				lpMovie->setReleaseDate(movie["release_date"].toString());
+
+				movieList.append(lpMovie);
+			}
+			if(jsonObj["total_pages"].toInt() == page)
+				break;
+
+			page++;
+			if(page > 20)
+				break;
+
+			delete reply;
+		}
+		else
+		{
+			qDebug() << reply->errorString();
+			delete reply;
+		}
+	}
+	return(movieList);
+}
+
+QMap<qint32, QString> cTheMovieDBV3::genresSerie(const QString& szLanguage)
+{
+	QMap<qint32, QString>	genres;
+	QNetworkAccessManager	networkManager;
+	QString					szRequest	= QString("https://api.themoviedb.org/3/genre/tv/list?api_key=%1").arg(m_szToken);
+
+	if(!szLanguage.contains("all"))
+		szRequest.append(QString("&language=%1").arg(szLanguage));
+
+	QNetworkReply*			reply   = networkManager.get(QNetworkRequest(QUrl(szRequest)));
+	QEventLoop				loop;
+
+	QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	loop.exec();
+
+	if(reply->error() == QNetworkReply::NoError)
+	{
+		QString			strReply		= (QString)reply->readAll();
+		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+		QJsonObject		jsonObj			= jsonResponse.object();
+		QJsonArray		jsonArray		= jsonObj["genres"].toArray();
+
+		for(int z = 0;z < jsonArray.count();z++)
+		{
+			QJsonObject	genre			= jsonArray[z].toObject();
+
+			genres.insert(genre["id"].toInt(), genre["name"].toString());
+		}
+	}
+	else
+	{
+		qDebug() << reply->errorString();
+		delete reply;
+	}
+
+	delete reply;
+
+	return(genres);
+}
+
+QStringList cTheMovieDBV3::genresFromID(QList<qint32> genres)
+{
+	QStringList	szGenres;
+
+	for(int x = 0;x < genres.count();x++)
+	{
+		qint32	genre	= genres[x];
+
+		QMapIterator<qint32, QString> iterator(m_genres);
+		while(iterator.hasNext())
+		{
+			iterator.next();
+
+			if(iterator.key() == genre)
+			{
+				szGenres.append(iterator.value());
+				break;
+			}
+		}
+	}
+
+	return(szGenres);
+}

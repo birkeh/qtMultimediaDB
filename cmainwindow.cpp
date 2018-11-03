@@ -17,6 +17,9 @@
 
 #include "cexportdialog.h"
 
+#include "cdiscover.h"
+#include "cmoviediscover.h"
+
 #include <QTreeWidgetItem>
 #include <QDir>
 #include <QFile>
@@ -43,6 +46,8 @@
 
 #include <QInputDialog>
 #include <QFileDialog>
+
+#include <QMap>
 
 
 static bool serieSort(cSerie* s1, cSerie* s2)
@@ -1048,6 +1053,9 @@ void cMainWindow::showSeriesContextMenu(QTreeView* lpTreeView, const QPoint &pos
 	lpMenu->addSeparator();
 	lpMenu->addAction("export...", this, SLOT(onActionExport()));
 
+	lpMenu->addSeparator();
+	lpMenu->addAction("discover...", this, SLOT(onActionDiscover()));
+
 	lpMenu->popup(lpTreeView->viewport()->mapToGlobal(pos));
 }
 
@@ -1097,6 +1105,9 @@ void cMainWindow::showMoviesContextMenu(QTreeView* lpTreeView, const QPoint &pos
 
 	lpMenu->addSeparator();
 	lpMenu->addAction("export...", this, SLOT(onActionExport()));
+
+	lpMenu->addSeparator();
+	lpMenu->addAction("discover...", this, SLOT(onActionMovieDiscover()));
 
 	lpMenu->popup(lpTreeView->viewport()->mapToGlobal(pos));
 }
@@ -2453,4 +2464,22 @@ void cMainWindow::findMovie()
 void cMainWindow::onActionExit()
 {
 	qApp->exit();
+}
+
+void cMainWindow::onActionDiscover()
+{
+	cTheMovieDBV3			movieDB3;
+	QMap<qint32, QString>	genres;
+
+	genres	= movieDB3.genresSerie("de-DE");
+}
+
+void cMainWindow::onActionMovieDiscover()
+{
+	cMovieDiscover*			lpMovieDiscover;
+
+	lpMovieDiscover	= new cMovieDiscover(this);
+	lpMovieDiscover->exec();
+
+	delete lpMovieDiscover;
 }
