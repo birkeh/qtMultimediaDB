@@ -4,16 +4,17 @@
 #include "ccheckboxitemdelegate.h"
 #include "cthemoviedbv3.h"
 
-#include "cmovie.h"
-
 #include <QStandardItem>
 #include <QMap>
 #include <QList>
 
+#include <QDebug>
 
-cMovieDiscover::cMovieDiscover(QWidget *parent) :
+
+cMovieDiscover::cMovieDiscover(const cMovieList movieList, QWidget *parent) :
 	QDialog(parent),
-	ui(new Ui::cMovieDiscover)
+	ui(new Ui::cMovieDiscover),
+	m_movieList(movieList)
 {
 	ui->setupUi(this);
 
@@ -23,6 +24,13 @@ cMovieDiscover::cMovieDiscover(QWidget *parent) :
 	ui->m_lpGenres->setModel(m_lpGenresModel);
 	ui->m_lpGenres->setItemDelegate(new cCheckBoxItemDelegate());
 	ui->m_lpGenres->setWrapping(true);
+
+	m_lpMoviesModel			= new QStandardItemModel(0, 1);
+	ui->m_lpMovies->setModel(m_lpMoviesModel);
+
+	headerLabels	= QStringList() << tr("Title") << tr("Year");
+	m_lpMoviesModel->setHorizontalHeaderLabels(headerLabels);
+
 
 	connect(ui->m_lpVoting, &QxtSpanSlider::spanChanged, this, &cMovieDiscover::spanChanged);
 
@@ -80,13 +88,53 @@ void cMovieDiscover::on_m_lpDiscover_clicked()
 			genres.append(lpItem->data().toInt());
 	}
 
+	setCursor(Qt::WaitCursor);
+
 	cTheMovieDBV3			movieDB3;
 	QList<cMovie*>			movieList	= movieDB3.discoverMovie(szText, bAdult, iYear, genres, voteMin, voteMax, "de-DE");
 
-	m_lp
+	m_lpMoviesModel->clear();
+
+	QStringList	headerLabels	= QStringList() << tr("Title") << tr("Year");
+	m_lpMoviesModel->setHorizontalHeaderLabels(headerLabels);
+
+	for(int x = 0; x < movieList.count();x++)
+	{
+		cMovie*	lpMovie	= movieList[x];
+
+		if(m_movieList.find(lpMovie->movieID()))
+			continue;
+		QList<QStandardItem*>	items;
+
+		items.append(new QStandardItem(lpMovie->movieTitle()));
+		items.append(new QStandardItem(QString::number(lpMovie->releaseDate().year())));
+		items[0]->setData(QVariant::fromValue(lpMovie));
+		items[1]->setData(QVariant::fromValue(lpMovie));
+		items[0]->setCheckable(true);
+
+		m_lpMoviesModel->appendRow(items);
+	}
+
+	for(int x = 0;x < headerLabels.count();x++)
+		ui->m_lpMovies->resizeColumnToContents(x);
+
+	setCursor(Qt::ArrowCursor);
 }
 
 void cMovieDiscover::on_m_lpYearEnable_clicked(bool checked)
 {
 	ui->m_lpYear->setEnabled(checked);
+}
+
+void cMovieDiscover::on_m_lpMovies_clicked(const QModelIndex &index)
+{
+	QStandardItem*	lpItem	= m_lpMoviesModel->itemFromIndex(index);
+	cMovie*			lpMovie	= lpItem->data().value<cMovie*>();
+
+	if(lpMovie->cast().isEmpty())
+	{
+		cTheMovieDBV3	theMovieDB;
+		theMovieDB.loadCastMovie(lpMovie);
+	}
+	ui->m_lpMovieDetails->setMovie(lpMovie);
 }

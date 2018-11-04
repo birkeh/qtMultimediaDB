@@ -2,6 +2,8 @@
 #define CMOVIEDISCOVER_H
 
 
+#include "cmovie.h"
+
 #include <QDialog>
 #include <QStandardItemModel>
 
@@ -15,7 +17,7 @@ class cMovieDiscover : public QDialog
 	Q_OBJECT
 
 public:
-	explicit cMovieDiscover(QWidget *parent = 0);
+	explicit cMovieDiscover(const cMovieList movieList, QWidget *parent = 0);
 	~cMovieDiscover();
 
 private slots:
@@ -23,9 +25,13 @@ private slots:
 	void					on_m_lpDiscover_clicked();
 	void					on_m_lpYearEnable_clicked(bool checked);
 
+	void on_m_lpMovies_clicked(const QModelIndex &index);
+
 private:
 	Ui::cMovieDiscover*		ui;
 	QStandardItemModel*		m_lpGenresModel;
+	QStandardItemModel*		m_lpMoviesModel;
+	cMovieList				m_movieList;
 };
 
 #endif // CMOVIEDISCOVER_H

@@ -1,7 +1,9 @@
 #ifndef CDISCOVER_H
 #define CDISCOVER_H
 
+
 #include <QDialog>
+
 
 namespace Ui {
 class cDiscover;
@@ -16,7 +18,7 @@ public:
 	~cDiscover();
 
 private:
-	Ui::cDiscover *ui;
+	Ui::cDiscover*	ui;
 };
 
 #endif // CDISCOVER_H
