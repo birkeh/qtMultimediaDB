@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     cdiscover.cpp \
     cmoviediscover.cpp \
     qxtspanslider.cpp \
-    ccheckboxitemdelegate.cpp
+    ccheckboxitemdelegate.cpp \
+    cmoviedetails.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -76,7 +77,8 @@ HEADERS  += cmainwindow.h \
     cmoviediscover.h \
     qxtspanslider.h \
     qxtspanslider_p.h \
-    ccheckboxitemdelegate.h
+    ccheckboxitemdelegate.h \
+    cmoviedetails.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \
@@ -89,7 +91,8 @@ FORMS    += cmainwindow.ui \
     cmovieedit.ui \
     cexportdialog.ui \
     cdiscover.ui \
-    cmoviediscover.ui
+    cmoviediscover.ui \
+    cmoviedetails.ui
 
 DISTFILES += \
     qtMovies.ico

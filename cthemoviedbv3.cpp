@@ -10,6 +10,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+#include <QApplication>
+
 //using std::pair;
 
 
@@ -18,8 +20,15 @@ cTheMovieDBV3::cTheMovieDBV3()
 	m_szToken	= "a33271b9e54cdcb9a80680eaf5522f1b";
 }
 
+cTheMovieDBV3::~cTheMovieDBV3()
+{
+}
+
 QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint16& year, const QString& szLanguage)
 {
+	if(m_genres.isEmpty())
+		m_genres	= genresMovie("de-DE");
+
 	QList<cMovie*>			movieList;
 	QNetworkAccessManager	networkManager;
 	QString					szRequest	= QString("https://api.themoviedb.org/3/search/movie?api_key=%1").arg(m_szToken);
@@ -60,6 +69,24 @@ QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint16& 
 				lpMovie->setMovieID(movie["id"].toInt());
 				lpMovie->setOriginalTitle(movie["original_title"].toString());
 				lpMovie->setReleaseDate(movie["release_date"].toString());
+				lpMovie->setVoteCount(movie["vote_count"].toInt());
+				lpMovie->setVideo(movie["video"].toBool());
+				lpMovie->setVoteAverage(movie["vote_average"].toDouble());
+				lpMovie->setPopularity(movie["popularity"].toDouble());
+				lpMovie->setPosterPath(movie["poster_path"].toString());
+				lpMovie->setOriginalLanguage(movie["original_language"].toString());
+
+				QJsonArray	genresArray		= movie["genre_ids"].toArray();
+				QList<qint32>	genresIDs;
+				for(int y = 0;y < genresArray.count();y++)
+					genresIDs.append(genresArray[y].toInt());
+				if(genresIDs.count())
+					lpMovie->setGenres(genresFromID(genresIDs));
+				lpMovie->setBackdropPath(movie["backdrop_path"].toString());
+				lpMovie->setAdult(movie["adult"].toBool());
+				lpMovie->setOverview(movie["overview"].toString());
+				lpMovie->setReleaseDate(movie["release_date"].toString());
+
 				movieList.append(lpMovie);
 			}
 			if(jsonObj["total_pages"].toInt() == page)
@@ -595,8 +622,6 @@ QList<cMovie*> cTheMovieDBV3::discoverMovie(const QString& szText, const bool& b
 	szRequest.append(QString("&vote_average.gte=%1").arg(voteMin));
 	szRequest.append(QString("&vote_average.lte=%1").arg(voteMax));
 
-	szRequest.append("&include_adult=false");
-
 	for(;;)
 	{
 		QNetworkRequest			request(QUrl(QString("%1&page=%2").arg(szRequest).arg(page)));
@@ -657,6 +682,7 @@ QList<cMovie*> cTheMovieDBV3::discoverMovie(const QString& szText, const bool& b
 			delete reply;
 		}
 	}
+
 	return(movieList);
 }
 
@@ -722,4 +748,54 @@ QStringList cTheMovieDBV3::genresFromID(QList<qint32> genres)
 	}
 
 	return(szGenres);
+}
+
+void cTheMovieDBV3::loadCastMovie(cMovie* lpMovie)
+{
+	QNetworkAccessManager	networkManager;
+	QNetworkRequest			request(QUrl(QString("https://api.themoviedb.org/3/movie/%1/credits?api_key=%2").arg(lpMovie->movieID()).arg(m_szToken)));
+
+	request.setRawHeader("Content-Type", "application/json");
+//	if(!szLanguage.contains("all"))
+//		request.setRawHeader("Accept-Language", szLanguage.toUtf8());
+//	else
+//		request.setRawHeader("Accept-Language", "en");
+		request.setRawHeader("Accept-Language", "de");
+
+	QNetworkReply*			reply   = networkManager.get(request);
+	QEventLoop				loop;
+
+	QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	loop.exec();
+
+	if (reply->error() == QNetworkReply::NoError)
+	{
+		QString			strReply		= (QString)reply->readAll();
+		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+		QJsonObject		jsonCast		= jsonResponse.object();
+		QJsonArray		jsonArrayCast	= jsonCast["cast"].toArray();
+		QJsonArray		jsonArrayCrew	= jsonCast["crew"].toArray();
+		QJsonObject		tmpObj;
+
+		QStringList		szCast;
+		QStringList		szCrew;
+
+		delete reply;
+
+		for(int x = 0;x < jsonArrayCast.count();x++)
+		{
+			tmpObj	= jsonArrayCast.at(x).toObject();
+			szCast.append(QString("%1,%2").arg(tmpObj["name"].toString()).arg(tmpObj["character"].toString()));
+		}
+		if(szCast.count())
+			lpMovie->setCast(szCast);
+
+		for(int x = 0;x < jsonArrayCrew.count();x++)
+		{
+			tmpObj	= jsonArrayCrew.at(x).toObject();
+			szCrew.append(QString("%1,%2").arg(tmpObj["name"].toString()).arg(tmpObj["job"].toString()));
+		}
+		if(szCrew.count())
+			lpMovie->setCrew(szCrew);
+	}
 }

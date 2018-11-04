@@ -2478,7 +2478,7 @@ void cMainWindow::onActionMovieDiscover()
 {
 	cMovieDiscover*			lpMovieDiscover;
 
-	lpMovieDiscover	= new cMovieDiscover(this);
+	lpMovieDiscover	= new cMovieDiscover(m_movieList, this);
 	lpMovieDiscover->exec();
 
 	delete lpMovieDiscover;

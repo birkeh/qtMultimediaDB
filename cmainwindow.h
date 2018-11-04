@@ -120,10 +120,7 @@ private:
 	QString				m_szOldSelected;
 
 	cMessageDialog*		m_lpMessageDialog;
-//	cUpdateThread*		m_lpUpdateThread;
 	cPicturesThread*	m_lpPicturesThread;
-
-//	QTime				m_timer;
 
 	QStandardItemModel*	m_lpSeriesListModel;
 	QStandardItemModel*	m_lpMoviesListModel;

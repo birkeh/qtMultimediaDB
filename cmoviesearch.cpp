@@ -68,8 +68,11 @@ void cMovieSearch::on_m_lpSearchButton_clicked()
 		cMovie*	lpMovie	= movieList.at(z);
 		QTreeWidgetItem*	lpNew		= new QTreeWidgetItem(ui->m_lpResults);
 		lpNew->setText(0, lpMovie->movieTitle());
-		lpNew->setText(2, QString("%1").arg(lpMovie->releaseDate().year()));
-		lpNew->setData(0, Qt::UserRole, QVariant::fromValue(lpMovie->movieID()));
+		lpNew->setText(1, QString("%1").arg(lpMovie->releaseDate().year()));
+		lpNew->setData(0, Qt::UserRole, QVariant::fromValue(lpMovie));
+		lpNew->setData(1, Qt::UserRole, QVariant::fromValue(lpMovie));
+		lpNew->setCheckState(0, Qt::Unchecked);
+
 		ui->m_lpResults->addTopLevelItem(lpNew);
 	}
 	ui->m_lpResults->resizeColumnToContents(0);
@@ -84,17 +87,21 @@ QList<qint32> cMovieSearch::id()
 {
 	QList<qint32>	idList;
 
-	if(!ui->m_lpResults->selectedItems().count())
+	for(int x = 0;x < ui->m_lpResults->topLevelItemCount();x++)
+	{
+		if(ui->m_lpResults->topLevelItem(x)->checkState(0) == Qt::Checked)
+		{
+			cMovie*	lpMovie	= ui->m_lpResults->topLevelItem(x)->data(0, Qt::UserRole).value<cMovie*>();
+			idList.append(lpMovie->movieID());
+		}
+	}
+
+	if(idList.isEmpty())
 	{
 		qint32	iID	= ui->m_lpSearch->text().toInt();
 		if(iID)
 			idList.append(iID);
 		return(idList);
-	}
-	else
-	{
-		for(int x = 0;x < ui->m_lpResults->selectedItems().count();x++)
-			idList.append(ui->m_lpResults->selectedItems().at(x)->data(0, Qt::UserRole).toInt());
 	}
 	return(idList);
 }
@@ -133,11 +140,15 @@ void cMovieSearch::setButtonBox()
 {
 	if(ui->m_lpTabWidget->currentIndex() == 0)
 	{
-		if(ui->m_lpResults->selectedItems().count())
-			ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
-		else
-			ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
-		return;
+		ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+		for(int x = 0;x < ui->m_lpResults->topLevelItemCount();x++)
+		{
+			if(ui->m_lpResults->topLevelItem(x)->checkState(0) == Qt::Checked)
+			{
+				ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
+				return;
+			}
+		}
 	}
 
 	if(ui->m_lpPlaceholderName->text().isEmpty())
@@ -155,8 +166,20 @@ void cMovieSearch::setButtonBox()
 	ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 }
 
-void cMovieSearch::on_m_lpResults_doubleClicked(const QModelIndex &index)
+//void cMovieSearch::on_m_lpResults_doubleClicked(const QModelIndex &index)
+//{
+//	if(index.isValid())
+//		accept();
+//}
+
+void cMovieSearch::on_m_lpResults_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-	if(index.isValid())
-		accept();
+	cMovie*	lpMovie	= current->data(0, Qt::UserRole).value<cMovie*>();
+
+	if(lpMovie->cast().isEmpty())
+	{
+		cTheMovieDBV3	theMovieDB;
+		theMovieDB.loadCastMovie(lpMovie);
+	}
+	ui->m_lpMovieDetails->setMovie(lpMovie);
 }
