@@ -31,7 +31,6 @@ cMovieDiscover::cMovieDiscover(const cMovieList movieList, QWidget *parent) :
 	headerLabels	= QStringList() << tr("Title") << tr("Year");
 	m_lpMoviesModel->setHorizontalHeaderLabels(headerLabels);
 
-
 	connect(ui->m_lpVoting, &QxtSpanSlider::spanChanged, this, &cMovieDiscover::spanChanged);
 
 	ui->m_lpVoting->setRange(0, 100);
@@ -137,4 +136,20 @@ void cMovieDiscover::on_m_lpMovies_clicked(const QModelIndex &index)
 		theMovieDB.loadCastMovie(lpMovie);
 	}
 	ui->m_lpMovieDetails->setMovie(lpMovie);
+}
+
+QList<qint32> cMovieDiscover::id()
+{
+	QList<qint32>	idList;
+
+	for(int x = 0;x < m_lpMoviesModel->rowCount();x++)
+	{
+		if(m_lpMoviesModel->item(x, 0)->checkState() == Qt::Checked)
+		{
+			cMovie*	lpMovie	= m_lpMoviesModel->item(x, 0)->data().value<cMovie*>();
+			idList.append(lpMovie->movieID());
+		}
+	}
+
+	return(idList);
 }

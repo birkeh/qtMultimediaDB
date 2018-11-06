@@ -799,3 +799,124 @@ void cTheMovieDBV3::loadCastMovie(cMovie* lpMovie)
 			lpMovie->setCrew(szCrew);
 	}
 }
+
+QList<cSerie*> cTheMovieDBV3::discoverSerie(const QString& szText, const qint16& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage)
+{
+	if(m_genres.isEmpty())
+		m_genres	= genresMovie("de-DE");
+
+	QList<cSerie*>			serieList;
+	QNetworkAccessManager	networkManager;
+	QString					szRequest	= QString("https://api.themoviedb.org/3/discover/tv?api_key=%1").arg(m_szToken);
+	qint16					page		= 1;
+
+	if(!szLanguage.contains("all"))
+		szRequest.append(QString("&language=%1").arg(szLanguage));
+
+	if(!szText.isEmpty())
+		szRequest.append(QString("&with_keywords=%1").arg(szText));
+	if(iYear != -1)
+		szRequest.append(QString("&first_air_date_year=%1").arg(iYear));
+	if(genres.count())
+	{
+		QString	tmp	= QString::number(genres[0]);
+
+		for(int x = 1;x < genres.count();x++)
+			tmp.append(QString(",%1").arg(genres[x]));
+		szRequest.append(QString("&with_genres=%1").arg(tmp));
+	}
+	szRequest.append(QString("&vote_average.gte=%1").arg(voteMin));
+	szRequest.append(QString("&vote_average.lte=%1").arg(voteMax));
+
+	for(;;)
+	{
+		QNetworkRequest			request(QUrl(QString("%1&page=%2").arg(szRequest).arg(page)));
+
+		QNetworkReply*			reply   = networkManager.get(request);
+		QEventLoop				loop;
+
+		QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+		loop.exec();
+
+		if (reply->error() == QNetworkReply::NoError)
+		{
+			QString			strReply		= (QString)reply->readAll();
+			QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
+			QJsonObject		jsonObj			= jsonResponse.object();
+			QJsonArray		jsonArray		= jsonObj["results"].toArray();
+			QJsonArray		tmpArray;
+			QStringList		tmpList;
+
+			for(int z = 0;z < jsonArray.count();z++)
+			{
+				QJsonObject	serie			= jsonArray[z].toObject();
+				cSerie*		lpSerie			= new cSerie;
+
+				lpSerie->setSeriesID(serie["id"].toInt());
+				lpSerie->setBackdropPath(serie["backdrop_path"].toString());
+				tmpArray	= serie["created_by"].toArray();
+				for(int x = 0;x < tmpArray.count();x++)
+					tmpList.append(tmpArray.at(x).toObject()["name"].toString());
+				lpSerie->setCreatedBy(tmpList);
+				tmpList.clear();
+				lpSerie->setFirstAired(serie["first_air_date"].toString());
+				tmpArray	= serie["genres"].toArray();
+				for(int x = 0;x < tmpArray.count();x++)
+					tmpList.append(tmpArray.at(x).toObject()["name"].toString());
+				lpSerie->setGenre(tmpList);
+				tmpList.clear();
+				lpSerie->setHomepage(serie["homepage"].toString());
+				lpSerie->setLastAired(serie["last_air_date"].toString());
+				tmpArray	= serie["languages"].toArray();
+				for(int x = 0;x < tmpArray.count();x++)
+					tmpList.append(tmpArray.at(x).toString());
+				lpSerie->setLanguages(tmpList);
+				tmpList.clear();
+				lpSerie->setSeriesName(serie["name"].toString());
+				tmpArray	= serie["networks"].toArray();
+				for(int x = 0;x < tmpArray.count();x++)
+					tmpList.append(tmpArray.at(x).toObject()["name"].toString());
+				lpSerie->setNetworks(tmpList);
+				tmpList.clear();
+				lpSerie->setEpisodes(serie["number_of_episodes"].toInt());
+				lpSerie->setSeasons(serie["number_of_seasons"].toInt());
+				tmpArray	= serie["origin_country"].toArray();
+				for(int x = 0;x < tmpArray.count();x++)
+					tmpList.append(tmpArray.at(x).toString());
+				lpSerie->setOriginCountries(tmpList);
+				tmpList.clear();
+				lpSerie->setOriginalLanguage(serie["original_language"].toString());
+				lpSerie->setOriginalName(serie["original_name"].toString());
+				lpSerie->setOverview(serie["overview"].toString());
+				lpSerie->setPopularity(serie["popularity"].toDouble());
+				lpSerie->setPosterPath(serie["poster_path"].toString());
+				tmpArray	= serie["production_companies"].toArray();
+				for(int x = 0;x < tmpArray.count();x++)
+					tmpList.append(tmpArray.at(x).toObject()["name"].toString());
+				lpSerie->setProductionCompanies(tmpList);
+				tmpList.clear();
+				lpSerie->setStatus(serie["status"].toString());
+				lpSerie->setType(serie["type"].toString());
+				lpSerie->setVoteAverage(serie["vote_average"].toDouble());
+				lpSerie->setVoteCount(serie["vote_count"].toInt());
+
+				serieList.append(lpSerie);
+			}
+			if(jsonObj["total_pages"].toInt() == page)
+				break;
+
+			page++;
+			if(page > 20)
+				break;
+
+			delete reply;
+		}
+		else
+		{
+			qDebug() << reply->errorString();
+			delete reply;
+		}
+	}
+
+	return(serieList);
+}

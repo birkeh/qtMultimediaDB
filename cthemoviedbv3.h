@@ -27,6 +27,7 @@ public:
 	cSerie*					loadSerie(const qint32 &iID, const QString& szLanguage);
 	cSerie*					loadSerie(const QString& szIMDBID);
 	QMap<qint32, QString>	genresSerie(const QString& szLanguage = "all");
+	QList<cSerie*>			discoverSerie(const QString& szText, const qint16& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage = "all");
 private:
 	QString					m_szToken;
 	QMap<qint32, QString>	m_genres;

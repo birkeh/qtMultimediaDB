@@ -2468,18 +2468,102 @@ void cMainWindow::onActionExit()
 
 void cMainWindow::onActionDiscover()
 {
-	cTheMovieDBV3			movieDB3;
-	QMap<qint32, QString>	genres;
+	cDiscover*	lpDiscover	= new cDiscover(m_serieList, this);
 
-	genres	= movieDB3.genresSerie("de-DE");
+	QSettings	settings;
+	qint16		iX		= settings.value("serieDiscover/x", QVariant::fromValue(-1)).toInt();
+	qint16		iY		= settings.value("serieDiscover/y", QVariant::fromValue(-1)).toInt();
+	qint16		iWidth	= settings.value("serieDiscover/width", QVariant::fromValue(-1)).toInt();
+	qint16		iHeight	= settings.value("serieDiscover/height", QVariant::fromValue(-1)).toInt();
+
+	if(iX != -1 && iY != -1)
+		lpDiscover->move(iX, iY);
+	if(iWidth != -1 && iHeight != -1)
+		lpDiscover->resize(iWidth, iHeight);
+
+	if(lpDiscover->exec() == QDialog::Rejected)
+	{
+		delete lpDiscover;
+		return;
+	}
+
+	settings.setValue("serieDiscover/width", QVariant::fromValue(lpDiscover->size().width()));
+	settings.setValue("serieDiscover/height", QVariant::fromValue(lpDiscover->size().height()));
+	settings.setValue("serieDiscover/x", QVariant::fromValue(lpDiscover->x()));
+	settings.setValue("serieDiscover/y", QVariant::fromValue(lpDiscover->y()));
+
+	QList<qint32>	idList	= lpDiscover->id();
+
+	delete lpDiscover;
 }
 
 void cMainWindow::onActionMovieDiscover()
 {
-	cMovieDiscover*			lpMovieDiscover;
+	cMovieDiscover*	lpMovieDiscover	= new cMovieDiscover(m_movieList, this);
 
-	lpMovieDiscover	= new cMovieDiscover(m_movieList, this);
-	lpMovieDiscover->exec();
+	QSettings	settings;
+	qint16		iX		= settings.value("movieDiscover/x", QVariant::fromValue(-1)).toInt();
+	qint16		iY		= settings.value("movieDiscover/y", QVariant::fromValue(-1)).toInt();
+	qint16		iWidth	= settings.value("movieDiscover/width", QVariant::fromValue(-1)).toInt();
+	qint16		iHeight	= settings.value("movieDiscover/height", QVariant::fromValue(-1)).toInt();
+
+	if(iX != -1 && iY != -1)
+		lpMovieDiscover->move(iX, iY);
+	if(iWidth != -1 && iHeight != -1)
+		lpMovieDiscover->resize(iWidth, iHeight);
+
+	if(lpMovieDiscover->exec() == QDialog::Rejected)
+	{
+		delete lpMovieDiscover;
+		return;
+	}
+
+	settings.setValue("movieDiscover/width", QVariant::fromValue(lpMovieDiscover->size().width()));
+	settings.setValue("movieDiscover/height", QVariant::fromValue(lpMovieDiscover->size().height()));
+	settings.setValue("movieDiscover/x", QVariant::fromValue(lpMovieDiscover->x()));
+	settings.setValue("movieDiscover/y", QVariant::fromValue(lpMovieDiscover->y()));
+
+	QList<qint32>	idList	= lpMovieDiscover->id();
 
 	delete lpMovieDiscover;
+
+	cMovie*			lpMovie	= 0;
+
+	for(int x = 0;x < idList.count();x++)
+	{
+		qint32	id	= idList.at(x);
+		if(id != -1)
+		{
+			cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
+			lpDialog->setTitle("Refresh");
+			lpDialog->setMessage("Loading");
+			lpDialog->show();
+
+			cTheMovieDBV3		movieDB3;
+
+			lpMovie	= movieDB3.loadMovie(id, "de-DE");
+			if(!lpMovie)
+				lpMovie	= movieDB3.loadMovie(id, "en");
+
+			delete lpDialog;
+
+			if(runMovieEdit(lpMovie))
+			{
+				lpDialog	= new cMessageAnimateDialog(this);
+				lpDialog->setTitle("Update");
+				lpDialog->setMessage("Updating");
+				lpDialog->show();
+
+				lpMovie->loadFanart();
+				lpMovie->save(m_db);
+
+				delete lpDialog;
+			}
+			delete lpMovie;
+		}
+	}
+
+	loadMoviesDB();
+	displayMovies();
+	applyMoviesFilter();
 }

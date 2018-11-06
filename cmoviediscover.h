@@ -20,6 +20,7 @@ public:
 	explicit cMovieDiscover(const cMovieList movieList, QWidget *parent = 0);
 	~cMovieDiscover();
 
+	QList<qint32>			id();
 private slots:
 	void					spanChanged(int lower, int upper);
 	void					on_m_lpDiscover_clicked();
