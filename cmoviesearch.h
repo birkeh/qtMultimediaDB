@@ -10,35 +10,116 @@ namespace Ui {
 class cMovieSearch;
 }
 
+/*!
+ \brief
+
+ \class cMovieSearch cmoviesearch.h "cmoviesearch.h"
+*/
 class cMovieSearch : public QDialog
 {
 	Q_OBJECT
 
 public:
+	/*!
+	 \brief
+
+	 \fn cMovieSearch
+	 \param parent
+	*/
 	explicit cMovieSearch(QWidget *parent = 0);
+	/*!
+	 \brief
+
+	 \fn ~cMovieSearch
+	*/
 	~cMovieSearch();
 
+	/*!
+	 \brief
+
+	 \fn id
+	 \return QList<qint32>
+	*/
 	QList<qint32>	id();
+	/*!
+	 \brief
+
+	 \fn placeholderName
+	 \return QString
+	*/
 	QString			placeholderName();
 
+	/*!
+	 \brief
+
+	 \fn placeholder
+	 \return bool
+	*/
 	bool	placeholder();
+	/*!
+	 \brief
+
+	 \fn year
+	 \return qint16
+	*/
 	qint16	year();
 
 private slots:
+	/*!
+	 \brief
+
+	 \fn on_m_lpSearchButton_clicked
+	*/
 	void	on_m_lpSearchButton_clicked();
 
+	/*!
+	 \brief
+
+	 \fn on_m_lpSearch_textChanged
+	 \param arg1
+	*/
 	void	on_m_lpSearch_textChanged(const QString &arg1);
+	/*!
+	 \brief
+
+	 \fn on_m_lpPlaceholderName_textChanged
+	 \param arg1
+	*/
 	void	on_m_lpPlaceholderName_textChanged(const QString &arg1);
+	/*!
+	 \brief
+
+	 \fn on_m_lpYear_valueChanged
+	 \param arg1
+	*/
 	void	on_m_lpYear_valueChanged(int arg1);
 
+	/*!
+	 \brief
+
+	 \fn on_m_lpResults_clicked
+	 \param index
+	*/
 	void	on_m_lpResults_clicked(const QModelIndex &index);
 //	void	on_m_lpResults_doubleClicked(const QModelIndex &index);
 
+	/*!
+	 \brief
+
+	 \fn on_m_lpResults_currentItemChanged
+	 \param current
+	 \param previous
+	*/
 	void on_m_lpResults_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 private:
-	Ui::cMovieSearch *ui;
+	Ui::cMovieSearch *ui; /*!< TODO: describe */
 
+	/*!
+	 \brief
+
+	 \fn setButtonBox
+	*/
 	void	setButtonBox();
 };
 

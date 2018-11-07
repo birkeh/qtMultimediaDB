@@ -38,44 +38,133 @@
 QT_FORWARD_DECLARE_CLASS(QStylePainter)
 QT_FORWARD_DECLARE_CLASS(QStyleOptionSlider)
 
+/*!
+ \brief
+
+ \class QxtSpanSliderPrivate qxtspanslider_p.h "qxtspanslider_p.h"
+*/
 class QxtSpanSliderPrivate : public QObject {
     Q_OBJECT
 public:
-    QxtSpanSliderPrivate();
-    void initStyleOption(QStyleOptionSlider* option, QxtSpanSlider::SpanHandle handle = QxtSpanSlider::UpperHandle) const;
-    int pick(const QPoint& pt) const
+	/*!
+	 \brief
+
+	 \fn QxtSpanSliderPrivate
+	*/
+	QxtSpanSliderPrivate();
+	/*!
+	 \brief
+
+	 \fn initStyleOption
+	 \param option
+	 \param handle
+	*/
+	void initStyleOption(QStyleOptionSlider* option, QxtSpanSlider::SpanHandle handle = QxtSpanSlider::UpperHandle) const;
+	/*!
+	 \brief
+
+	 \fn pick
+	 \param pt
+	 \return int
+	*/
+	int pick(const QPoint& pt) const
     {
         return q_ptr->orientation() == Qt::Horizontal ? pt.x() : pt.y();
     }
-    int pixelPosToRangeValue(int pos) const;
-    void handleMousePress(const QPoint& pos, QStyle::SubControl& control, int value, QxtSpanSlider::SpanHandle handle);
-    void drawHandle(QStylePainter* painter, QxtSpanSlider::SpanHandle handle) const;
-    void setupPainter(QPainter* painter, Qt::Orientation orientation, qreal x1, qreal y1, qreal x2, qreal y2) const;
-    void drawSpan(QStylePainter* painter, const QRect& rect) const;
-    void triggerAction(QAbstractSlider::SliderAction action, bool main);
-    void swapControls();
+	/*!
+	 \brief
 
-    int lower;
-    int upper;
-    int lowerPos;
-    int upperPos;
-    int offset;
-    int position;
-    QxtSpanSlider::SpanHandle lastPressed;
-    QxtSpanSlider::SpanHandle mainControl;
-    QStyle::SubControl lowerPressed;
-    QStyle::SubControl upperPressed;
-    QxtSpanSlider::HandleMovementMode movement;
-    bool firstMovement;
-    bool blockTracking;
+	 \fn pixelPosToRangeValue
+	 \param pos
+	 \return int
+	*/
+	int pixelPosToRangeValue(int pos) const;
+	/*!
+	 \brief
+
+	 \fn handleMousePress
+	 \param pos
+	 \param control
+	 \param value
+	 \param handle
+	*/
+	void handleMousePress(const QPoint& pos, QStyle::SubControl& control, int value, QxtSpanSlider::SpanHandle handle);
+	/*!
+	 \brief
+
+	 \fn drawHandle
+	 \param painter
+	 \param handle
+	*/
+	void drawHandle(QStylePainter* painter, QxtSpanSlider::SpanHandle handle) const;
+	/*!
+	 \brief
+
+	 \fn setupPainter
+	 \param painter
+	 \param orientation
+	 \param x1
+	 \param y1
+	 \param x2
+	 \param y2
+	*/
+	void setupPainter(QPainter* painter, Qt::Orientation orientation, qreal x1, qreal y1, qreal x2, qreal y2) const;
+	/*!
+	 \brief
+
+	 \fn drawSpan
+	 \param painter
+	 \param rect
+	*/
+	void drawSpan(QStylePainter* painter, const QRect& rect) const;
+	/*!
+	 \brief
+
+	 \fn triggerAction
+	 \param action
+	 \param main
+	*/
+	void triggerAction(QAbstractSlider::SliderAction action, bool main);
+	/*!
+	 \brief
+
+	 \fn swapControls
+	*/
+	void swapControls();
+
+	int lower; /*!< TODO: describe */
+	int upper; /*!< TODO: describe */
+	int lowerPos; /*!< TODO: describe */
+	int upperPos; /*!< TODO: describe */
+	int offset; /*!< TODO: describe */
+	int position; /*!< TODO: describe */
+	QxtSpanSlider::SpanHandle lastPressed; /*!< TODO: describe */
+	QxtSpanSlider::SpanHandle mainControl; /*!< TODO: describe */
+	QStyle::SubControl lowerPressed; /*!< TODO: describe */
+	QStyle::SubControl upperPressed; /*!< TODO: describe */
+	QxtSpanSlider::HandleMovementMode movement; /*!< TODO: describe */
+	bool firstMovement; /*!< TODO: describe */
+	bool blockTracking; /*!< TODO: describe */
 
 
 public Q_SLOTS:
-    void updateRange(int min, int max);
-    void movePressedHandle();
+	/*!
+	 \brief
+
+	 \fn updateRange
+	 \param min
+	 \param max
+	*/
+	void updateRange(int min, int max);
+	/*!
+	 \brief
+
+	 \fn movePressedHandle
+	*/
+	void movePressedHandle();
 
 private:
-    QxtSpanSlider* q_ptr;
+	QxtSpanSlider* q_ptr; /*!< TODO: describe */
     friend class QxtSpanSlider;
 
 

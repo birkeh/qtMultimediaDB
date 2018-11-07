@@ -95,7 +95,8 @@ FORMS    += cmainwindow.ui \
     cmoviedetails.ui
 
 DISTFILES += \
-    qtMovies.ico
+    qtMovies.ico \
+    Doxyfile
 
 RESOURCES += \
     resource.qrc

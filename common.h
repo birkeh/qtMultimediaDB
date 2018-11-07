@@ -5,7 +5,20 @@
 #include <QString>
 
 
+/*!
+ \brief
+
+ \fn rootPath
+ \return QString
+*/
 QString	rootPath();
+/*!
+ \brief
+
+ \fn cleanList
+ \param list
+ \return QStringList
+*/
 QStringList	cleanList(const QStringList& list);
 
 

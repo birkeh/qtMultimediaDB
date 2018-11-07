@@ -37,6 +37,11 @@
 
 class QxtSpanSliderPrivate;
 
+/*!
+ \brief
+
+ \class QxtSpanSlider qxtspanslider.h "qxtspanslider.h"
+*/
 class QxtSpanSlider : public QSlider {
     Q_OBJECT
 
@@ -49,60 +54,222 @@ class QxtSpanSlider : public QSlider {
     Q_ENUMS(HandleMovementMode)
 
 public:
-    explicit QxtSpanSlider(QWidget* parent = 0);
-    explicit QxtSpanSlider(Qt::Orientation orientation, QWidget* parent = 0);
-    virtual ~QxtSpanSlider();
+	/*!
+	 \brief
 
-    enum HandleMovementMode
+	 \fn QxtSpanSlider
+	 \param parent
+	*/
+	explicit QxtSpanSlider(QWidget* parent = 0);
+	/*!
+	 \brief
+
+	 \fn QxtSpanSlider
+	 \param orientation
+	 \param parent
+	*/
+	explicit QxtSpanSlider(Qt::Orientation orientation, QWidget* parent = 0);
+	/*!
+	 \brief
+
+	 \fn ~QxtSpanSlider
+	*/
+	virtual ~QxtSpanSlider();
+
+	/*!
+	 \brief
+
+	 \enum HandleMovementMode
+	*/
+	enum HandleMovementMode
     {
         FreeMovement,
         NoCrossing,
         NoOverlapping
     };
 
-    enum SpanHandle
+	/*!
+	 \brief
+
+	 \enum SpanHandle
+	*/
+	enum SpanHandle
     {
         NoHandle,
         LowerHandle,
         UpperHandle
     };
 
-    HandleMovementMode handleMovementMode() const;
-    void setHandleMovementMode(HandleMovementMode mode);
+	/*!
+	 \brief
 
-    int lowerValue() const;
-    int upperValue() const;
+	 \fn handleMovementMode
+	 \return HandleMovementMode
+	*/
+	HandleMovementMode handleMovementMode() const;
+	/*!
+	 \brief
 
-    int lowerPosition() const;
-    int upperPosition() const;
+	 \fn setHandleMovementMode
+	 \param mode
+	*/
+	void setHandleMovementMode(HandleMovementMode mode);
+
+	/*!
+	 \brief
+
+	 \fn lowerValue
+	 \return int
+	*/
+	int lowerValue() const;
+	/*!
+	 \brief
+
+	 \fn upperValue
+	 \return int
+	*/
+	int upperValue() const;
+
+	/*!
+	 \brief
+
+	 \fn lowerPosition
+	 \return int
+	*/
+	int lowerPosition() const;
+	/*!
+	 \brief
+
+	 \fn upperPosition
+	 \return int
+	*/
+	int upperPosition() const;
 
 public Q_SLOTS:
-    void setLowerValue(int lower);
-    void setUpperValue(int upper);
-    void setSpan(int lower, int upper);
+	/*!
+	 \brief
 
-    void setLowerPosition(int lower);
-    void setUpperPosition(int upper);
+	 \fn setLowerValue
+	 \param lower
+	*/
+	void setLowerValue(int lower);
+	/*!
+	 \brief
+
+	 \fn setUpperValue
+	 \param upper
+	*/
+	void setUpperValue(int upper);
+	/*!
+	 \brief
+
+	 \fn setSpan
+	 \param lower
+	 \param upper
+	*/
+	void setSpan(int lower, int upper);
+
+	/*!
+	 \brief
+
+	 \fn setLowerPosition
+	 \param lower
+	*/
+	void setLowerPosition(int lower);
+	/*!
+	 \brief
+
+	 \fn setUpperPosition
+	 \param upper
+	*/
+	void setUpperPosition(int upper);
 
 Q_SIGNALS:
-    void spanChanged(int lower, int upper);
-    void lowerValueChanged(int lower);
-    void upperValueChanged(int upper);
+	/*!
+	 \brief
 
-    void lowerPositionChanged(int lower);
-    void upperPositionChanged(int upper);
+	 \fn spanChanged
+	 \param lower
+	 \param upper
+	*/
+	void spanChanged(int lower, int upper);
+	/*!
+	 \brief
 
-    void sliderPressed(SpanHandle handle);
+	 \fn lowerValueChanged
+	 \param lower
+	*/
+	void lowerValueChanged(int lower);
+	/*!
+	 \brief
+
+	 \fn upperValueChanged
+	 \param upper
+	*/
+	void upperValueChanged(int upper);
+
+	/*!
+	 \brief
+
+	 \fn lowerPositionChanged
+	 \param lower
+	*/
+	void lowerPositionChanged(int lower);
+	/*!
+	 \brief
+
+	 \fn upperPositionChanged
+	 \param upper
+	*/
+	void upperPositionChanged(int upper);
+
+	/*!
+	 \brief
+
+	 \fn sliderPressed
+	 \param handle
+	*/
+	void sliderPressed(SpanHandle handle);
 
 protected:
-    virtual void keyPressEvent(QKeyEvent* event);
-    virtual void mousePressEvent(QMouseEvent* event);
-    virtual void mouseMoveEvent(QMouseEvent* event);
-    virtual void mouseReleaseEvent(QMouseEvent* event);
-    virtual void paintEvent(QPaintEvent* event);
+	/*!
+	 \brief
+
+	 \fn keyPressEvent
+	 \param event
+	*/
+	virtual void keyPressEvent(QKeyEvent* event);
+	/*!
+	 \brief
+
+	 \fn mousePressEvent
+	 \param event
+	*/
+	virtual void mousePressEvent(QMouseEvent* event);
+	/*!
+	 \brief
+
+	 \fn mouseMoveEvent
+	 \param event
+	*/
+	virtual void mouseMoveEvent(QMouseEvent* event);
+	/*!
+	 \brief
+
+	 \fn mouseReleaseEvent
+	 \param event
+	*/
+	virtual void mouseReleaseEvent(QMouseEvent* event);
+	/*!
+	 \brief
+
+	 \fn paintEvent
+	 \param event
+	*/
+	virtual void paintEvent(QPaintEvent* event);
 
 private:
-    QxtSpanSliderPrivate* d_ptr;
+	QxtSpanSliderPrivate* d_ptr; /*!< TODO: describe */
     friend class QxtSpanSliderPrivate;
 };
 

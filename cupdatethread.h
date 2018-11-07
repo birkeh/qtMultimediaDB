@@ -13,28 +13,69 @@
 #include <QSqlDatabase>
 
 
+/*!
+ \brief
+
+ \class cUpdateThread cupdatethread.h "cupdatethread.h"
+*/
 class cUpdateThread : public QThread
 {
 	Q_OBJECT
 
 public:
+	/*!
+	 \brief
+
+	 \fn cUpdateThread
+	*/
 	explicit				cUpdateThread();
 
+	/*!
+	 \brief
+
+	 \fn setData
+	 \param lpMessageDialog
+	 \param serieList
+	 \param db
+	*/
 	void					setData(cMessageDialog *lpMessageDialog, const cSerieList& serieList, const QSqlDatabase& db);
 public slots:
+	/*!
+	 \brief
+
+	 \fn stop
+	*/
 	void					stop();
 
 signals:
+	/*!
+	 \brief
+
+	 \fn updateMessage
+	 \param szMessage
+	 \param iProgress
+	*/
 	void					updateMessage(const QString& szMessage, const qint32 &iProgress);
+	/*!
+	 \brief
+
+	 \fn updateAppendMessage
+	 \param szMessage
+	*/
 	void					updateAppendMessage(const QString& szMessage);
 
 private:
-	QMutex					m_mutex;
-	bool					m_bStop;
-	cSerieList				m_serieList;
-	QSqlDatabase			m_db;
-	QWidget*				m_lpParent;
+	QMutex					m_mutex; /*!< TODO: describe */
+	bool					m_bStop; /*!< TODO: describe */
+	cSerieList				m_serieList; /*!< TODO: describe */
+	QSqlDatabase			m_db; /*!< TODO: describe */
+	QWidget*				m_lpParent; /*!< TODO: describe */
 
+	/*!
+	 \brief
+
+	 \fn run
+	*/
 	void					run();
 };
 
