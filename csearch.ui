@@ -53,28 +53,13 @@
             </layout>
            </item>
            <item>
-            <widget class="QTreeWidget" name="m_lpResults">
-             <property name="columnCount">
-              <number>3</number>
+            <widget class="QTreeView" name="m_lpResults">
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
              </property>
-             <attribute name="headerVisible">
-              <bool>false</bool>
-             </attribute>
-             <column>
-              <property name="text">
-               <string notr="true">1</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string notr="true">2</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string notr="true">3</string>
-              </property>
-             </column>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
           </layout>

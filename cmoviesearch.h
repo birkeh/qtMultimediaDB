@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QList>
-#include <QTreeWidgetItem>
+#include <QStandardItemModel>
 
 
 namespace Ui {
@@ -103,17 +103,9 @@ private slots:
 	void	on_m_lpResults_clicked(const QModelIndex &index);
 //	void	on_m_lpResults_doubleClicked(const QModelIndex &index);
 
-	/*!
-	 \brief
-
-	 \fn on_m_lpResults_currentItemChanged
-	 \param current
-	 \param previous
-	*/
-	void on_m_lpResults_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-
 private:
-	Ui::cMovieSearch *ui; /*!< TODO: describe */
+	Ui::cMovieSearch*		ui; /*!< TODO: describe */
+	QStandardItemModel*		m_lpResultsModel;
 
 	/*!
 	 \brief

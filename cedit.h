@@ -5,6 +5,7 @@
 #include "cserie.h"
 
 #include <QDialog>
+#include <QStandardItemModel>
 
 
 namespace Ui {
@@ -133,6 +134,9 @@ private:
 	QPushButton*		m_lpAllDone; /*!< TODO: describe */
 
 	QSpacerItem*		m_lpVerticalSpacer; /*!< TODO: describe */
+
+	QStandardItemModel*	m_lpDetailsActorsModel;
+	QStandardItemModel*	m_lpDetailsGenreModel;
 
 	cSerie*				m_lpSerie; /*!< TODO: describe */
 };

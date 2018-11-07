@@ -2,6 +2,7 @@
 #define CEPISODEDETAILS_H
 
 #include <QWidget>
+#include <QStandardItemModel>
 
 #include "cepisode.h"
 
@@ -49,6 +50,7 @@ public:
 	void					loadImages();
 private:
 	Ui::cEpisodeDetails*	ui; /*!< TODO: describe */
+	QStandardItemModel*		m_lpDetailsActorsModel;
 	cEpisode*				m_lpEpisode; /*!< TODO: describe */
 	bool					m_bLoaded; /*!< TODO: describe */
 };

@@ -5,6 +5,7 @@
 #include "cmovie.h"
 
 #include <QWidget>
+#include <QStandardItemModel>
 
 
 namespace Ui {
@@ -44,6 +45,8 @@ public:
 	void				setMovie(cMovie* lpMovie);
 private:
 	Ui::cMovieDetails*	ui; /*!< TODO: describe */
+	QStandardItemModel*	m_lpActorsModel;
+	QStandardItemModel*	m_lpGenreModel;
 };
 
 #endif // CMOVIEDETAILS_H

@@ -11,14 +11,19 @@
 cEpisodeDetails::cEpisodeDetails(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::cEpisodeDetails),
+	m_lpDetailsActorsModel(0),
 	m_lpEpisode(0),
 	m_bLoaded(false)
 {
 	ui->setupUi(this);
+
+	m_lpDetailsActorsModel	= new QStandardItemModel(0, 0);
+	ui->m_lpDetailsActors->setModel(m_lpDetailsActorsModel);
 }
 
 cEpisodeDetails::~cEpisodeDetails()
 {
+	delete m_lpDetailsActorsModel;
 	delete ui;
 }
 
@@ -28,16 +33,16 @@ void cEpisodeDetails::setEpisode(cEpisode* lpEpisode)
 	ui->m_lpEpisodeTitle->setText(lpEpisode->name());
 	ui->m_lpOverview->setText(lpEpisode->overview());
 
-	QTreeWidgetItem*	lpItem;
 	for(int x = 0;x < lpEpisode->guestStars().count();x++)
 	{
-		QStringList	tmp	= lpEpisode->guestStars().at(x).split(",");
-		lpItem			= new QTreeWidgetItem(ui->m_lpDetailsActors);
-		lpItem->setText(0, tmp.at(0));
-		if(tmp.count() > 1)
-			lpItem->setText(1, tmp.at(1));
+		QStringList				tmp	= lpEpisode->guestStars().at(x).split(",");
+		QList<QStandardItem*>	items;
 
-		ui->m_lpDetailsActors->addTopLevelItem(lpItem);
+		items <<  new QStandardItem(tmp.at(0));
+		if(tmp.count() > 1)
+			items << new QStandardItem(tmp.at(1));
+
+		m_lpDetailsActorsModel->appendRow(items);
 	}
 	ui->m_lpDetailsActors->resizeColumnToContents(0);
 	ui->m_lpDetailsActors->resizeColumnToContents(1);

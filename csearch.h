@@ -1,7 +1,10 @@
 #ifndef CSEARCH_H
 #define CSEARCH_H
 
+
 #include <QDialog>
+#include <QStandardItemModel>
+
 
 namespace Ui {
 class cSearch;
@@ -107,7 +110,8 @@ private slots:
 	void on_m_lpResults_doubleClicked(const QModelIndex &index);
 
 private:
-	Ui::cSearch *ui; /*!< TODO: describe */
+	Ui::cSearch*		ui; /*!< TODO: describe */
+	QStandardItemModel*	m_lpResultsModel;
 
 	/*!
 	 \brief

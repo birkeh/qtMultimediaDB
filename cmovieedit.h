@@ -5,6 +5,8 @@
 #include "cmovie.h"
 
 #include <QDialog>
+#include <QStandardItemModel>
+
 
 namespace Ui {
 class cMovieEdit;
@@ -64,9 +66,10 @@ private slots:
 	void on_m_lpDone_clicked();
 
 private:
-	Ui::cMovieEdit *ui; /*!< TODO: describe */
-
-	cMovie*		m_lpMovie; /*!< TODO: describe */
+	Ui::cMovieEdit*		ui; /*!< TODO: describe */
+	cMovie*				m_lpMovie; /*!< TODO: describe */
+	QStandardItemModel*	m_lpActorsModel;
+	QStandardItemModel*	m_lpGenreModel;
 };
 
 #endif // CMOVIEEDIT_H

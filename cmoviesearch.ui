@@ -51,36 +51,18 @@
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,2">
+          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,2">
            <item>
-            <widget class="QTreeWidget" name="m_lpResults">
+            <widget class="QTreeView" name="m_lpResults">
              <property name="editTriggers">
               <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
              </property>
              <property name="selectionMode">
               <enum>QAbstractItemView::SingleSelection</enum>
              </property>
-             <property name="columnCount">
-              <number>3</number>
-             </property>
-             <attribute name="headerVisible">
-              <bool>false</bool>
-             </attribute>
-             <column>
-              <property name="text">
-               <string notr="true">1</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string notr="true">2</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string notr="true">3</string>
-              </property>
-             </column>
             </widget>
            </item>
            <item>
@@ -93,7 +75,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>563</width>
+                <width>590</width>
                 <height>372</height>
                </rect>
               </property>

@@ -11,7 +11,8 @@
 
 cSearch::cSearch(QWidget *parent) :
 	QDialog(parent),
-	ui(new Ui::cSearch)
+	ui(new Ui::cSearch),
+	m_lpResultsModel(0)
 {
 	ui->setupUi(this);
 	ui->m_lpSearchButton->setEnabled(false);
@@ -20,10 +21,14 @@ cSearch::cSearch(QWidget *parent) :
 	ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 	ui->m_lpSearch->setFocus();
 	ui->m_lpSearchButton->setDefault(true);
+
+	m_lpResultsModel	= new QStandardItemModel(0, 0);
+	ui->m_lpResults->setModel(m_lpResultsModel);
 }
 
 cSearch::~cSearch()
 {
+	delete m_lpResultsModel;
 	delete ui;
 }
 
@@ -46,35 +51,44 @@ void cSearch::on_m_lpSearchButton_clicked()
 
 	QList<cSerie*>		serieList3	= theMovieDBV3.searchSerie(ui->m_lpSearch->text(), -1, "de-DE");
 
-	ui->m_lpResults->clear();
+	m_lpResultsModel->clear();
 
 	for(int z = 0;z < serieList3.count();z++)
 	{
 		cSerie*	lpSerie	= serieList3.at(z);
-		QTreeWidgetItem*	lpNew		= new QTreeWidgetItem(ui->m_lpResults);
-		lpNew->setText(0, lpSerie->seriesName());
-		lpNew->setText(2, QString("%1").arg(lpSerie->firstAired().year()));
-		lpNew->setData(0, Qt::UserRole, QVariant::fromValue(lpSerie->seriesID()));
-		ui->m_lpResults->addTopLevelItem(lpNew);
+//		QTreeWidgetItem*	lpNew		= new QTreeWidgetItem(ui->m_lpResults);
+//		lpNew->setText(0, lpSerie->seriesName());
+//		lpNew->setText(2, QString("%1").arg(lpSerie->firstAired().year()));
+//		lpNew->setData(0, Qt::UserRole, QVariant::fromValue(lpSerie->seriesID()));
+//		ui->m_lpResults->addTopLevelItem(lpNew);
+
+		QList<QStandardItem*>	items;
+
+		items.append(new QStandardItem(lpSerie->seriesName()));
+		items.append(new QStandardItem(QString::number(lpSerie->firstAired().year())));
+		items[0]->setData(QVariant::fromValue(lpSerie));
+		items[1]->setData(QVariant::fromValue(lpSerie));
+
+		m_lpResultsModel->appendRow(items);
 	}
 	ui->m_lpResults->resizeColumnToContents(0);
 	ui->m_lpResults->resizeColumnToContents(1);
 
-	ui->m_lpResults->sortItems(0, Qt::AscendingOrder);
+	m_lpResultsModel->sort(0);
 
 	delete lpDialog;
 }
 
 qint32 cSearch::id()
 {
-	if(!ui->m_lpResults->selectedItems().count())
+	if(!ui->m_lpResults->selectionModel()->selectedRows().count())
 	{
 		qint32	iID	= ui->m_lpSearch->text().toInt();
 		if(iID)
 			return(iID);
 		return(-1);
 	}
-	return(ui->m_lpResults->selectedItems().at(0)->data(0, Qt::UserRole).toInt());
+	return(m_lpResultsModel->itemFromIndex(ui->m_lpResults->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>()->seriesID());
 }
 
 QString cSearch::placeholderName()
@@ -111,7 +125,7 @@ void cSearch::setButtonBox()
 {
 	if(ui->m_lpTabWidget->currentIndex() == 0)
 	{
-		if(ui->m_lpResults->selectedItems().count())
+		if(ui->m_lpResults->selectionModel()->selectedIndexes().count())
 			ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 		else
 			ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);

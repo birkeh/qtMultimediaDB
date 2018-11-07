@@ -44,6 +44,8 @@ cEdit::cEdit(QWidget *parent) :
 	m_lpAllProgress(0),
 	m_lpAllDone(0),
 	m_lpVerticalSpacer(0),
+	m_lpDetailsActorsModel(0),
+	m_lpDetailsGenreModel(0),
 	m_lpSerie(0)
 {
 	ui->setupUi(this);
@@ -52,6 +54,12 @@ cEdit::cEdit(QWidget *parent) :
 	QColor		col		= palette.color(QPalette::Window);
 	QString		color	= QString("background-color: rgb(%1,%2,%3,%4);").arg(col.red()).arg(col.green()).arg(col.blue()).arg(95);
 	ui->m_lpScrollArea->setStyleSheet(color);
+
+	m_lpDetailsActorsModel	= new QStandardItemModel(0, 0);
+	ui->m_lpDetailsActors->setModel(m_lpDetailsActorsModel);
+
+	m_lpDetailsGenreModel	= new QStandardItemModel(0, 0);
+	ui->m_lpDetailsGenre->setModel(m_lpDetailsGenreModel);
 
 	connect(ui->m_lpAllInit, SIGNAL(clicked()), this, SLOT(lpAllInit_clicked()));
 	connect(ui->m_lpAllProgress, SIGNAL(clicked()), this, SLOT(lpAllProgress_clicked()));
@@ -83,6 +91,9 @@ cEdit::~cEdit()
 			}
 		}
 	}
+
+	delete m_lpDetailsActorsModel;
+	delete m_lpDetailsGenreModel;
 
 	delete ui;
 }
@@ -271,26 +282,22 @@ void cEdit::on_m_lpTabWidget_tabBarClicked(int index)
 			ui->m_lpDetailsOverview->setText(m_lpSerie->overview());
 			ui->m_lpDetailsSeasonTab->clear();
 
-			QTreeWidgetItem*	lpItem;
 			for(int x = 0;x < m_lpSerie->cast().count();x++)
 			{
-				QStringList	tmp	= m_lpSerie->cast().at(x).split(",");
-				lpItem			= new QTreeWidgetItem(ui->m_lpDetailsActors);
-				lpItem->setText(0, tmp.at(0));
-				if(tmp.count() > 1)
-					lpItem->setText(1, tmp.at(1));
+				QList<QStandardItem*>	items;
+				QStringList	tmp			= m_lpSerie->cast().at(x).split(",");
 
-				ui->m_lpDetailsActors->addTopLevelItem(lpItem);
+				items.append(new QStandardItem(tmp.at(0)));
+				if(tmp.count() > 1)
+					items.append(new QStandardItem(tmp.at(1)));
+
+				m_lpDetailsActorsModel->appendRow(items);
 			}
 			ui->m_lpDetailsActors->resizeColumnToContents(0);
 			ui->m_lpDetailsActors->resizeColumnToContents(1);
 
 			for(int x = 0;x < m_lpSerie->genre().count();x++)
-			{
-				lpItem	= new QTreeWidgetItem(ui->m_lpDetailsGenre);
-				lpItem->setText(0, m_lpSerie->genre().at(x));
-				ui->m_lpDetailsGenre->addTopLevelItem(lpItem);
-			}
+				m_lpDetailsGenreModel->appendRow(new QStandardItem(m_lpSerie->genre().at(x)));
 			for(int x = 0;x < m_lpSerie->seasonList().count();x++)
 			{
 				cSeason*		lpSeason		= m_lpSerie->seasonList().at(x);

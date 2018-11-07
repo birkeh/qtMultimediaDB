@@ -6,13 +6,24 @@
 
 cMovieDetails::cMovieDetails(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::cMovieDetails)
+	ui(new Ui::cMovieDetails),
+	m_lpActorsModel(0),
+	m_lpGenreModel(0)
 {
 	ui->setupUi(this);
+
+	m_lpActorsModel	= new QStandardItemModel(0, 0);
+	ui->m_lpDetailsActors->setModel(m_lpActorsModel);
+
+	m_lpGenreModel	= new QStandardItemModel(0, 9);
+	ui->m_lpDetailsGenre->setModel(m_lpGenreModel);
 }
 
 cMovieDetails::~cMovieDetails()
 {
+	delete m_lpActorsModel;
+	delete m_lpGenreModel;
+
 	delete ui;
 }
 
@@ -31,24 +42,21 @@ void cMovieDetails::setMovie(cMovie* lpMovie)
 
 	ui->m_lpDetailsOverview->setText(lpMovie->overview());
 
-	ui->m_lpDetailsActors->clear();
-	QTreeWidgetItem*	lpItem;
+	m_lpActorsModel->clear();
 	for(int x = 0;x < lpMovie->cast().count();x++)
 	{
-		QStringList	str	= lpMovie->cast().at(x).split(",");
-		lpItem	= new QTreeWidgetItem(ui->m_lpDetailsActors);
-		lpItem->setText(0, str.at(0));
-		lpItem->setText(1, str.at(1));
-		ui->m_lpDetailsActors->addTopLevelItem(lpItem);
+		QList<QStandardItem*>	items;
+		QStringList				str	= lpMovie->cast().at(x).split(",");
+
+		items.append(new QStandardItem(str.at(0)));
+		items.append(new QStandardItem(str.at(1)));
+		m_lpActorsModel->appendRow(items);
 	}
 	ui->m_lpDetailsActors->resizeColumnToContents(0);
 
-	ui->m_lpDetailsGenre->clear();
+	m_lpGenreModel->clear();
 	for(int x = 0;x < lpMovie->genres().count();x++)
-	{
-		lpItem	= new QTreeWidgetItem(ui->m_lpDetailsGenre);
-		lpItem->setText(0, lpMovie->genres().at(x));
-		ui->m_lpDetailsGenre->addTopLevelItem(lpItem);
-	}
+		m_lpGenreModel->appendRow(new QStandardItem(lpMovie->genres().at(x)));
+
 	ui->m_lpDetailsGenre->resizeColumnToContents(0);
 }

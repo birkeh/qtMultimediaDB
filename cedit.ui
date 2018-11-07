@@ -19,7 +19,7 @@
      <item>
       <widget class="QTabWidget" name="m_lpTabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="cPixmapWidget" name="m_lpProgressTab">
         <attribute name="title">
@@ -148,23 +148,16 @@
               </widget>
              </item>
              <item>
-              <widget class="QTreeWidget" name="m_lpDetailsActors">
-               <property name="columnCount">
-                <number>2</number>
+              <widget class="QTreeView" name="m_lpDetailsActors">
+               <property name="editTriggers">
+                <set>QAbstractItemView::NoEditTriggers</set>
+               </property>
+               <property name="alternatingRowColors">
+                <bool>true</bool>
                </property>
                <attribute name="headerVisible">
                 <bool>false</bool>
                </attribute>
-               <column>
-                <property name="text">
-                 <string notr="true">1</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string notr="true">2</string>
-                </property>
-               </column>
               </widget>
              </item>
             </layout>
@@ -192,15 +185,19 @@
               </widget>
              </item>
              <item>
-              <widget class="QTreeWidget" name="m_lpDetailsGenre">
+              <widget class="QTreeView" name="m_lpDetailsGenre">
+               <property name="editTriggers">
+                <set>QAbstractItemView::NoEditTriggers</set>
+               </property>
+               <property name="alternatingRowColors">
+                <bool>true</bool>
+               </property>
                <attribute name="headerVisible">
                 <bool>false</bool>
                </attribute>
-               <column>
-                <property name="text">
-                 <string notr="true">1</string>
-                </property>
-               </column>
+               <attribute name="headerDefaultSectionSize">
+                <number>0</number>
+               </attribute>
               </widget>
              </item>
             </layout>

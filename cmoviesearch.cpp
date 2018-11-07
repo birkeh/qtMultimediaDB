@@ -12,7 +12,8 @@
 
 cMovieSearch::cMovieSearch(QWidget *parent) :
 	QDialog(parent),
-	ui(new Ui::cMovieSearch)
+	ui(new Ui::cMovieSearch),
+	m_lpResultsModel(0)
 {
 	ui->setupUi(this);
 	ui->m_lpSearchButton->setEnabled(false);
@@ -21,6 +22,9 @@ cMovieSearch::cMovieSearch(QWidget *parent) :
 	ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 	ui->m_lpSearch->setFocus();
 	ui->m_lpSearchButton->setDefault(true);
+
+	m_lpResultsModel	= new QStandardItemModel(0, 0);
+	ui->m_lpResults->setModel(m_lpResultsModel);
 }
 
 cMovieSearch::~cMovieSearch()
@@ -61,24 +65,26 @@ void cMovieSearch::on_m_lpSearchButton_clicked()
 
 	QList<cMovie*>		movieList	= theMovieDBV3.searchMovie(szSearchText, iYear, "de-DE");
 
-	ui->m_lpResults->clear();
+	m_lpResultsModel->clear();
 
 	for(int z = 0;z < movieList.count();z++)
 	{
 		cMovie*	lpMovie	= movieList.at(z);
-		QTreeWidgetItem*	lpNew		= new QTreeWidgetItem(ui->m_lpResults);
-		lpNew->setText(0, lpMovie->movieTitle());
-		lpNew->setText(1, QString("%1").arg(lpMovie->releaseDate().year()));
-		lpNew->setData(0, Qt::UserRole, QVariant::fromValue(lpMovie));
-		lpNew->setData(1, Qt::UserRole, QVariant::fromValue(lpMovie));
-		lpNew->setCheckState(0, Qt::Unchecked);
 
-		ui->m_lpResults->addTopLevelItem(lpNew);
+		QList<QStandardItem*>	items;
+
+		items.append(new QStandardItem(lpMovie->movieTitle()));
+		items.append(new QStandardItem(QString::number(lpMovie->releaseDate().year())));
+		items[0]->setData(QVariant::fromValue(lpMovie));
+		items[1]->setData(QVariant::fromValue(lpMovie));
+		items[0]->setCheckState(Qt::Unchecked);
+
+		m_lpResultsModel->appendRow(items);
 	}
 	ui->m_lpResults->resizeColumnToContents(0);
 	ui->m_lpResults->resizeColumnToContents(1);
 
-	ui->m_lpResults->sortItems(0, Qt::AscendingOrder);
+	m_lpResultsModel->sort(0, Qt::AscendingOrder);
 
 	delete lpDialog;
 }
@@ -87,11 +93,11 @@ QList<qint32> cMovieSearch::id()
 {
 	QList<qint32>	idList;
 
-	for(int x = 0;x < ui->m_lpResults->topLevelItemCount();x++)
+	for(int x = 0;x < m_lpResultsModel->rowCount();x++)
 	{
-		if(ui->m_lpResults->topLevelItem(x)->checkState(0) == Qt::Checked)
+		if(m_lpResultsModel->item(x, 0)->checkState() == Qt::Checked)
 		{
-			cMovie*	lpMovie	= ui->m_lpResults->topLevelItem(x)->data(0, Qt::UserRole).value<cMovie*>();
+			cMovie*	lpMovie	= m_lpResultsModel->item(x, 0)->data().value<cMovie*>();
 			idList.append(lpMovie->movieID());
 		}
 	}
@@ -121,8 +127,17 @@ qint16 cMovieSearch::year()
 	return(ui->m_lpYear->value());
 }
 
-void cMovieSearch::on_m_lpResults_clicked(const QModelIndex &/*index*/)
+void cMovieSearch::on_m_lpResults_clicked(const QModelIndex& index)
 {
+	cMovie*	lpMovie	= m_lpResultsModel->itemFromIndex(index)->data().value<cMovie*>();
+
+	if(lpMovie->cast().isEmpty())
+	{
+		cTheMovieDBV3	theMovieDB;
+		theMovieDB.loadCastMovie(lpMovie);
+	}
+	ui->m_lpMovieDetails->setMovie(lpMovie);
+
 	setButtonBox();
 }
 
@@ -141,9 +156,9 @@ void cMovieSearch::setButtonBox()
 	if(ui->m_lpTabWidget->currentIndex() == 0)
 	{
 		ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
-		for(int x = 0;x < ui->m_lpResults->topLevelItemCount();x++)
+		for(int x = 0;x < m_lpResultsModel->rowCount();x++)
 		{
-			if(ui->m_lpResults->topLevelItem(x)->checkState(0) == Qt::Checked)
+			if(m_lpResultsModel->item(x, 0)->checkState() == Qt::Checked)
 			{
 				ui->m_lpButtonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 				return;
@@ -171,15 +186,3 @@ void cMovieSearch::setButtonBox()
 //	if(index.isValid())
 //		accept();
 //}
-
-void cMovieSearch::on_m_lpResults_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
-{
-	cMovie*	lpMovie	= current->data(0, Qt::UserRole).value<cMovie*>();
-
-	if(lpMovie->cast().isEmpty())
-	{
-		cTheMovieDBV3	theMovieDB;
-		theMovieDB.loadCastMovie(lpMovie);
-	}
-	ui->m_lpMovieDetails->setMovie(lpMovie);
-}
