@@ -127,6 +127,8 @@ void cMovieDiscover::on_m_lpYearEnable_clicked(bool checked)
 
 void cMovieDiscover::on_m_lpMovies_clicked(const QModelIndex &index)
 {
+	setCursor(Qt::WaitCursor);
+
 	QStandardItem*	lpItem	= m_lpMoviesModel->itemFromIndex(index);
 	cMovie*			lpMovie	= lpItem->data().value<cMovie*>();
 
@@ -136,6 +138,8 @@ void cMovieDiscover::on_m_lpMovies_clicked(const QModelIndex &index)
 		theMovieDB.loadCastMovie(lpMovie);
 	}
 	ui->m_lpMovieDetails->setMovie(lpMovie);
+
+	setCursor(Qt::ArrowCursor);
 }
 
 QList<qint32> cMovieDiscover::id()

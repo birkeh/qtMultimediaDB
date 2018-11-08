@@ -124,6 +124,13 @@ public:
 	 \return QList<cSerie *>
 	*/
 	QList<cSerie*>			discoverSerie(const QString& szText, const qint16& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage = "all");
+	/*!
+	 \brief
+
+	 \fn loadCastSerie
+	 \param lpSerie
+	*/
+	void					loadCastSerie(cSerie* lpSerie);
 private:
 	QString					m_szToken; /*!< TODO: describe */
 	QMap<qint32, QString>	m_genres; /*!< TODO: describe */

@@ -131,40 +131,39 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,2">
-       <item>
-        <widget class="QTreeView" name="m_lpSeries">
-         <property name="editTriggers">
-          <set>QAbstractItemView::NoEditTriggers</set>
+      <widget class="QSplitter" name="splitter">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <widget class="QTreeView" name="m_lpSeries">
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QScrollArea" name="m_lpMovieDetailsScroller">
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="scrollAreaWidgetContents">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>90</width>
+           <height>304</height>
+          </rect>
          </property>
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="cSerieDetails" name="m_lpSerieDetails" native="true"/>
+          </item>
+         </layout>
         </widget>
-       </item>
-       <item>
-        <widget class="QScrollArea" name="m_lpMovieDetailsScroller">
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>579</width>
-            <height>302</height>
-           </rect>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_4">
-           <item row="0" column="0">
-            <widget class="cMovieDetails" name="m_lpSerieDetails" native="true"/>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
+       </widget>
+      </widget>
      </item>
     </layout>
    </item>
@@ -187,9 +186,9 @@
    <header>qxtspanslider.h</header>
   </customwidget>
   <customwidget>
-   <class>cMovieDetails</class>
+   <class>cSerieDetails</class>
    <extends>QWidget</extends>
-   <header>cmoviedetails.h</header>
+   <header>cseriedetails.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

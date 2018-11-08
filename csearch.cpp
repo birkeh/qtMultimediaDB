@@ -42,6 +42,8 @@ void cSearch::on_m_lpSearch_textChanged(const QString& /*arg1*/)
 
 void cSearch::on_m_lpSearchButton_clicked()
 {
+	setCursor(Qt::WaitCursor);
+
 	cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
 	lpDialog->setTitle("Search");
 	lpDialog->setMessage("Searching");
@@ -56,11 +58,6 @@ void cSearch::on_m_lpSearchButton_clicked()
 	for(int z = 0;z < serieList3.count();z++)
 	{
 		cSerie*	lpSerie	= serieList3.at(z);
-//		QTreeWidgetItem*	lpNew		= new QTreeWidgetItem(ui->m_lpResults);
-//		lpNew->setText(0, lpSerie->seriesName());
-//		lpNew->setText(2, QString("%1").arg(lpSerie->firstAired().year()));
-//		lpNew->setData(0, Qt::UserRole, QVariant::fromValue(lpSerie->seriesID()));
-//		ui->m_lpResults->addTopLevelItem(lpNew);
 
 		QList<QStandardItem*>	items;
 
@@ -77,6 +74,8 @@ void cSearch::on_m_lpSearchButton_clicked()
 	m_lpResultsModel->sort(0);
 
 	delete lpDialog;
+
+	setCursor(Qt::ArrowCursor);
 }
 
 qint32 cSearch::id()
@@ -88,7 +87,10 @@ qint32 cSearch::id()
 			return(iID);
 		return(-1);
 	}
-	return(m_lpResultsModel->itemFromIndex(ui->m_lpResults->selectionModel()->selectedRows().at(0))->data(Qt::UserRole).value<cSerie*>()->seriesID());
+
+	QStandardItem*	lpItem	= m_lpResultsModel->itemFromIndex(ui->m_lpResults->selectionModel()->selectedRows().at(0));
+	cSerie*			lpSerie	= lpItem->data().value<cSerie*>();
+	return(lpSerie->seriesID());
 }
 
 QString cSearch::placeholderName()
@@ -106,9 +108,22 @@ qint16 cSearch::year()
 	return(ui->m_lpYear->value());
 }
 
-void cSearch::on_m_lpResults_clicked(const QModelIndex &/*index*/)
+void cSearch::on_m_lpResults_clicked(const QModelIndex& index)
 {
+	setCursor(Qt::WaitCursor);
+	QStandardItem*	lpItem	= m_lpResultsModel->itemFromIndex(index);
+	cSerie*			lpSerie	= lpItem->data().value<cSerie*>();
+
+	if(lpSerie->cast().isEmpty())
+	{
+		cTheMovieDBV3	theMovieDB;
+		theMovieDB.loadCastSerie(lpSerie);
+	}
+	ui->m_lpSerieDetails->setSerie(lpSerie);
+
 	setButtonBox();
+
+	setCursor(Qt::ArrowCursor);
 }
 
 void cSearch::on_m_lpPlaceholderName_textChanged(const QString& /*arg1*/)

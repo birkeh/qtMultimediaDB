@@ -126,15 +126,19 @@ void cDiscover::on_m_lpYearEnable_clicked(bool checked)
 
 void cDiscover::on_m_lpSeries_clicked(const QModelIndex &index)
 {
+	setCursor(Qt::WaitCursor);
+
 	QStandardItem*	lpItem	= m_lpSeriesModel->itemFromIndex(index);
 	cSerie*			lpSerie	= lpItem->data().value<cSerie*>();
 
-//	if(lpSerie->cast().isEmpty())
-//	{
-//		cTheMovieDBV3	theMovieDB;
-//		theMovieDB.loadCastSerie(lpSerie);
-//	}
-//	ui->m_lpMovieDetails->setMovie(lpMovie);
+	if(lpSerie->cast().isEmpty())
+	{
+		cTheMovieDBV3	theMovieDB;
+		theMovieDB.loadCastSerie(lpSerie);
+	}
+	ui->m_lpSerieDetails->setSerie(lpSerie);
+
+	setCursor(Qt::ArrowCursor);
 }
 
 QList<qint32> cDiscover::id()

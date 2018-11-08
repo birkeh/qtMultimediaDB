@@ -9,7 +9,6 @@
 #include <QList>
 
 
-
 cMovieSearch::cMovieSearch(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::cMovieSearch),
@@ -42,6 +41,8 @@ void cMovieSearch::on_m_lpSearch_textChanged(const QString &/*arg1*/)
 
 void cMovieSearch::on_m_lpSearchButton_clicked()
 {
+	setCursor(Qt::WaitCursor);
+
 	cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
 	lpDialog->setTitle("Search");
 	lpDialog->setMessage("Searching");
@@ -66,6 +67,8 @@ void cMovieSearch::on_m_lpSearchButton_clicked()
 	QList<cMovie*>		movieList	= theMovieDBV3.searchMovie(szSearchText, iYear, "de-DE");
 
 	m_lpResultsModel->clear();
+	QStringList	headerLabels	= QStringList() << tr("Title") << tr("Year");
+	m_lpResultsModel->setHorizontalHeaderLabels(headerLabels);
 
 	for(int z = 0;z < movieList.count();z++)
 	{
@@ -77,16 +80,19 @@ void cMovieSearch::on_m_lpSearchButton_clicked()
 		items.append(new QStandardItem(QString::number(lpMovie->releaseDate().year())));
 		items[0]->setData(QVariant::fromValue(lpMovie));
 		items[1]->setData(QVariant::fromValue(lpMovie));
-		items[0]->setCheckState(Qt::Unchecked);
+		items[0]->setCheckable(true);
 
 		m_lpResultsModel->appendRow(items);
 	}
-	ui->m_lpResults->resizeColumnToContents(0);
-	ui->m_lpResults->resizeColumnToContents(1);
+
+	for(int x = 0;x < headerLabels.count();x++)
+		ui->m_lpResults->resizeColumnToContents(x);
 
 	m_lpResultsModel->sort(0, Qt::AscendingOrder);
 
 	delete lpDialog;
+
+	setCursor(Qt::ArrowCursor);
 }
 
 QList<qint32> cMovieSearch::id()
@@ -129,6 +135,8 @@ qint16 cMovieSearch::year()
 
 void cMovieSearch::on_m_lpResults_clicked(const QModelIndex& index)
 {
+	setCursor(Qt::WaitCursor);
+
 	cMovie*	lpMovie	= m_lpResultsModel->itemFromIndex(index)->data().value<cMovie*>();
 
 	if(lpMovie->cast().isEmpty())
@@ -139,6 +147,8 @@ void cMovieSearch::on_m_lpResults_clicked(const QModelIndex& index)
 	ui->m_lpMovieDetails->setMovie(lpMovie);
 
 	setButtonBox();
+
+	setCursor(Qt::ArrowCursor);
 }
 
 void cMovieSearch::on_m_lpPlaceholderName_textChanged(const QString &/*arg1*/)

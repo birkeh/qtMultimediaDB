@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Search Movies</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="1" column="0">
@@ -35,7 +35,7 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
-        <layout class="QVBoxLayout" name="verticalLayout">
+        <layout class="QVBoxLayout" name="verticalLayout" stretch="1,10">
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
@@ -51,43 +51,42 @@
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,2">
-           <item>
-            <widget class="QTreeView" name="m_lpResults">
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
+          <widget class="QSplitter" name="m_lpSplitter">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <widget class="QTreeView" name="m_lpResults">
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+           </widget>
+           <widget class="QScrollArea" name="m_lpMovieDetailsScroller">
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>87</width>
+               <height>363</height>
+              </rect>
              </property>
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-             <property name="selectionMode">
-              <enum>QAbstractItemView::SingleSelection</enum>
-             </property>
+             <layout class="QGridLayout" name="gridLayout_5">
+              <item row="0" column="0">
+               <widget class="cMovieDetails" name="m_lpMovieDetails" native="true"/>
+              </item>
+             </layout>
             </widget>
-           </item>
-           <item>
-            <widget class="QScrollArea" name="m_lpMovieDetailsScroller">
-             <property name="widgetResizable">
-              <bool>true</bool>
-             </property>
-             <widget class="QWidget" name="scrollAreaWidgetContents">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>590</width>
-                <height>372</height>
-               </rect>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_5">
-               <item row="0" column="0">
-                <widget class="cMovieDetails" name="m_lpMovieDetails" native="true"/>
-               </item>
-              </layout>
-             </widget>
-            </widget>
-           </item>
-          </layout>
+           </widget>
+          </widget>
          </item>
         </layout>
        </item>

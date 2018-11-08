@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>334</width>
-    <height>460</height>
+    <width>900</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,34 +35,58 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
-        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <layout class="QVBoxLayout" name="verticalLayout" stretch="1,10">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout">
+          <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item>
-              <widget class="QLineEdit" name="m_lpSearch"/>
-             </item>
-             <item>
-              <widget class="QPushButton" name="m_lpSearchButton">
-               <property name="text">
-                <string>Search</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <widget class="QLineEdit" name="m_lpSearch"/>
            </item>
            <item>
-            <widget class="QTreeView" name="m_lpResults">
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
-             </property>
-             <property name="alternatingRowColors">
-              <bool>true</bool>
+            <widget class="QPushButton" name="m_lpSearchButton">
+             <property name="text">
+              <string>Search</string>
              </property>
             </widget>
            </item>
           </layout>
+         </item>
+         <item>
+          <widget class="QSplitter" name="splitter">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <widget class="QTreeView" name="m_lpResults">
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <attribute name="headerVisible">
+             <bool>false</bool>
+            </attribute>
+           </widget>
+           <widget class="QScrollArea" name="m_lpMovieDetailsScroller">
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>589</width>
+               <height>363</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_5">
+              <item row="0" column="0">
+               <widget class="cSerieDetails" name="m_lpSerieDetails" native="true"/>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </widget>
          </item>
         </layout>
        </item>
@@ -127,6 +151,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>cSerieDetails</class>
+   <extends>QWidget</extends>
+   <header>cseriedetails.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>m_lpSearch</tabstop>
   <tabstop>m_lpSearchButton</tabstop>
