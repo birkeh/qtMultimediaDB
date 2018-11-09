@@ -12,8 +12,6 @@
 
 #include <QApplication>
 
-//using std::pair;
-
 
 cTheMovieDBV3::cTheMovieDBV3()
 {

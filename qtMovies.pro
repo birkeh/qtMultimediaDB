@@ -45,7 +45,9 @@ SOURCES += main.cpp\
     qxtspanslider.cpp \
     ccheckboxitemdelegate.cpp \
     cmoviedetails.cpp \
-    cseriedetails.cpp
+    cseriedetails.cpp \
+    ctheaudiodbv1.cpp \
+    cartist.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -80,7 +82,9 @@ HEADERS  += cmainwindow.h \
     qxtspanslider_p.h \
     ccheckboxitemdelegate.h \
     cmoviedetails.h \
-    cseriedetails.h
+    cseriedetails.h \
+    ctheaudiodbv1.h \
+    cartist.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \

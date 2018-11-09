@@ -78,12 +78,14 @@ static bool movieSort(cMovie* s1, cMovie* s2)
 	return(title1 < title2);
 }
 
+#include "ctheaudiodbv1.h"
+#include "cartist.h"
+
 cMainWindow::cMainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::cMainWindow),
 	m_szOldSelected(""),
 	m_lpMessageDialog(0),
-//	m_lpUpdateThread(0),
 	m_lpPicturesThread(0),
 	m_bProcessing(false),
 	m_lpShortcutAdd(0),
@@ -94,7 +96,8 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	m_lpFileExportAction(0),
 	m_lpFileExitAction(0)
 {
-//	m_timer.start();
+	cTheAudioDBV1			theAudioDBV1;
+	QList<cArtist*>			artistList	= theAudioDBV1.searchArtist("Wolfgang Ambros");
 
 	QSettings				settings;
 
