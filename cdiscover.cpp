@@ -28,7 +28,7 @@ cDiscover::cDiscover(const cSerieList serieList, QWidget *parent) :
 	m_lpSeriesModel			= new QStandardItemModel(0, 1);
 	ui->m_lpSeries->setModel(m_lpSeriesModel);
 
-	headerLabels	= QStringList() << tr("Title") << tr("Year");
+	headerLabels	= QStringList() << tr("Title") << tr("Year") << tr("Voting");
 	m_lpSeriesModel->setHorizontalHeaderLabels(headerLabels);
 
 	connect(ui->m_lpVoting, &QxtSpanSlider::spanChanged, this, &cDiscover::spanChanged);
@@ -93,7 +93,7 @@ void cDiscover::on_m_lpDiscover_clicked()
 
 	m_lpSeriesModel->clear();
 
-	QStringList	headerLabels	= QStringList() << tr("Title") << tr("Year");
+	QStringList	headerLabels	= QStringList() << tr("Title") << tr("Year") << tr("Voting");
 	m_lpSeriesModel->setHorizontalHeaderLabels(headerLabels);
 
 	for(int x = 0; x < serieList.count();x++)
@@ -106,8 +106,10 @@ void cDiscover::on_m_lpDiscover_clicked()
 
 		items.append(new QStandardItem(lpSerie->seriesName()));
 		items.append(new QStandardItem(QString::number(lpSerie->firstAired().year())));
+		items.append(new QStandardItem(QString::number(lpSerie->voteAverage())));
 		items[0]->setData(QVariant::fromValue(lpSerie));
 		items[1]->setData(QVariant::fromValue(lpSerie));
+		items[2]->setData(QVariant::fromValue(lpSerie));
 		items[0]->setCheckable(true);
 
 		m_lpSeriesModel->appendRow(items);

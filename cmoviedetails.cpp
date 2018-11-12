@@ -31,8 +31,9 @@ void cMovieDetails::setMovie(cMovie* lpMovie)
 {
 	ui->m_lpName->setText(lpMovie->movieTitle());
 	ui->m_lpFirstAired->setDate(lpMovie->releaseDate());
+	ui->m_lpVoting->setText(QString::number(lpMovie->voteAverage()));
 
-	ui->m_lpDetailsBanner->clear();
+			ui->m_lpDetailsBanner->clear();
 	if(!lpMovie->backdropPath().isEmpty())
 	{
 		cMovieImage	image;

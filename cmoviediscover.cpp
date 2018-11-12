@@ -28,7 +28,7 @@ cMovieDiscover::cMovieDiscover(const cMovieList movieList, QWidget *parent) :
 	m_lpMoviesModel			= new QStandardItemModel(0, 1);
 	ui->m_lpMovies->setModel(m_lpMoviesModel);
 
-	headerLabels	= QStringList() << tr("Title") << tr("Year");
+	headerLabels	= QStringList() << tr("Title") << tr("Year") << tr("Voting");
 	m_lpMoviesModel->setHorizontalHeaderLabels(headerLabels);
 
 	connect(ui->m_lpVoting, &QxtSpanSlider::spanChanged, this, &cMovieDiscover::spanChanged);
@@ -94,7 +94,7 @@ void cMovieDiscover::on_m_lpDiscover_clicked()
 
 	m_lpMoviesModel->clear();
 
-	QStringList	headerLabels	= QStringList() << tr("Title") << tr("Year");
+	QStringList	headerLabels	= QStringList() << tr("Title") << tr("Year") << tr("Voting");
 	m_lpMoviesModel->setHorizontalHeaderLabels(headerLabels);
 
 	for(int x = 0; x < movieList.count();x++)
@@ -107,8 +107,10 @@ void cMovieDiscover::on_m_lpDiscover_clicked()
 
 		items.append(new QStandardItem(lpMovie->movieTitle()));
 		items.append(new QStandardItem(QString::number(lpMovie->releaseDate().year())));
+		items.append(new QStandardItem(QString::number(lpMovie->voteAverage())));
 		items[0]->setData(QVariant::fromValue(lpMovie));
 		items[1]->setData(QVariant::fromValue(lpMovie));
+		items[2]->setData(QVariant::fromValue(lpMovie));
 		items[0]->setCheckable(true);
 
 		m_lpMoviesModel->appendRow(items);

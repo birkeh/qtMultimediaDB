@@ -28,7 +28,7 @@ QList<cArtist*> cTheAudioDBV1::searchArtist(const QString& szArtist)
 	QNetworkAccessManager	networkManager;
 //	QString					szRequest	= QString("theaudiodb.com/api/v1/json/%1/search.php?s=%2").arg(m_szToken).arg(szArtist);
 
-	QNetworkRequest			request(QUrl(QString("theaudiodb.com/api/v1/json/%1/search.php?s=%2").arg(m_szToken).arg(szArtist)));
+	QNetworkRequest			request(QUrl(QString("https://www.theaudiodb.com/api/v1/json/%1/search.php?s=%2").arg(m_szToken).arg(szArtist)));
 
 	QNetworkReply*			reply   = networkManager.get(request);
 	QEventLoop				loop;

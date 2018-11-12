@@ -15,7 +15,7 @@ cSerieDetails::cSerieDetails(QWidget *parent) :
 	m_lpActorsModel	= new QStandardItemModel(0, 0);
 	ui->m_lpDetailsActors->setModel(m_lpActorsModel);
 
-	m_lpGenreModel	= new QStandardItemModel(0, 9);
+	m_lpGenreModel	= new QStandardItemModel(0, 0);
 	ui->m_lpDetailsGenre->setModel(m_lpGenreModel);
 }
 
@@ -31,6 +31,7 @@ void cSerieDetails::setSerie(cSerie* lpSerie)
 {
 	ui->m_lpName->setText(lpSerie->seriesName());
 	ui->m_lpFirstAired->setDate(lpSerie->firstAired());
+	ui->m_lpVoting->setText(QString::number(lpSerie->voteAverage()));
 
 	ui->m_lpDetailsBanner->clear();
 	if(!lpSerie->backdropPath().isEmpty())
