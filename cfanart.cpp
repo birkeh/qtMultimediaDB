@@ -64,12 +64,12 @@ qint32 cFanart::likes()
 	return(m_iLikes);
 }
 
-void cFanart::setSeason(const qint16& iSeason)
+void cFanart::setSeason(const qint32& iSeason)
 {
 	m_iSeason	= iSeason;
 }
 
-qint16 cFanart::season()
+qint32 cFanart::season()
 {
 	return(m_iSeason);
 }

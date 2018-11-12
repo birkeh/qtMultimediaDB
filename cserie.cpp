@@ -146,22 +146,22 @@ QStringList cSerie::networks()
 	return(m_szNetworks);
 }
 
-void cSerie::setEpisodes(const qint16& iEpisodes)
+void cSerie::setEpisodes(const qint32& iEpisodes)
 {
 	m_iEpisodes	= iEpisodes;
 }
 
-qint16 cSerie::episodes()
+qint32 cSerie::episodes()
 {
 	return(m_iEpisodes);
 }
 
-void cSerie::setSeasons(const qint16& iSeasons)
+void cSerie::setSeasons(const qint32& iSeasons)
 {
 	m_iSeasons	= iSeasons;
 }
 
-qint16 cSerie::seasons()
+qint32 cSerie::seasons()
 {
 	return(m_iSeasons);
 }
@@ -245,12 +245,12 @@ qreal cSerie::voteAverage()
 	return(m_dVoteAverage);
 }
 
-void cSerie::setVoteCount(const qint16& iVoteCount)
+void cSerie::setVoteCount(const qint32& iVoteCount)
 {
 	m_iVoteCount	= iVoteCount;
 }
 
-qint16 cSerie::voteCount()
+qint32 cSerie::voteCount()
 {
 	return(m_iVoteCount);
 }
@@ -397,7 +397,7 @@ bool cSerie::cliffhanger()
 	return(m_bCliffhanger);
 }
 
-cSeason* cSerie::addSeason(const qint16& iSeason)
+cSeason* cSerie::addSeason(const qint32& iSeason)
 {
 	cSeason*	lpNew	= new cSeason;
 	lpNew->setSeasonNumber(iSeason);
@@ -406,7 +406,7 @@ cSeason* cSerie::addSeason(const qint16& iSeason)
 	return(lpNew);
 }
 
-cSeason* cSerie::findSeason(const qint16& iSeason)
+cSeason* cSerie::findSeason(const qint32& iSeason)
 {
 	for(int z = 0;z < m_seasonList.count();z++)
 	{
@@ -421,9 +421,9 @@ QList<cSeason*> cSerie::seasonList()
 	return(m_seasonList);
 }
 
-qint16 cSerie::minSeason()
+qint32 cSerie::minSeason()
 {
-	qint16	iMin	= 9999;
+	qint32	iMin	= 9999;
 	for(int z = 0;z < m_seasonList.count();z++)
 	{
 		if(m_seasonList.at(z)->seasonNumber() < iMin)
@@ -434,9 +434,9 @@ qint16 cSerie::minSeason()
 	return(iMin);
 }
 
-qint16 cSerie::maxSeason()
+qint32 cSerie::maxSeason()
 {
-	qint16	iMax	= -1;
+	qint32	iMax	= -1;
 	for(int z = 0;z < m_seasonList.count();z++)
 	{
 		if(m_seasonList.at(z)->seasonNumber() > iMax)
@@ -468,9 +468,9 @@ bool cSerie::isValid()
 	return(false);
 }
 
-qint16 cSerie::maxEpisode()
+qint32 cSerie::maxEpisode()
 {
-	qint16	iMax	= -1;
+	qint32	iMax	= -1;
 	for(int z = 0;z < m_seasonList.count();z++)
 	{
 		if(m_seasonList.at(z)->episodeCount() > iMax)
@@ -781,7 +781,7 @@ cSerie* cSerieList::add(cSerie* lpSerie)
 	for(int z = 0;z < count();z++)
 	{
 		if(at(z) == lpSerie)
-			return(0);
+			return(nullptr);
 	}
 	append(lpSerie);
 	return(lpSerie);
@@ -794,12 +794,12 @@ cSerie* cSerieList::find(const qint32& iID)
 		if(at(x)->seriesID() == iID)
 			return(at(x));
 	}
-	return(0);
+	return(nullptr);
 }
 
-qint16 cSerieList::minSeason()
+qint32 cSerieList::minSeason()
 {
-	qint16	iMin	= 9999;
+	qint32	iMin	= 9999;
 	for(int z = 0;z < count();z++)
 	{
 		if(at(z)->minSeason() < iMin)
@@ -811,9 +811,9 @@ qint16 cSerieList::minSeason()
 	return(iMin);
 }
 
-qint16 cSerieList::maxSeason()
+qint32 cSerieList::maxSeason()
 {
-	qint16	iMax	= -1;
+	qint32	iMax	= -1;
 	for(int z = 0;z < count();z++)
 	{
 		if(at(z)->maxSeason() > iMax)
@@ -826,9 +826,9 @@ qint16 cSerieList::maxSeason()
 	return(iMax);
 }
 
-qint16 cSerieList::maxEpisode()
+qint32 cSerieList::maxEpisode()
 {
-	qint16	iMax	= -1;
+	qint32	iMax	= -1;
 	for(int z = 0;z < count();z++)
 	{
 		if(at(z)->maxEpisode() > iMax)

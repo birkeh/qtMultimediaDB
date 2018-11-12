@@ -1,6 +1,6 @@
 #include "cseason.h"
 
-#define DELETE(x) { if(x) delete x; x=0; }
+#define DELETE(x) { if(x) delete x; x=nullptr; }
 
 cSeason::cSeason() :
 	m_i_ID(-1),
@@ -10,15 +10,15 @@ cSeason::cSeason() :
 	m_iID(-1),
 	m_szPosterPath(""),
 	m_iSeasonNumber(-1),
-	m_lpGroupBox(0),
-	m_lpGridLayout(0),
-	m_lpGrid(0),
-	m_lpLabel1(0),
-	m_lpAllInit(0),
-	m_lpAllProgress(0),
-	m_lpAllDone(0),
-	m_lpSpacer(0),
-	m_lpSerie(0)
+	m_lpGroupBox(nullptr),
+	m_lpGridLayout(nullptr),
+	m_lpGrid(nullptr),
+	m_lpLabel1(nullptr),
+	m_lpAllInit(nullptr),
+	m_lpAllProgress(nullptr),
+	m_lpAllDone(nullptr),
+	m_lpSpacer(nullptr),
+	m_lpSerie(nullptr)
 
 {
 }
@@ -93,12 +93,12 @@ QString cSeason::posterPath()
 	return(m_szPosterPath);
 }
 
-void cSeason::setSeasonNumber(const qint16& iSeasonNumber)
+void cSeason::setSeasonNumber(const qint32& iSeasonNumber)
 {
 	m_iSeasonNumber	= iSeasonNumber;
 }
 
-qint16 cSeason::seasonNumber()
+qint32 cSeason::seasonNumber()
 {
 	return(m_iSeasonNumber);
 }
@@ -113,7 +113,7 @@ cSerie* cSeason::serie()
 	return(m_lpSerie);
 }
 
-cEpisode* cSeason::addEpisode(qint16 iNumber)
+cEpisode* cSeason::addEpisode(qint32 iNumber)
 {
 	cEpisode*	lpNew	= new cEpisode;
 	lpNew->setEpisodeNumber(iNumber);
@@ -125,7 +125,7 @@ cEpisode* cSeason::addEpisode(qint16 iNumber)
 cEpisode* cSeason::addEpisode(cEpisode* lpEpisode)
 {
 	if(episodeList().contains(lpEpisode))
-		return(0);
+		return(nullptr);
 	m_episodeList.append(lpEpisode);
 	return(lpEpisode);
 }
@@ -135,19 +135,19 @@ QList<cEpisode*> cSeason::episodeList()
 	return(m_episodeList);
 }
 
-cEpisode* cSeason::findEpisode(qint16 iNumber)
+cEpisode* cSeason::findEpisode(qint32 iNumber)
 {
 	for(int x = 0;x < m_episodeList.count();x++)
 	{
 		if(m_episodeList.at(x)->episodeNumber() == iNumber)
 			return(m_episodeList.at(x));
 	}
-	return(0);
+	return(nullptr);
 }
 
-qint16 cSeason::episodeCount()
+qint32 cSeason::episodeCount()
 {
-	qint16	iTotal = -1;
+	qint32	iTotal = -1;
 	for(int z = 0;z < m_episodeList.count();z++)
 	{
 		cEpisode*	lpEpisode	= m_episodeList.at(z);

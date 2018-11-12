@@ -598,7 +598,7 @@ private:
 	 \param lpMovie
 	 \return bool
 	*/
-	bool				applyMoviesFilter(qint16 i, cMovie* lpMovie);
+	bool				applyMoviesFilter(qint32 i, cMovie* lpMovie);
 	/*!
 	 \brief
 

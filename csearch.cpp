@@ -103,7 +103,7 @@ bool cSearch::placeholder()
 	return(ui->m_lpTabWidget->currentIndex() == 1);
 }
 
-qint16 cSearch::year()
+qint32 cSearch::year()
 {
 	return(ui->m_lpYear->value());
 }

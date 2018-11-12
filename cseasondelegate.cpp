@@ -86,8 +86,8 @@ QSize cSeasonDelegate::sizeHint(const QStyleOptionViewItem &option, const QModel
 {
 	if(index.column() > 2)
 	{
-		qint16		iTotal		= -1;
-		qint16		z;
+		qint32		iTotal		= -1;
+		qint32		z;
 		cSeason*	lpSeason	= 0;
 
 		if(index.data(Qt::UserRole).canConvert<cSeason*>())

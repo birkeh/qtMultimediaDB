@@ -22,7 +22,7 @@ void cPicturesThread::stop()
 
 void cPicturesThread::run()
 {
-	qint16	iCurrent	= 0;
+	qint32	iCurrent	= 0;
 
 	for(int z = 0;z < m_items.count();z++)
 	{

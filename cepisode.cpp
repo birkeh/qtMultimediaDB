@@ -2,7 +2,7 @@
 #include "common.h"
 
 
-#define DELETE(x) { if(x) delete x;x = 0;}
+#define DELETE(x) { if(x) delete x;x = nullptr;}
 
 cEpisode::cEpisode() :
 	m_iID(-1),
@@ -54,12 +54,12 @@ QString cEpisode::name()
 	return(m_szName);
 }
 
-void cEpisode::setEpisodeNumber(const qint16& iEpisodeNumber)
+void cEpisode::setEpisodeNumber(const qint32& iEpisodeNumber)
 {
 	m_iEpisodeNumber	= iEpisodeNumber;
 }
 
-qint16 cEpisode::episodeNumber()
+qint32 cEpisode::episodeNumber()
 {
 	return(m_iEpisodeNumber);
 }
@@ -114,12 +114,12 @@ QString cEpisode::productionCode()
 	return(m_szProductionCode);
 }
 
-void cEpisode::setSeasonNumber(const qint16& iSeasonNumber)
+void cEpisode::setSeasonNumber(const qint32& iSeasonNumber)
 {
 	m_iSeasonNumber	= iSeasonNumber;
 }
 
-qint16 cEpisode::seasonNumber()
+qint32 cEpisode::seasonNumber()
 {
 	return(m_iSeasonNumber);
 }
@@ -164,12 +164,12 @@ qreal cEpisode::voteAverage()
 	return(m_dVoteAverage);
 }
 
-void cEpisode::setVoteCount(const qint16& iVoteCount)
+void cEpisode::setVoteCount(const qint32& iVoteCount)
 {
 	m_iVoteCount	= iVoteCount;
 }
 
-qint16 cEpisode::voteCount()
+qint32 cEpisode::voteCount()
 {
 	return(m_iVoteCount);
 }
@@ -238,22 +238,22 @@ QString cEpisode::fileName()
 	return(m_szFileName);
 }
 
-void cEpisode::setThumbHeight(const qint16& iThumbHeight)
+void cEpisode::setThumbHeight(const qint32& iThumbHeight)
 {
 	m_iThumbHeight	= iThumbHeight;
 }
 
-qint16 cEpisode::thumbHeight()
+qint32 cEpisode::thumbHeight()
 {
 	return(m_iThumbHeight);
 }
 
-void cEpisode::setThumbWidth(const qint16& iThumbWidth)
+void cEpisode::setThumbWidth(const qint32& iThumbWidth)
 {
 	m_iThumbWidth	= iThumbWidth;
 }
 
-qint16 cEpisode::thumbWidth()
+qint32 cEpisode::thumbWidth()
 {
 	return(m_iThumbWidth);
 }

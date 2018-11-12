@@ -76,14 +76,14 @@ public:
 	 \fn setEpisodeNumber
 	 \param iEpisodeNumber
 	*/
-	void		setEpisodeNumber(const qint16& iEpisodeNumber);
+	void		setEpisodeNumber(const qint32& iEpisodeNumber);
 	/*!
 	 \brief
 
 	 \fn episodeNumber
-	 \return qint16
+	 \return qint32
 	*/
-	qint16		episodeNumber();
+	qint32		episodeNumber();
 
 	/*!
 	 \brief
@@ -165,14 +165,14 @@ public:
 	 \fn setSeasonNumber
 	 \param iSeasonNumber
 	*/
-	void		setSeasonNumber(const qint16& iSeasonNumber);
+	void		setSeasonNumber(const qint32& iSeasonNumber);
 	/*!
 	 \brief
 
 	 \fn seasonNumber
-	 \return qint16
+	 \return qint32
 	*/
-	qint16		seasonNumber();
+	qint32		seasonNumber();
 
 	/*!
 	 \brief
@@ -240,14 +240,14 @@ public:
 	 \fn setVoteCount
 	 \param iVoteCount
 	*/
-	void		setVoteCount(const qint16& iVoteCount);
+	void		setVoteCount(const qint32& iVoteCount);
 	/*!
 	 \brief
 
 	 \fn voteCount
-	 \return qint16
+	 \return qint32
 	*/
-	qint16		voteCount();
+	qint32		voteCount();
 
 	/*!
 	 \brief
@@ -307,14 +307,14 @@ public:
 	 \fn setThumbHeight
 	 \param iThumbHeight
 	*/
-	void		setThumbHeight(const qint16& iThumbHeight);
+	void		setThumbHeight(const qint32& iThumbHeight);
 	/*!
 	 \brief
 
 	 \fn thumbHeight
-	 \return qint16
+	 \return qint32
 	*/
-	qint16		thumbHeight();
+	qint32		thumbHeight();
 
 	/*!
 	 \brief
@@ -322,14 +322,14 @@ public:
 	 \fn setThumbWidth
 	 \param iThumbWidth
 	*/
-	void		setThumbWidth(const qint16& iThumbWidth);
+	void		setThumbWidth(const qint32& iThumbWidth);
 	/*!
 	 \brief
 
 	 \fn thumbWidth
-	 \return qint16
+	 \return qint32
 	*/
-	qint16		thumbWidth();
+	qint32		thumbWidth();
 
 	/*!
 	 \brief
@@ -390,17 +390,17 @@ public:
 private:
 	qint32			m_iID; /*!< TODO: describe */
 	QString			m_szName; /*!< TODO: describe */
-	qint16			m_iEpisodeNumber; /*!< TODO: describe */
+	qint32			m_iEpisodeNumber; /*!< TODO: describe */
 	QDate			m_airDate; /*!< TODO: describe */
 	QStringList		m_szGuestStars; /*!< TODO: describe */
 	QString			m_szOverview; /*!< TODO: describe */
 	QString			m_szProductionCode; /*!< TODO: describe */
-	qint16			m_iSeasonNumber; /*!< TODO: describe */
+	qint32			m_iSeasonNumber; /*!< TODO: describe */
 	qint32			m_iSeasonID; /*!< TODO: describe */
 	qint32			m_iSeriesID; /*!< TODO: describe */
 	QString			m_szStillPath; /*!< TODO: describe */
 	qreal			m_dVoteAverage; /*!< TODO: describe */
-	qint16			m_iVoteCount; /*!< TODO: describe */
+	qint32			m_iVoteCount; /*!< TODO: describe */
 	QStringList		m_szCrew; /*!< TODO: describe */
 	State			m_state; /*!< TODO: describe */
 	QButtonGroup*	m_lpGroup; /*!< TODO: describe */
@@ -411,5 +411,6 @@ private:
 };
 
 Q_DECLARE_METATYPE(cEpisode*)
+Q_DECLARE_METATYPE(cEpisode::State)
 
 #endif // CEPISODE_H

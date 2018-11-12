@@ -1,7 +1,8 @@
 #include "cmainwindow.h"
 #include <QApplication>
 #include <QSettings>
-#include <QSplashScreen>
+
+#include "csplashscreen.h"
 
 
 #define SHOW_SPLASH
@@ -23,9 +24,16 @@ int main(int argc, char *argv[])
 	QPixmap			pixmap(":/splashEmpty.png");
 #endif
 
-	QSplashScreen	splash(pixmap);
+	QFont			splashFont;
+
+	splashFont.setPixelSize(18);
+	splashFont.setBold(true);
+
+	cSplashScreen	splash(pixmap, splashFont);
+	splash.setMessageRect(QRect(85, 310, 200, 100));
+
 	splash.show();
-	splash.showMessage("initializing...");
+	splash.showStatusMessage("<center><font color='white'>initializing...</font></center>");
 	a.processEvents();
 
 	cMainWindow w;

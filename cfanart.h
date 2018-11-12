@@ -129,14 +129,14 @@ public:
 	 \fn setSeason
 	 \param iSeason
 	*/
-	void		setSeason(const qint16& iSeason);
+	void		setSeason(const qint32& iSeason);
 	/*!
 	 \brief
 
 	 \fn season
-	 \return qint16
+	 \return qint32
 	*/
-	qint16		season();
+	qint32		season();
 
 	/*!
 	 \brief
@@ -188,13 +188,14 @@ private:
 	QString		m_szURL; /*!< TODO: describe */
 	QString		m_szLanguage; /*!< TODO: describe */
 	qint32		m_iLikes; /*!< TODO: describe */
-	qint16		m_iSeason; /*!< TODO: describe */
+	qint32		m_iSeason; /*!< TODO: describe */
 	QString		m_szDisc; /*!< TODO: describe */
 	QString		m_szDiscType; /*!< TODO: describe */
 	bool		m_bActive; /*!< TODO: describe */
 };
 
 Q_DECLARE_METATYPE(cFanart*)
+Q_DECLARE_METATYPE(cFanart::Type)
 
 /*!
  \brief

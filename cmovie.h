@@ -553,6 +553,7 @@ private:
 };
 
 Q_DECLARE_METATYPE(cMovie*)
+Q_DECLARE_METATYPE(cMovie::State)
 
 /*!
  \brief

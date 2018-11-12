@@ -135,14 +135,14 @@ public:
 	 \fn setSeasonNumber
 	 \param iSeasonNumber
 	*/
-	void				setSeasonNumber(const qint16& iSeasonNumber);
+	void				setSeasonNumber(const qint32& iSeasonNumber);
 	/*!
 	 \brief
 
 	 \fn seasonNumber
-	 \return qint16
+	 \return qint32
 	*/
-	qint16				seasonNumber();
+	qint32				seasonNumber();
 
 	/*!
 	 \brief
@@ -166,7 +166,7 @@ public:
 	 \param iNumber
 	 \return cEpisode
 	*/
-	cEpisode*			addEpisode(qint16 iNumber);
+	cEpisode*			addEpisode(qint32 iNumber);
 	/*!
 	 \brief
 
@@ -189,15 +189,15 @@ public:
 	 \param iNumber
 	 \return cEpisode
 	*/
-	cEpisode*			findEpisode(qint16 iNumber);
+	cEpisode*			findEpisode(qint32 iNumber);
 
 	/*!
 	 \brief
 
 	 \fn episodeCount
-	 \return qint16
+	 \return qint32
 	*/
-	qint16				episodeCount();
+	qint32				episodeCount();
 
 	/*!
 	 \brief
@@ -338,7 +338,7 @@ private:
 	QString				m_szOverview; /*!< TODO: describe */
 	qint32				m_iID; /*!< TODO: describe */
 	QString				m_szPosterPath; /*!< TODO: describe */
-	qint16				m_iSeasonNumber; /*!< TODO: describe */
+	qint32				m_iSeasonNumber; /*!< TODO: describe */
 	QList<cEpisode*>	m_episodeList; /*!< TODO: describe */
 	QGroupBox*			m_lpGroupBox; /*!< TODO: describe */
 	QGridLayout*		m_lpGridLayout; /*!< TODO: describe */

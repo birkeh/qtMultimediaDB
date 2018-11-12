@@ -84,9 +84,9 @@ private:
 	QString			m_szArtistAlernate;
 	QString			m_szLabel;
 	qint32			m_iLabelID;
-	qint16			m_iFormedYear;
-	qint16			m_iBornYear;
-	qint16			m_iDiedYear;
+	qint32			m_iFormedYear;
+	qint32			m_iBornYear;
+	qint32			m_iDiedYear;
 	QString			m_szDisbanded;
 	QString			m_szStyle;
 	QString			m_szGenre;
@@ -96,7 +96,7 @@ private:
 	QString			m_szTwitter;
 	QString			m_szBiography;
 	QString			m_szGender;
-	qint16			m_iMembers;
+	qint32			m_iMembers;
 	QString			m_szCountry;
 	QString			m_szCountryCode;
 	QString			m_szArtistThumb;

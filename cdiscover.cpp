@@ -69,7 +69,7 @@ void cDiscover::spanChanged(int lower, int upper)
 void cDiscover::on_m_lpDiscover_clicked()
 {
 	QString			szText	= ui->m_lpText->text();
-	qint16			iYear	= ui->m_lpYear->value();
+	qint32			iYear	= ui->m_lpYear->value();
 	qreal			voteMin	= (qreal)ui->m_lpVoting->lowerValue()/10;
 	qreal			voteMax	= (qreal)ui->m_lpVoting->upperValue()/10;
 

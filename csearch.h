@@ -60,9 +60,9 @@ public:
 	 \brief
 
 	 \fn year
-	 \return qint16
+	 \return qint32
 	*/
-	qint16	year();
+	qint32	year();
 
 private slots:
 	/*!

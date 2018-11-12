@@ -22,7 +22,7 @@ cTheMovieDBV3::~cTheMovieDBV3()
 {
 }
 
-QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint16& year, const QString& szLanguage)
+QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint32& year, const QString& szLanguage)
 {
 	if(m_genres.isEmpty())
 		m_genres	= genresMovie("de-DE");
@@ -30,7 +30,7 @@ QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint16& 
 	QList<cMovie*>			movieList;
 	QNetworkAccessManager	networkManager;
 	QString					szRequest	= QString("https://api.themoviedb.org/3/search/movie?api_key=%1").arg(m_szToken);
-	qint16					page		= 1;
+	qint32					page		= 1;
 
 	if(!szLanguage.contains("all"))
 		szRequest.append(QString("&language=%1").arg(szLanguage));
@@ -54,7 +54,7 @@ QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint16& 
 
 		if (reply->error() == QNetworkReply::NoError)
 		{
-			QString			strReply		= (QString)reply->readAll();
+			QString			strReply		= QString(reply->readAll());
 			QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
 			QJsonObject		jsonObj			= jsonResponse.object();
 			QJsonArray		jsonArray		= jsonObj["results"].toArray();
@@ -105,12 +105,12 @@ QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint16& 
 	return(movieList);
 }
 
-QList<cSerie*> cTheMovieDBV3::searchSerie(const QString& szSerie, const qint16& year, const QString& szLanguage)
+QList<cSerie*> cTheMovieDBV3::searchSerie(const QString& szSerie, const qint32& year, const QString& szLanguage)
 {
 	QList<cSerie*>			serieList;
 	QNetworkAccessManager	networkManager;
 	QString					szRequest	= QString("https://api.themoviedb.org/3/search/tv?api_key=%1").arg(m_szToken);
-	qint16					page		= 1;
+	qint32					page		= 1;
 
 	if(!szLanguage.contains("all"))
 		szRequest.append(QString("&language=%1").arg(szLanguage));
@@ -216,7 +216,7 @@ QList<cSerie*> cTheMovieDBV3::searchSerie(const QString& szSerie, const qint16& 
 
 cMovie* cTheMovieDBV3::loadMovie(const qint32 &iID, const QString &szLanguage)
 {
-	cMovie*					lpMovie	= 0;
+	cMovie*					lpMovie	= nullptr;
 	QNetworkAccessManager	networkManager;
 	QNetworkRequest			request(QUrl(QString("https://api.themoviedb.org/3/movie/%1?api_key=%2&language=%3").arg(iID).arg(m_szToken).arg(szLanguage)));
 
@@ -235,7 +235,7 @@ cMovie* cTheMovieDBV3::loadMovie(const qint32 &iID, const QString &szLanguage)
 
 	if (reply->error() == QNetworkReply::NoError)
 	{
-		QString			strReply		= (QString)reply->readAll();
+		QString			strReply		= QString(reply->readAll());
 		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
 		QJsonObject		jsonObj			= jsonResponse.object();
 
@@ -320,7 +320,7 @@ cMovie* cTheMovieDBV3::loadMovie(const qint32 &iID, const QString &szLanguage)
 
 		if (reply->error() == QNetworkReply::NoError)
 		{
-			strReply		= (QString)reply->readAll();
+			strReply		= QString(reply->readAll());
 			jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
 			QJsonObject		jsonCast		= jsonResponse.object();
 			QJsonArray		jsonArrayCast	= jsonCast["cast"].toArray();
@@ -373,7 +373,7 @@ cSerie* cTheMovieDBV3::loadSerie(const QString& szIMDBID)
 
 	if (reply->error() == QNetworkReply::NoError)
 	{
-		QString			strReply		= (QString)reply->readAll();
+		QString			strReply		= QString(reply->readAll());
 		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
 		QJsonObject		jsonObj			= jsonResponse.object();
 
@@ -390,12 +390,12 @@ cSerie* cTheMovieDBV3::loadSerie(const QString& szIMDBID)
 	}
 	else
 		qDebug() << reply->errorString();
-	return(0);
+	return(nullptr);
 }
 
 cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 {
-	cSerie*					lpSerie	= 0;
+	cSerie*					lpSerie	= nullptr;
 	QNetworkAccessManager	networkManager;
 	QNetworkRequest			request(QUrl(QString("https://api.themoviedb.org/3/tv/%1?api_key=%2&language=%3&append_to_response=credits,external_ids").arg(iID).arg(m_szToken).arg(szLanguage)));
 
@@ -414,7 +414,7 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 
 	if (reply->error() == QNetworkReply::NoError)
 	{
-		QString			strReply		= (QString)reply->readAll();
+		QString			strReply		= QString(reply->readAll());
 		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
 		QJsonObject		jsonObj			= jsonResponse.object();
 
@@ -516,7 +516,7 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 		for(int x = 0; x < tmpArray.count();x++)
 		{
 			QJsonObject	seasonObj		= tmpArray.at(x).toObject();
-			qint16		seasonNumber	= seasonObj["season_number"].toInt();
+			qint32		seasonNumber	= seasonObj["season_number"].toInt();
 			cSeason*	lpSeason		= lpSerie->addSeason(seasonNumber);
 
 			request.setUrl(QUrl(QString("https://api.themoviedb.org/3/tv/%1/season/%2?api_key=%3&language=%4").arg(iID).arg(seasonNumber).arg(m_szToken).arg(szLanguage)));
@@ -534,7 +534,7 @@ cSerie* cTheMovieDBV3::loadSerie(const qint32 &iID, const QString& szLanguage)
 
 			if (reply->error() == QNetworkReply::NoError)
 			{
-				strReply		= (QString)reply->readAll();
+				strReply		= QString(reply->readAll());
 				jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
 				QJsonObject		jsonEpisodes		= jsonResponse.object();
 				QJsonArray		jsonArrayEpisodes	= jsonEpisodes["episodes"].toArray();
@@ -614,7 +614,7 @@ QMap<qint32, QString> cTheMovieDBV3::genresMovie(const QString& szLanguage)
 
 	if(reply->error() == QNetworkReply::NoError)
 	{
-		QString			strReply		= (QString)reply->readAll();
+		QString			strReply		= QString(reply->readAll());
 		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
 		QJsonObject		jsonObj			= jsonResponse.object();
 		QJsonArray		jsonArray		= jsonObj["genres"].toArray();
@@ -637,7 +637,7 @@ QMap<qint32, QString> cTheMovieDBV3::genresMovie(const QString& szLanguage)
 	return(genres);
 }
 
-QList<cMovie*> cTheMovieDBV3::discoverMovie(const QString& szText, const bool& bAdult, const qint16& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage)
+QList<cMovie*> cTheMovieDBV3::discoverMovie(const QString& szText, const bool& bAdult, const qint32& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage)
 {
 	if(m_genres.isEmpty())
 		m_genres	= genresMovie("de-DE");
@@ -645,7 +645,7 @@ QList<cMovie*> cTheMovieDBV3::discoverMovie(const QString& szText, const bool& b
 	QList<cMovie*>			movieList;
 	QNetworkAccessManager	networkManager;
 	QString					szRequest	= QString("https://api.themoviedb.org/3/discover/movie?api_key=%1").arg(m_szToken);
-	qint16					page		= 1;
+	qint32					page		= 1;
 
 	if(!szLanguage.contains("all"))
 		szRequest.append(QString("&language=%1").arg(szLanguage));
@@ -748,7 +748,7 @@ QMap<qint32, QString> cTheMovieDBV3::genresSerie(const QString& szLanguage)
 
 	if(reply->error() == QNetworkReply::NoError)
 	{
-		QString			strReply		= (QString)reply->readAll();
+		QString			strReply		= QString(reply->readAll());
 		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
 		QJsonObject		jsonObj			= jsonResponse.object();
 		QJsonArray		jsonArray		= jsonObj["genres"].toArray();
@@ -815,7 +815,7 @@ void cTheMovieDBV3::loadCastMovie(cMovie* lpMovie)
 
 	if (reply->error() == QNetworkReply::NoError)
 	{
-		QString			strReply		= (QString)reply->readAll();
+		QString			strReply		= QString(reply->readAll());
 		QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
 		QJsonObject		jsonCast		= jsonResponse.object();
 		QJsonArray		jsonArrayCast	= jsonCast["cast"].toArray();
@@ -845,7 +845,7 @@ void cTheMovieDBV3::loadCastMovie(cMovie* lpMovie)
 	}
 }
 
-QList<cSerie*> cTheMovieDBV3::discoverSerie(const QString& szText, const qint16& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage)
+QList<cSerie*> cTheMovieDBV3::discoverSerie(const QString& szText, const qint32& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage)
 {
 	if(m_genres.isEmpty())
 		m_genres	= genresMovie("de-DE");
@@ -853,7 +853,7 @@ QList<cSerie*> cTheMovieDBV3::discoverSerie(const QString& szText, const qint16&
 	QList<cSerie*>			serieList;
 	QNetworkAccessManager	networkManager;
 	QString					szRequest	= QString("https://api.themoviedb.org/3/discover/tv?api_key=%1").arg(m_szToken);
-	qint16					page		= 1;
+	qint32					page		= 1;
 
 	if(!szLanguage.contains("all"))
 		szRequest.append(QString("&language=%1").arg(szLanguage));
@@ -885,7 +885,7 @@ QList<cSerie*> cTheMovieDBV3::discoverSerie(const QString& szText, const qint16&
 
 		if (reply->error() == QNetworkReply::NoError)
 		{
-			QString			strReply		= (QString)reply->readAll();
+			QString			strReply		= QString(reply->readAll());
 			QJsonDocument	jsonResponse	= QJsonDocument::fromJson(strReply.toUtf8());
 			QJsonObject		jsonObj			= jsonResponse.object();
 			QJsonArray		jsonArray		= jsonObj["results"].toArray();

@@ -58,41 +58,41 @@ static bool serieSort(cSerie* s1, cSerie* s2)
 	return(str1 < str2);
 }
 
-static bool movieSort(cMovie* s1, cMovie* s2)
-{
-	QString	collection1	= s1->belongsToCollection();
-	QString	collection2	= s2->belongsToCollection();
+//static bool movieSort(cMovie* s1, cMovie* s2)
+//{
+//	QString	collection1	= s1->belongsToCollection();
+//	QString	collection2	= s2->belongsToCollection();
 
-	QString title1		= s1->movieTitle();
-	QString	title2		= s2->movieTitle();
+//	QString title1		= s1->movieTitle();
+//	QString	title2		= s2->movieTitle();
 
-	if(collection1.isEmpty() && collection2.isEmpty())
-		return(title1 < title2);
+//	if(collection1.isEmpty() && collection2.isEmpty())
+//		return(title1 < title2);
 
-	if(!collection1.isEmpty() && !collection2.isEmpty())
-	{
-		if(collection1 == collection2)
-			return(title1 < title2);
-		return(collection1 < collection2);
-	}
+//	if(!collection1.isEmpty() && !collection2.isEmpty())
+//	{
+//		if(collection1 == collection2)
+//			return(title1 < title2);
+//		return(collection1 < collection2);
+//	}
 
-	return(title1 < title2);
-}
+//	return(title1 < title2);
+//}
 
 cMainWindow::cMainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::cMainWindow),
 	m_szOldSelected(""),
-	m_lpMessageDialog(0),
-	m_lpPicturesThread(0),
+	m_lpMessageDialog(nullptr),
+	m_lpPicturesThread(nullptr),
 	m_bProcessing(false),
-	m_lpShortcutAdd(0),
-	m_lpShortcutFind(0),
+	m_lpShortcutAdd(nullptr),
+	m_lpShortcutFind(nullptr),
 	m_szFind(""),
 	m_szFindMovie(""),
-	m_lpFileMenu(0),
-	m_lpFileExportAction(0),
-	m_lpFileExitAction(0)
+	m_lpFileMenu(nullptr),
+	m_lpFileExportAction(nullptr),
+	m_lpFileExitAction(nullptr)
 {
 	QSettings				settings;
 
@@ -108,17 +108,17 @@ cMainWindow::cMainWindow(QWidget *parent) :
 
 	ui->m_lpMainTab->setCurrentIndex(0);
 	ui->m_lpSeriesFilter->setChecked(settings.value("seriesFilter/enabled", QVariant::fromValue(false)).toBool());
-	ui->m_lpSeriesFilterInitialized->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasInit", (uint)Qt::PartiallyChecked).toUInt()));
-	ui->m_lpSeriesFilterProgress->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasProgress", (uint)Qt::PartiallyChecked).toUInt()));
-	ui->m_lpSeriesFilterDone->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasDone", (uint)Qt::PartiallyChecked).toUInt()));
-	ui->m_lpSeriesFilterWithLink->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasLink", (uint)Qt::PartiallyChecked).toUInt()));
-	ui->m_lpSeriesFilterNotFinished->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasNotFinished", (uint)Qt::PartiallyChecked).toUInt()));
-	ui->m_lpSeriesFilterCliffhanger->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/isCliffhanger", (uint)Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterInitialized->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasInit", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterProgress->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasProgress", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterDone->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasDone", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterWithLink->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasLink", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterNotFinished->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasNotFinished", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterCliffhanger->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/isCliffhanger", Qt::PartiallyChecked).toUInt()));
 
 	ui->m_lpMoviesFilter->setChecked(settings.value("movieFilter/enabled", QVariant::fromValue(false)).toBool());
-	ui->m_lpMoviesFilterInitialized->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasInit", (uint)Qt::PartiallyChecked).toUInt()));
-	ui->m_lpMoviesFilterProgress->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasProgress", (uint)Qt::PartiallyChecked).toUInt()));
-	ui->m_lpMoviesFilterDone->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasDone", (uint)Qt::PartiallyChecked).toUInt()));
+	ui->m_lpMoviesFilterInitialized->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasInit", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpMoviesFilterProgress->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasProgress", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpMoviesFilterDone->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasDone", Qt::PartiallyChecked).toUInt()));
 
 	m_lpSeriesListModel	= new QStandardItemModel(0, 3);
 	initDB();
@@ -140,24 +140,24 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	displaySeries();
 	displayMovies();
 
-	qint16		iX		= settings.value("main/x", QVariant::fromValue(-1)).toInt();
-	qint16		iY		= settings.value("main/y", QVariant::fromValue(-1)).toInt();
-	qint16		iWidth	= settings.value("main/width", QVariant::fromValue(-1)).toInt();
-	qint16		iHeight	= settings.value("main/height", QVariant::fromValue(-1)).toInt();
+	qint32		iX		= settings.value("main/x", QVariant::fromValue(-1)).toInt();
+	qint32		iY		= settings.value("main/y", QVariant::fromValue(-1)).toInt();
+	qint32		iWidth	= settings.value("main/width", QVariant::fromValue(-1)).toInt();
+	qint32		iHeight	= settings.value("main/height", QVariant::fromValue(-1)).toInt();
 
 	if(iWidth != -1 && iHeight != -1)
 		resize(iWidth, iHeight);
 	if(iX != -1 && iY != -1)
 		move(iX, iY);
 
-	qint16	iWindowWidth	= iWidth;
-	qint16	iSubtract		= 50;
+	qint32	iWindowWidth	= iWidth;
+	qint32	iSubtract		= 50;
 
 	if(settings.value("main/maximized").toBool())
 		iWindowWidth	= QApplication::desktop()->geometry().width();
 
-	qint16	iWidth1			= 0;
-	qint16	iWidth2;
+	qint32	iWidth1			= 0;
+	qint32	iWidth2;
 
 	for(int z = 0;z < 3;z++)
 		iWidth1	+= ui->m_lpSeriesList1->columnWidth(z);
@@ -367,7 +367,7 @@ void cMainWindow::convertSeries()
 	QSqlQuery		query;
 	QString			szOldIMDBID	= "";
 	cTheMovieDBV3	theMovieDB;
-	cSerie*			lpSerie		= 0;
+	cSerie*			lpSerie		= nullptr;
 
 	if(query.exec("SELECT s.imdbid, s.download, s.cliffhanger, e.episodeNumber, e.seasonNumber, e.state FROM serie_old s LEFT JOIN episode_old e ON s.id = e.seriesID WHERE s.imdbid IS NOT NULL AND s.imdbid <> \"\" ORDER BY s.imdbid, e.seasonNumber, e.episodeNumber;"))
 	{
@@ -383,7 +383,7 @@ void cMainWindow::convertSeries()
 					{
 						lpSerie->save(m_db);
 						delete lpSerie;
-						lpSerie	= 0;
+						lpSerie	= nullptr;
 					}
 
 					szOldIMDBID	= szIMDBID;
@@ -402,7 +402,7 @@ void cMainWindow::convertSeries()
 					{
 						cEpisode*	lpEpisode	= lpSeason->findEpisode(query.value("episodeNumber").toInt());
 						if(lpEpisode)
-							lpEpisode->setState((cEpisode::State)query.value("state").toInt());
+							lpEpisode->setState(query.value("state").value<cEpisode::State>());
 					}
 				}
 			}
@@ -412,7 +412,7 @@ void cMainWindow::convertSeries()
 	{
 		lpSerie->save(m_db);
 		delete lpSerie;
-		lpSerie	= 0;
+		lpSerie	= nullptr;
 	}
 }
 
@@ -426,9 +426,9 @@ void cMainWindow::loadSeriesDB()
 	qint32		iOldSeasonNumber	= -1;
 	qint32		iSeriesID;
 	qint32		iSeasonNumber;
-	cSeason*	lpSeason;
-	cEpisode*	lpEpisode;
-	cSerie*		lpSerie				= 0;
+	cSeason*	lpSeason			= nullptr;
+	cEpisode*	lpEpisode			= nullptr;
+	cSerie*		lpSerie				= nullptr;
 
 	QString		szQuery	=
 			" SELECT	serie.seriesID seriesID,"
@@ -568,7 +568,7 @@ void cMainWindow::loadSeriesDB()
 			lpEpisode->setVoteAverage(query.value("e_voteAverage").toDouble());
 			lpEpisode->setVoteCount(query.value("e_voteCount").toInt());
 			lpEpisode->setCrew(query.value("e_crew").toString());
-			lpEpisode->setState((cEpisode::State)query.value("e_state").toInt());
+			lpEpisode->setState(query.value("e_state").value<cEpisode::State>());
 		}
 
 		iOldSeriesID	= -1;
@@ -577,7 +577,7 @@ void cMainWindow::loadSeriesDB()
 		szQuery	= "SELECT id, type, url, language, likes, season, active, seriesID FROM fanart ORDER BY seriesID;";
 		if(query.exec(szQuery))
 		{
-			cSerie*	lpSerie	= 0;
+			cSerie*	lpSerie	= nullptr;
 
 			while(query.next())
 			{
@@ -594,7 +594,7 @@ void cMainWindow::loadSeriesDB()
 					iOldSeriesID		= iSeriesID;
 				}
 
-				cFanart*	lpFanart	= fanartList.add((cFanart::Type)query.value("type").toInt());
+				cFanart*	lpFanart	= fanartList.add(query.value("type").value<cFanart::Type>());
 				lpFanart->setActive(query.value("active").toBool());
 				lpFanart->setID(query.value("id").toInt());
 				lpFanart->setURL(query.value("url").toString());
@@ -649,7 +649,7 @@ void cMainWindow::loadMoviesDB()
 			lpMovie->setVoteCount(query.value("voteCount").toInt());
 			lpMovie->setCast(query.value("cast").toString().split("|"));
 			lpMovie->setCrew(query.value("crew").toString().split("|"));
-			lpMovie->setState((cMovie::State)query.value("state").toInt());
+			lpMovie->setState(query.value("state").value<cMovie::State>());
 		}
 
 		qint32 iOldMovieID	= -1;
@@ -657,7 +657,7 @@ void cMainWindow::loadMoviesDB()
 
 		if(query.exec("SELECT id, type, url, language, likes, discType, disc, active, movieID FROM fanart ORDER BY movieID;"))
 		{
-			cMovie*	lpMovie	= 0;
+			cMovie*	lpMovie	= nullptr;
 
 			while(query.next())
 			{
@@ -674,7 +674,7 @@ void cMainWindow::loadMoviesDB()
 					iOldMovieID		= iMovieID;
 				}
 
-				cFanart*	lpFanart	= fanartList.add((cFanart::Type)query.value("type").toInt());
+				cFanart*	lpFanart	= fanartList.add(query.value("type").value<cFanart::Type>());
 				lpFanart->setActive(query.value("active").toBool());
 				lpFanart->setID(query.value("id").toInt());
 				lpFanart->setURL(query.value("url").toString());
@@ -700,11 +700,10 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 	if(!lpSerie)
 		return;
 
-	qint16		iMin		= m_serieList.minSeason();
-	qint16		iEpisodes	= 0;
+	qint32		iMin		= m_serieList.minSeason();
+	qint32		iEpisodes	= 0;
 	bool		bHasInit	= false;
 	bool		bHasProg	= false;
-	bool		bHasDone	= false;
 
 	QString		szOpen;
 
@@ -759,9 +758,6 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 					szDone.append(QString("%1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
 				else
 					szDone.append(QString(", %1").arg(lpSeason->episodeList().at(y)->episodeNumber()));
-
-				if(lpSeason->seasonNumber())
-					bHasDone	= true;
 			}
 		}
 
@@ -856,11 +852,11 @@ void cMainWindow::displaySeries()
 {
 	m_lpSeriesListModel->clear();
 
-	qint16	iMin		= m_serieList.minSeason();
-	qint16	iMax		= m_serieList.maxSeason();
+	qint32	iMin		= m_serieList.minSeason();
+	qint32	iMax		= m_serieList.maxSeason();
 
-	qint16	iSeries		= 0;
-	qint16	iEpisodes	= 0;
+	qint32	iSeries		= 0;
+	qint32	iEpisodes	= 0;
 
 	m_lpSeriesListModel->setColumnCount(iMax-iMin+2);
 
@@ -946,7 +942,7 @@ void cMainWindow::displaySeries()
 
 void cMainWindow::displayMovies()
 {
-	qint16	iMovies	= 0;
+	qint32	iMovies	= 0;
 
 	m_lpMoviesListModel->clear();
 	m_lpMoviesListModel->setColumnCount(1);
@@ -957,7 +953,7 @@ void cMainWindow::displayMovies()
 	m_lpMoviesListModel->setHorizontalHeaderLabels(header);
 
 	QString			szOldCollection("");
-	QStandardItem*	lpRoot	= 0;
+	QStandardItem*	lpRoot	= nullptr;
 
 	for(int x = 0;x < m_movieList.count();x++)
 	{
@@ -969,7 +965,7 @@ void cMainWindow::displayMovies()
 		{
 			szOldCollection	= lpMovie->belongsToCollection();
 			if(szOldCollection.isEmpty())
-				lpRoot	= 0;
+				lpRoot	= nullptr;
 			else
 			{
 				lpRoot	= new QStandardItem(QString("<b>%1</b>").arg(szOldCollection));
@@ -1115,10 +1111,10 @@ bool cMainWindow::runEdit(cSerie* lpSerie, QString& szDownload)
 	lpEdit->setSerie(lpSerie);
 
 	QSettings	settings;
-	qint16		iX		= settings.value("edit/x", QVariant::fromValue(-1)).toInt();
-	qint16		iY		= settings.value("edit/y", QVariant::fromValue(-1)).toInt();
-	qint16		iWidth	= settings.value("edit/width", QVariant::fromValue(-1)).toInt();
-	qint16		iHeight	= settings.value("edit/height", QVariant::fromValue(-1)).toInt();
+	qint32		iX		= settings.value("edit/x", QVariant::fromValue(-1)).toInt();
+	qint32		iY		= settings.value("edit/y", QVariant::fromValue(-1)).toInt();
+	qint32		iWidth	= settings.value("edit/width", QVariant::fromValue(-1)).toInt();
+	qint32		iHeight	= settings.value("edit/height", QVariant::fromValue(-1)).toInt();
 
 	if(iX != -1 && iY != -1)
 		lpEdit->move(iX, iY);
@@ -1127,7 +1123,7 @@ bool cMainWindow::runEdit(cSerie* lpSerie, QString& szDownload)
 
 	delete lpDialog;
 
-	qint16	ret	= lpEdit->exec();
+	qint32	ret	= lpEdit->exec();
 
 	settings.setValue("edit/width", QVariant::fromValue(lpEdit->size().width()));
 	settings.setValue("edit/height", QVariant::fromValue(lpEdit->size().height()));
@@ -1154,9 +1150,9 @@ bool cMainWindow::runEdit(cSerie* lpSerie, QString& szDownload)
 				cEpisode*	lpEpisode	= episodeList.at(y);
 				if(lpEpisode)
 				{
-					lpEpisode->setButton1(0);
-					lpEpisode->setButton2(0);
-					lpEpisode->setButton3(0);
+					lpEpisode->setButton1(nullptr);
+					lpEpisode->setButton2(nullptr);
+					lpEpisode->setButton3(nullptr);
 				}
 			}
 		}
@@ -1186,10 +1182,10 @@ bool cMainWindow::runMovieEdit(cMovie *lpMovie)
 	lpMovieEdit->setMovie(lpMovie);
 
 	QSettings	settings;
-	qint16		iX		= settings.value("movieEdit/x", QVariant::fromValue(-1)).toInt();
-	qint16		iY		= settings.value("movieEdit/y", QVariant::fromValue(-1)).toInt();
-	qint16		iWidth	= settings.value("movieEdit/width", QVariant::fromValue(-1)).toInt();
-	qint16		iHeight	= settings.value("movieEdit/height", QVariant::fromValue(-1)).toInt();
+	qint32		iX		= settings.value("movieEdit/x", QVariant::fromValue(-1)).toInt();
+	qint32		iY		= settings.value("movieEdit/y", QVariant::fromValue(-1)).toInt();
+	qint32		iWidth	= settings.value("movieEdit/width", QVariant::fromValue(-1)).toInt();
+	qint32		iHeight	= settings.value("movieEdit/height", QVariant::fromValue(-1)).toInt();
 
 	if(iX != -1 && iY != -1)
 		lpMovieEdit->move(iX, iY);
@@ -1198,7 +1194,7 @@ bool cMainWindow::runMovieEdit(cMovie *lpMovie)
 
 	delete lpDialog;
 
-	qint16	ret	= lpMovieEdit->exec();
+	qint32	ret	= lpMovieEdit->exec();
 
 	settings.setValue("movieEdit/width", QVariant::fromValue(lpMovieEdit->size().width()));
 	settings.setValue("movieEdit/height", QVariant::fromValue(lpMovieEdit->size().height()));
@@ -1233,10 +1229,10 @@ void cMainWindow::onActionAdd()
 	cSearch*	lpSearch	= new cSearch(this);
 
 	QSettings	settings;
-	qint16		iX		= settings.value("search/x", QVariant::fromValue(-1)).toInt();
-	qint16		iY		= settings.value("search/y", QVariant::fromValue(-1)).toInt();
-	qint16		iWidth	= settings.value("search/width", QVariant::fromValue(-1)).toInt();
-	qint16		iHeight	= settings.value("search/height", QVariant::fromValue(-1)).toInt();
+	qint32		iX		= settings.value("search/x", QVariant::fromValue(-1)).toInt();
+	qint32		iY		= settings.value("search/y", QVariant::fromValue(-1)).toInt();
+	qint32		iWidth	= settings.value("search/width", QVariant::fromValue(-1)).toInt();
+	qint32		iHeight	= settings.value("search/height", QVariant::fromValue(-1)).toInt();
 
 	if(iX != -1 && iY != -1)
 		lpSearch->move(iX, iY);
@@ -1257,11 +1253,11 @@ void cMainWindow::onActionAdd()
 	qint32	id				= lpSearch->id();
 	QString	szPlaceholder	= lpSearch->placeholderName();
 	bool	bPlaceholder	= lpSearch->placeholder();
-	qint16	iYear			= lpSearch->year();
+	qint32	iYear			= lpSearch->year();
 
 	delete lpSearch;
 
-	cSerie*	lpSerie			= 0;
+	cSerie*	lpSerie			= nullptr;
 
 	cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
 	lpDialog->setTitle("Refresh");
@@ -1329,10 +1325,10 @@ void cMainWindow::onActionMovieAdd()
 	cMovieSearch*	lpSearch	= new cMovieSearch(this);
 
 	QSettings	settings;
-	qint16		iX		= settings.value("movieSearch/x", QVariant::fromValue(-1)).toInt();
-	qint16		iY		= settings.value("movieSearch/y", QVariant::fromValue(-1)).toInt();
-	qint16		iWidth	= settings.value("movieSearch/width", QVariant::fromValue(-1)).toInt();
-	qint16		iHeight	= settings.value("movieSearch/height", QVariant::fromValue(-1)).toInt();
+	qint32		iX		= settings.value("movieSearch/x", QVariant::fromValue(-1)).toInt();
+	qint32		iY		= settings.value("movieSearch/y", QVariant::fromValue(-1)).toInt();
+	qint32		iWidth	= settings.value("movieSearch/width", QVariant::fromValue(-1)).toInt();
+	qint32		iHeight	= settings.value("movieSearch/height", QVariant::fromValue(-1)).toInt();
 
 	if(iX != -1 && iY != -1)
 		lpSearch->move(iX, iY);
@@ -1353,11 +1349,11 @@ void cMainWindow::onActionMovieAdd()
 	QList<qint32>	idList	= lpSearch->id();
 	QString	szPlaceholder	= lpSearch->placeholderName();
 	bool	bPlaceholder	= lpSearch->placeholder();
-	qint16	iYear			= lpSearch->year();
+	qint32	iYear			= lpSearch->year();
 
 	delete lpSearch;
 
-	cMovie*	lpMovie			= 0;
+	cMovie*	lpMovie			= nullptr;
 
 	if(!bPlaceholder)
 	{
@@ -1476,9 +1472,7 @@ void cMainWindow::onActionExport()
 {
 	cExportDialog*		lpExportDialog	= new cExportDialog(this);
 
-	int x;
-
-	if(x = lpExportDialog->exec() == QDialog::Rejected)
+	if(lpExportDialog->exec() == QDialog::Rejected)
 	{
 		delete lpExportDialog;
 		return;
@@ -1690,7 +1684,7 @@ void cMainWindow::updateDone()
 
 	if(m_lpMessageDialog)
 		delete m_lpMessageDialog;
-	m_lpMessageDialog	= 0;
+	m_lpMessageDialog	= nullptr;
 }
 
 void cMainWindow::onActionDelete()
@@ -1923,7 +1917,7 @@ void cMainWindow::onActionLoadPictures()
 	if(!serieList.count())
 		return;
 
-	qint16	iTotal		= 0;
+	qint32	iTotal		= 0;
 
 	for(int z = 0;z < serieList.count();z++)
 	{
@@ -1967,11 +1961,11 @@ void cMainWindow::picturesDone()
 {
 	if(m_lpPicturesThread)
 		delete m_lpPicturesThread;
-	m_lpPicturesThread	= 0;
+	m_lpPicturesThread	= nullptr;
 
 	if(m_lpMessageDialog)
 		delete m_lpMessageDialog;
-	m_lpMessageDialog	= 0;
+	m_lpMessageDialog	= nullptr;
 }
 
 void cMainWindow::on_m_lpSeriesList1_pressed(const QModelIndex &/*index*/)
@@ -2156,12 +2150,12 @@ void cMainWindow::applySeriesFilter()
 	QSettings	settings;
 
 	settings.setValue("seriesFilter/enabled", QVariant::fromValue(ui->m_lpSeriesFilter->isChecked()));
-	settings.setValue("seriesFilter/hasInit", (uint)ui->m_lpSeriesFilterInitialized->checkState());
-	settings.setValue("seriesFilter/hasProgress", (uint)ui->m_lpSeriesFilterProgress->checkState());
-	settings.setValue("seriesFilter/hasDone", (uint)ui->m_lpSeriesFilterDone->checkState());
-	settings.setValue("seriesFilter/hasLink", (uint)ui->m_lpSeriesFilterWithLink->checkState());
-	settings.setValue("seriesFilter/hasNotFinished", (uint)ui->m_lpSeriesFilterNotFinished->checkState());
-	settings.setValue("seriesFilter/isCliffhanger", (uint)ui->m_lpSeriesFilterCliffhanger->checkState());
+	settings.setValue("seriesFilter/hasInit", ui->m_lpSeriesFilterInitialized->checkState());
+	settings.setValue("seriesFilter/hasProgress", ui->m_lpSeriesFilterProgress->checkState());
+	settings.setValue("seriesFilter/hasDone", ui->m_lpSeriesFilterDone->checkState());
+	settings.setValue("seriesFilter/hasLink", ui->m_lpSeriesFilterWithLink->checkState());
+	settings.setValue("seriesFilter/hasNotFinished", ui->m_lpSeriesFilterNotFinished->checkState());
+	settings.setValue("seriesFilter/isCliffhanger", ui->m_lpSeriesFilterCliffhanger->checkState());
 
 	for(int x = 0;x < m_lpSeriesListModel->rowCount();x++)
 	{
@@ -2206,9 +2200,9 @@ void cMainWindow::applyMoviesFilter()
 	QSettings	settings;
 
 	settings.setValue("movieFilter/enabled", QVariant::fromValue(ui->m_lpMoviesFilter->isChecked()));
-	settings.setValue("movieFilter/hasInit", (uint)ui->m_lpMoviesFilterInitialized->checkState());
-	settings.setValue("movieFilter/hasProgress", (uint)ui->m_lpMoviesFilterProgress->checkState());
-	settings.setValue("movieFilter/hasDone", (uint)ui->m_lpMoviesFilterDone->checkState());
+	settings.setValue("movieFilter/hasInit", ui->m_lpMoviesFilterInitialized->checkState());
+	settings.setValue("movieFilter/hasProgress", ui->m_lpMoviesFilterProgress->checkState());
+	settings.setValue("movieFilter/hasDone", ui->m_lpMoviesFilterDone->checkState());
 
 	for(int x = 0;x < m_lpMoviesListModel->rowCount();x++)
 	{
@@ -2222,7 +2216,7 @@ void cMainWindow::applyMoviesFilter()
 	}
 }
 
-bool cMainWindow::applyMoviesFilter(qint16 i, cMovie* lpMovie)
+bool cMainWindow::applyMoviesFilter(qint32 i, cMovie* lpMovie)
 {
 	bool	bDisplay			= false;
 
@@ -2462,10 +2456,10 @@ void cMainWindow::onActionDiscover()
 	cDiscover*	lpDiscover	= new cDiscover(m_serieList, this);
 
 	QSettings	settings;
-	qint16		iX		= settings.value("serieDiscover/x", QVariant::fromValue(-1)).toInt();
-	qint16		iY		= settings.value("serieDiscover/y", QVariant::fromValue(-1)).toInt();
-	qint16		iWidth	= settings.value("serieDiscover/width", QVariant::fromValue(-1)).toInt();
-	qint16		iHeight	= settings.value("serieDiscover/height", QVariant::fromValue(-1)).toInt();
+	qint32		iX		= settings.value("serieDiscover/x", QVariant::fromValue(-1)).toInt();
+	qint32		iY		= settings.value("serieDiscover/y", QVariant::fromValue(-1)).toInt();
+	qint32		iWidth	= settings.value("serieDiscover/width", QVariant::fromValue(-1)).toInt();
+	qint32		iHeight	= settings.value("serieDiscover/height", QVariant::fromValue(-1)).toInt();
 
 	if(iX != -1 && iY != -1)
 		lpDiscover->move(iX, iY);
@@ -2493,10 +2487,10 @@ void cMainWindow::onActionMovieDiscover()
 	cMovieDiscover*	lpMovieDiscover	= new cMovieDiscover(m_movieList, this);
 
 	QSettings	settings;
-	qint16		iX		= settings.value("movieDiscover/x", QVariant::fromValue(-1)).toInt();
-	qint16		iY		= settings.value("movieDiscover/y", QVariant::fromValue(-1)).toInt();
-	qint16		iWidth	= settings.value("movieDiscover/width", QVariant::fromValue(-1)).toInt();
-	qint16		iHeight	= settings.value("movieDiscover/height", QVariant::fromValue(-1)).toInt();
+	qint32		iX		= settings.value("movieDiscover/x", QVariant::fromValue(-1)).toInt();
+	qint32		iY		= settings.value("movieDiscover/y", QVariant::fromValue(-1)).toInt();
+	qint32		iWidth	= settings.value("movieDiscover/width", QVariant::fromValue(-1)).toInt();
+	qint32		iHeight	= settings.value("movieDiscover/height", QVariant::fromValue(-1)).toInt();
 
 	if(iX != -1 && iY != -1)
 		lpMovieDiscover->move(iX, iY);
@@ -2518,7 +2512,7 @@ void cMainWindow::onActionMovieDiscover()
 
 	delete lpMovieDiscover;
 
-	cMovie*			lpMovie	= 0;
+	cMovie*			lpMovie	= nullptr;
 
 	for(int x = 0;x < idList.count();x++)
 	{

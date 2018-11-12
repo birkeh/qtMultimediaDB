@@ -47,7 +47,8 @@ SOURCES += main.cpp\
     cmoviedetails.cpp \
     cseriedetails.cpp \
     ctheaudiodbv1.cpp \
-    cartist.cpp
+    cartist.cpp \
+    csplashscreen.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -84,7 +85,8 @@ HEADERS  += cmainwindow.h \
     cmoviedetails.h \
     cseriedetails.h \
     ctheaudiodbv1.h \
-    cartist.h
+    cartist.h \
+    csplashscreen.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \

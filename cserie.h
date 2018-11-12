@@ -189,14 +189,14 @@ public:
 	 \fn setEpisodes
 	 \param iEpisodes
 	*/
-	void			setEpisodes(const qint16& iEpisodes);
+	void			setEpisodes(const qint32& iEpisodes);
 	/*!
 	 \brief
 
 	 \fn episodes
-	 \return qint16
+	 \return qint32
 	*/
-	qint16			episodes();
+	qint32			episodes();
 
 	/*!
 	 \brief
@@ -204,14 +204,14 @@ public:
 	 \fn setSeasons
 	 \param iSeasons
 	*/
-	void			setSeasons(const qint16& iSeasons);
+	void			setSeasons(const qint32& iSeasons);
 	/*!
 	 \brief
 
 	 \fn seasons
-	 \return qint16
+	 \return qint32
 	*/
-	qint16			seasons();
+	qint32			seasons();
 
 	/*!
 	 \brief
@@ -338,14 +338,14 @@ public:
 	 \fn setVoteCount
 	 \param iVoteCount
 	*/
-	void			setVoteCount(const qint16& iVoteCount);
+	void			setVoteCount(const qint32& iVoteCount);
 	/*!
 	 \brief
 
 	 \fn voteCount
-	 \return qint16
+	 \return qint32
 	*/
-	qint16			voteCount();
+	qint32			voteCount();
 
 	/*!
 	 \brief
@@ -563,7 +563,7 @@ public:
 	 \param iSeason
 	 \return cSeason
 	*/
-	cSeason*		addSeason(const qint16& iSeason);
+	cSeason*		addSeason(const qint32& iSeason);
 	/*!
 	 \brief
 
@@ -579,30 +579,30 @@ public:
 	 \param iSeason
 	 \return cSeason
 	*/
-	cSeason*		findSeason(const qint16& iSeason);
+	cSeason*		findSeason(const qint32& iSeason);
 
 	/*!
 	 \brief
 
 	 \fn minSeason
-	 \return qint16
+	 \return qint32
 	*/
-	qint16			minSeason();
+	qint32			minSeason();
 	/*!
 	 \brief
 
 	 \fn maxSeason
-	 \return qint16
+	 \return qint32
 	*/
-	qint16			maxSeason();
+	qint32			maxSeason();
 
 	/*!
 	 \brief
 
 	 \fn maxEpisode
-	 \return qint16
+	 \return qint32
 	*/
-	qint16			maxEpisode();
+	qint32			maxEpisode();
 
 	/*!
 	 \brief
@@ -752,8 +752,8 @@ private:
 	QDate			m_lastAired; /*!< TODO: describe */
 	QStringList		m_szLanguages; /*!< TODO: describe */
 	QStringList		m_szNetworks; /*!< TODO: describe */
-	qint16			m_iEpisodes; /*!< TODO: describe */
-	qint16			m_iSeasons; /*!< TODO: describe */
+	qint32			m_iEpisodes; /*!< TODO: describe */
+	qint32			m_iSeasons; /*!< TODO: describe */
 	QStringList		m_szOriginCountries; /*!< TODO: describe */
 	QString			m_szOriginalLanguage; /*!< TODO: describe */
 	qreal			m_dPopularity; /*!< TODO: describe */
@@ -761,7 +761,7 @@ private:
 	QStringList		m_szProductionCompanies; /*!< TODO: describe */
 	QString			m_szType; /*!< TODO: describe */
 	qreal			m_dVoteAverage; /*!< TODO: describe */
-	qint16			m_iVoteCount; /*!< TODO: describe */
+	qint32			m_iVoteCount; /*!< TODO: describe */
 	QString			m_szOverview; /*!< TODO: describe */
 	QDate			m_firstAired; /*!< TODO: describe */
 	QStringList		m_szCast; /*!< TODO: describe */
@@ -819,24 +819,24 @@ public:
 	 \brief
 
 	 \fn minSeason
-	 \return qint16
+	 \return qint32
 	*/
-	qint16			minSeason();
+	qint32			minSeason();
 	/*!
 	 \brief
 
 	 \fn maxSeason
-	 \return qint16
+	 \return qint32
 	*/
-	qint16			maxSeason();
+	qint32			maxSeason();
 
 	/*!
 	 \brief
 
 	 \fn maxEpisode
-	 \return qint16
+	 \return qint32
 	*/
-	qint16			maxEpisode();
+	qint32			maxEpisode();
 };
 
 #endif // CSERIE_H

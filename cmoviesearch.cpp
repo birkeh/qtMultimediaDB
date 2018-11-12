@@ -50,7 +50,7 @@ void cMovieSearch::on_m_lpSearchButton_clicked()
 
 	cTheMovieDBV3		theMovieDBV3;
 	QString				szSearchText	= ui->m_lpSearch->text();
-	qint16				iYear			= -1;
+	qint32				iYear			= -1;
 
 	if(szSearchText.contains("(") && szSearchText.contains(")"))
 	{
@@ -128,7 +128,7 @@ bool cMovieSearch::placeholder()
 	return(ui->m_lpTabWidget->currentIndex() == 1);
 }
 
-qint16 cMovieSearch::year()
+qint32 cMovieSearch::year()
 {
 	return(ui->m_lpYear->value());
 }
