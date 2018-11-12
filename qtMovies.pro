@@ -103,7 +103,10 @@ FORMS    += cmainwindow.ui \
 
 DISTFILES += \
     qtMovies.ico \
-    Doxyfile
+    Doxyfile \
+    logo.jpg \
+    splash.jpg \
+    splashEmpty.png
 
 RESOURCES += \
     resource.qrc

@@ -12,6 +12,7 @@
 #include "cmovieedit.h"
 
 #include "cthemoviedbv3.h"
+#include "ctheaudiodbv1.h"
 
 #include "cmovieviewitemdelegate.h"
 
@@ -78,9 +79,6 @@ static bool movieSort(cMovie* s1, cMovie* s2)
 	return(title1 < title2);
 }
 
-#include "ctheaudiodbv1.h"
-#include "cartist.h"
-
 cMainWindow::cMainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::cMainWindow),
@@ -96,15 +94,7 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	m_lpFileExportAction(0),
 	m_lpFileExitAction(0)
 {
-	cTheAudioDBV1			theAudioDBV1;
-	QList<cArtist*>			artistList	= theAudioDBV1.searchArtist("Wolfgang Ambros");
-
 	QSettings				settings;
-
-	cMessageAnimateDialog*	lpDialog	= new cMessageAnimateDialog(this);
-	lpDialog->setTitle("Initializing");
-	lpDialog->setMessage("Initializing");
-	lpDialog->show();
 
 	ui->setupUi(this);
 
@@ -176,8 +166,6 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	iWidth2	= iWindowWidth-iSubtract-iWidth1;
 
 	ui->m_lpSplitter->setSizes(QList<int>() << iWidth1 << iWidth2);
-
-	delete lpDialog;
 
 	connect(ui->m_lpSeriesList1->selectionModel(), &QItemSelectionModel::selectionChanged, this, &cMainWindow::selectionChanged1);
 	connect(ui->m_lpSeriesList2->selectionModel(), &QItemSelectionModel::selectionChanged, this, &cMainWindow::selectionChanged2);
