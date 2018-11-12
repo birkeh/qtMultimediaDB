@@ -8,9 +8,9 @@ QT       += core gui network xml sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = qtMovies
+TARGET = qtMultimediaDB
 TEMPLATE = app
-RC_ICONS = qtMovies.ico
+RC_ICONS = qtMultimediaDB.ico
 
 SOURCES += main.cpp\
         cmainwindow.cpp \
@@ -102,11 +102,11 @@ FORMS    += cmainwindow.ui \
     cseriedetails.ui
 
 DISTFILES += \
-    qtMovies.ico \
     Doxyfile \
     logo.jpg \
     splash.jpg \
-    splashEmpty.png
+    splashEmpty.png \
+    qtMultimediaDB.ico
 
 RESOURCES += \
     resource.qrc
