@@ -142,6 +142,9 @@
         <property name="alternatingRowColors">
          <bool>true</bool>
         </property>
+        <property name="sortingEnabled">
+         <bool>true</bool>
+        </property>
        </widget>
        <widget class="QScrollArea" name="m_lpMovieDetailsScroller">
         <property name="widgetResizable">
