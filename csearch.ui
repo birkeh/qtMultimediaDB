@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Search Series</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="1" column="0">
@@ -75,7 +75,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>589</width>
+               <width>87</width>
                <height>363</height>
               </rect>
              </property>
