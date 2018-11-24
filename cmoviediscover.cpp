@@ -90,7 +90,7 @@ void cMovieDiscover::on_m_lpDiscover_clicked()
 	setCursor(Qt::WaitCursor);
 
 	cTheMovieDBV3			movieDB3;
-	QList<cMovie*>			movieList	= movieDB3.discoverMovie(szText, bAdult, iYear, genres, voteMin, voteMax, "de-DE");
+	QList<cMovie*>			movieList	= movieDB3.discoverMovie(m_movieList, szText, bAdult, iYear, genres, voteMin, voteMax, "de-DE");
 
 	m_lpMoviesModel->clear();
 
@@ -101,8 +101,6 @@ void cMovieDiscover::on_m_lpDiscover_clicked()
 	{
 		cMovie*	lpMovie	= movieList[x];
 
-		if(m_movieList.find(lpMovie->movieID()))
-			continue;
 		QList<QStandardItem*>	items;
 
 		items.append(new QStandardItem(lpMovie->movieTitle()));

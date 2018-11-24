@@ -50,6 +50,8 @@
 
 #include <QMap>
 
+#include <cpreferences.h>
+
 
 static bool serieSort(cSerie* s1, cSerie* s2)
 {
@@ -92,28 +94,31 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	m_szFindMovie(""),
 	m_lpFileMenu(nullptr),
 	m_lpFileExportAction(nullptr),
+	m_lpFilePreferencesAction(nullptr),
 	m_lpFileExitAction(nullptr)
 {
 	QSettings				settings;
 
 	ui->setupUi(this);
 
-	m_lpFileMenu			= menuBar()->addMenu(tr("&File"));
+	m_lpFileMenu				= menuBar()->addMenu(tr("&File"));
 
-	m_lpFileExportAction	= m_lpFileMenu->addAction(tr("&Export"), this, &cMainWindow::onActionExport);
+	m_lpFileExportAction		= m_lpFileMenu->addAction(tr("&Export"), this, &cMainWindow::onActionExport);
 	m_lpFileExportAction->setShortcut(Qt::CTRL + Qt::Key_E);
 
-	m_lpFileExportAction	= m_lpFileMenu->addAction(tr("E&xit"), this, &cMainWindow::onActionExit);
+	m_lpFilePreferencesAction	= m_lpFileMenu->addAction(tr("&Preferences"), this, &cMainWindow::onActionPreferences);
+
+	m_lpFileExportAction		= m_lpFileMenu->addAction(tr("E&xit"), this, &cMainWindow::onActionExit);
 	m_lpFileExportAction->setShortcut(Qt::CTRL + Qt::Key_X);
 
 	ui->m_lpMainTab->setCurrentIndex(0);
-	ui->m_lpSeriesFilter->setChecked(settings.value("seriesFilter/enabled", QVariant::fromValue(false)).toBool());
-	ui->m_lpSeriesFilterInitialized->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasInit", Qt::PartiallyChecked).toUInt()));
-	ui->m_lpSeriesFilterProgress->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasProgress", Qt::PartiallyChecked).toUInt()));
-	ui->m_lpSeriesFilterDone->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasDone", Qt::PartiallyChecked).toUInt()));
-	ui->m_lpSeriesFilterWithLink->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasLink", Qt::PartiallyChecked).toUInt()));
-	ui->m_lpSeriesFilterNotFinished->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/hasNotFinished", Qt::PartiallyChecked).toUInt()));
-	ui->m_lpSeriesFilterCliffhanger->setCheckState(static_cast<Qt::CheckState>(settings.value("seriesFilter/isCliffhanger", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilter->setChecked(settings.value("serieFilter/enabled", QVariant::fromValue(false)).toBool());
+	ui->m_lpSeriesFilterInitialized->setCheckState(static_cast<Qt::CheckState>(settings.value("serieFilter/hasInit", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterProgress->setCheckState(static_cast<Qt::CheckState>(settings.value("serieFilter/hasProgress", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterDone->setCheckState(static_cast<Qt::CheckState>(settings.value("serieFilter/hasDone", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterWithLink->setCheckState(static_cast<Qt::CheckState>(settings.value("serieFilter/hasLink", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterNotFinished->setCheckState(static_cast<Qt::CheckState>(settings.value("serieFilter/hasNotFinished", Qt::PartiallyChecked).toUInt()));
+	ui->m_lpSeriesFilterCliffhanger->setCheckState(static_cast<Qt::CheckState>(settings.value("serieFilter/isCliffhanger", Qt::PartiallyChecked).toUInt()));
 
 	ui->m_lpMoviesFilter->setChecked(settings.value("movieFilter/enabled", QVariant::fromValue(false)).toBool());
 	ui->m_lpMoviesFilterInitialized->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasInit", Qt::PartiallyChecked).toUInt()));
@@ -696,9 +701,12 @@ void cMainWindow::loadMoviesDB()
 
 void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 {
-	cSerie*	lpSerie	= lpItems.at(0)->data(Qt::UserRole).value<cSerie*>();
+	cSerie*		lpSerie	= lpItems.at(0)->data(Qt::UserRole).value<cSerie*>();
 	if(!lpSerie)
 		return;
+
+	QSettings	settings;
+	bool		bDisplaySeason0	= settings.value("displaySeason0", true).toBool();
 
 	qint32		iMin		= m_serieList.minSeason();
 	qint32		iEpisodes	= 0;
@@ -710,6 +718,9 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 	QIcon		icon(":/128279.png");;
 	QFont		font	= ui->m_lpSeriesList1->font();
 	QFont		fontI	= ui->m_lpSeriesList1->font();
+
+	if(!iMin && !bDisplaySeason0)
+		iMin	= 1;
 
 	font.setBold(true);
 	fontI.setItalic(true);
@@ -726,6 +737,10 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 		QString		szDone		= "";
 
 		cSeason*	lpSeason	= seasonList.at(season);
+
+		if(!lpSeason->seasonNumber() && !bDisplaySeason0)
+			continue;
+
 		lpItems.at(lpSeason->seasonNumber()+3-iMin)->setData(QVariant::fromValue(lpSeason), Qt::UserRole);
 
 		for(int y = 0;y < lpSeason->episodeList().count();y++)
@@ -850,10 +865,16 @@ void cMainWindow::setMovieStyle(QStandardItem* /*lpItem*/)
 
 void cMainWindow::displaySeries()
 {
+	QSettings	settings;
+	bool		bDisplaySeason0	= settings.value("displaySeason0", true).toBool();
+
 	m_lpSeriesListModel->clear();
 
 	qint32	iMin		= m_serieList.minSeason();
 	qint32	iMax		= m_serieList.maxSeason();
+
+	if(!iMin && !bDisplaySeason0)
+		iMin			= 1;
 
 	qint32	iSeries		= 0;
 	qint32	iEpisodes	= 0;
@@ -863,7 +884,7 @@ void cMainWindow::displaySeries()
 	QStringList	header;
 	header << "Nr" << "Serie" << "Year";
 
-	for(int z = 0;z <= iMax;z++)
+	for(int z = iMin;z <= iMax;z++)
 		header.append(QString("Season %1").arg(z));
 
 	m_lpSeriesListModel->setHorizontalHeaderLabels(header);
@@ -896,7 +917,8 @@ void cMainWindow::displaySeries()
 		for(int season = 0;season < seasonList.count();season++)
 		{
 			cSeason*	lpSeason	= seasonList.at(season);
-			lpItems.at(lpSeason->seasonNumber()+3-iMin)->setData(QVariant::fromValue(lpSeason), Qt::UserRole);
+			if(lpSeason->seasonNumber() || bDisplaySeason0)
+				lpItems.at(lpSeason->seasonNumber()+3-iMin)->setData(QVariant::fromValue(lpSeason), Qt::UserRole);
 		}
 
 		m_lpSeriesListModel->appendRow(lpItems);
@@ -1111,10 +1133,10 @@ bool cMainWindow::runEdit(cSerie* lpSerie, QString& szDownload)
 	lpEdit->setSerie(lpSerie);
 
 	QSettings	settings;
-	qint32		iX		= settings.value("edit/x", QVariant::fromValue(-1)).toInt();
-	qint32		iY		= settings.value("edit/y", QVariant::fromValue(-1)).toInt();
-	qint32		iWidth	= settings.value("edit/width", QVariant::fromValue(-1)).toInt();
-	qint32		iHeight	= settings.value("edit/height", QVariant::fromValue(-1)).toInt();
+	qint32		iX		= settings.value("serieEdit/x", QVariant::fromValue(-1)).toInt();
+	qint32		iY		= settings.value("serieEdit/y", QVariant::fromValue(-1)).toInt();
+	qint32		iWidth	= settings.value("serieEdit/width", QVariant::fromValue(-1)).toInt();
+	qint32		iHeight	= settings.value("serieEdit/height", QVariant::fromValue(-1)).toInt();
 
 	if(iX != -1 && iY != -1)
 		lpEdit->move(iX, iY);
@@ -1125,14 +1147,14 @@ bool cMainWindow::runEdit(cSerie* lpSerie, QString& szDownload)
 
 	qint32	ret	= lpEdit->exec();
 
-	settings.setValue("edit/width", QVariant::fromValue(lpEdit->size().width()));
-	settings.setValue("edit/height", QVariant::fromValue(lpEdit->size().height()));
-	settings.setValue("edit/x", QVariant::fromValue(lpEdit->x()));
-	settings.setValue("edit/y", QVariant::fromValue(lpEdit->y()));
+	settings.setValue("serieEdit/width", QVariant::fromValue(lpEdit->size().width()));
+	settings.setValue("serieEdit/height", QVariant::fromValue(lpEdit->size().height()));
+	settings.setValue("serieEdit/x", QVariant::fromValue(lpEdit->x()));
+	settings.setValue("serieEdit/y", QVariant::fromValue(lpEdit->y()));
 	if(this->isMaximized())
-		settings.setValue("edit/maximized", QVariant::fromValue(true));
+		settings.setValue("serieEdit/maximized", QVariant::fromValue(true));
 	else
-		settings.setValue("edit/maximized", QVariant::fromValue(false));
+		settings.setValue("serieEdit/maximized", QVariant::fromValue(false));
 
 	if(ret == QDialog::Rejected)
 	{
@@ -1226,13 +1248,13 @@ void cMainWindow::onActionAddGlobal()
 
 void cMainWindow::onActionAdd()
 {
-	cSearch*	lpSearch	= new cSearch(this);
+	cSearch*	lpSearch	= new cSearch(m_serieList, this);
 
 	QSettings	settings;
-	qint32		iX		= settings.value("search/x", QVariant::fromValue(-1)).toInt();
-	qint32		iY		= settings.value("search/y", QVariant::fromValue(-1)).toInt();
-	qint32		iWidth	= settings.value("search/width", QVariant::fromValue(-1)).toInt();
-	qint32		iHeight	= settings.value("search/height", QVariant::fromValue(-1)).toInt();
+	qint32		iX		= settings.value("serieSearch/x", QVariant::fromValue(-1)).toInt();
+	qint32		iY		= settings.value("serieSearch/y", QVariant::fromValue(-1)).toInt();
+	qint32		iWidth	= settings.value("serieSearch/width", QVariant::fromValue(-1)).toInt();
+	qint32		iHeight	= settings.value("serieSearch/height", QVariant::fromValue(-1)).toInt();
 
 	if(iX != -1 && iY != -1)
 		lpSearch->move(iX, iY);
@@ -1245,10 +1267,10 @@ void cMainWindow::onActionAdd()
 		return;
 	}
 
-	settings.setValue("search/width", QVariant::fromValue(lpSearch->size().width()));
-	settings.setValue("search/height", QVariant::fromValue(lpSearch->size().height()));
-	settings.setValue("search/x", QVariant::fromValue(lpSearch->x()));
-	settings.setValue("search/y", QVariant::fromValue(lpSearch->y()));
+	settings.setValue("serieSearch/width", QVariant::fromValue(lpSearch->size().width()));
+	settings.setValue("serieSearch/height", QVariant::fromValue(lpSearch->size().height()));
+	settings.setValue("serieSearch/x", QVariant::fromValue(lpSearch->x()));
+	settings.setValue("serieSearch/y", QVariant::fromValue(lpSearch->y()));
 
 	qint32	id				= lpSearch->id();
 	QString	szPlaceholder	= lpSearch->placeholderName();
@@ -1322,7 +1344,7 @@ void cMainWindow::onActionAdd()
 
 void cMainWindow::onActionMovieAdd()
 {
-	cMovieSearch*	lpSearch	= new cMovieSearch(this);
+	cMovieSearch*	lpSearch	= new cMovieSearch(m_movieList, this);
 
 	QSettings	settings;
 	qint32		iX		= settings.value("movieSearch/x", QVariant::fromValue(-1)).toInt();
@@ -1558,6 +1580,26 @@ void cMainWindow::onActionExport()
 	}
 
 	QMessageBox::information(this, "Export", "export done");
+}
+
+void cMainWindow::onActionPreferences()
+{
+	cPreferences*		lpPreferencesDialog	= new cPreferences(this);
+
+	if(lpPreferencesDialog->exec() == QDialog::Rejected)
+	{
+		delete lpPreferencesDialog;
+		return;
+	}
+
+	if(lpPreferencesDialog->displaySeason0Changed())
+	{
+		delete lpPreferencesDialog;
+		displaySeries();
+		return;
+	}
+
+	delete lpPreferencesDialog;
 }
 
 void cMainWindow::doUpdate(cSerieList& serieList)
@@ -2149,13 +2191,13 @@ void cMainWindow::applySeriesFilter()
 {
 	QSettings	settings;
 
-	settings.setValue("seriesFilter/enabled", QVariant::fromValue(ui->m_lpSeriesFilter->isChecked()));
-	settings.setValue("seriesFilter/hasInit", ui->m_lpSeriesFilterInitialized->checkState());
-	settings.setValue("seriesFilter/hasProgress", ui->m_lpSeriesFilterProgress->checkState());
-	settings.setValue("seriesFilter/hasDone", ui->m_lpSeriesFilterDone->checkState());
-	settings.setValue("seriesFilter/hasLink", ui->m_lpSeriesFilterWithLink->checkState());
-	settings.setValue("seriesFilter/hasNotFinished", ui->m_lpSeriesFilterNotFinished->checkState());
-	settings.setValue("seriesFilter/isCliffhanger", ui->m_lpSeriesFilterCliffhanger->checkState());
+	settings.setValue("serieFilter/enabled", QVariant::fromValue(ui->m_lpSeriesFilter->isChecked()));
+	settings.setValue("serieFilter/hasInit", ui->m_lpSeriesFilterInitialized->checkState());
+	settings.setValue("serieFilter/hasProgress", ui->m_lpSeriesFilterProgress->checkState());
+	settings.setValue("serieFilter/hasDone", ui->m_lpSeriesFilterDone->checkState());
+	settings.setValue("serieFilter/hasLink", ui->m_lpSeriesFilterWithLink->checkState());
+	settings.setValue("serieFilter/hasNotFinished", ui->m_lpSeriesFilterNotFinished->checkState());
+	settings.setValue("serieFilter/isCliffhanger", ui->m_lpSeriesFilterCliffhanger->checkState());
 
 	for(int x = 0;x < m_lpSeriesListModel->rowCount();x++)
 	{

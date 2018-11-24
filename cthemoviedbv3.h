@@ -36,7 +36,7 @@ public:
 	 \param szLanguage
 	 \return QList<cMovie *>
 	*/
-	QList<cMovie*>			searchMovie(const QString& szMovie, const qint32& year = -1, const QString& szLanguage = "all");
+	QList<cMovie*>			searchMovie(cMovieList& movieListOri, const QString& szMovie, const qint32& year = -1, const QString& szLanguage = "all");
 	/*!
 	 \brief
 
@@ -67,7 +67,7 @@ public:
 	 \param szLanguage
 	 \return QList<cMovie *>
 	*/
-	QList<cMovie*>			discoverMovie(const QString& szText, const bool& bAdult, const qint32& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage = "all");
+	QList<cMovie*>			discoverMovie(cMovieList& movieListOri, const QString& szText, const bool& bAdult, const qint32& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage = "all");
 	/*!
 	 \brief
 
@@ -85,7 +85,7 @@ public:
 	 \param szLanguage
 	 \return QList<cSerie *>
 	*/
-	QList<cSerie*>			searchSerie(const QString& szSerie, const qint32& year = -1, const QString& szLanguage = "all");
+	QList<cSerie*>			searchSerie(cSerieList& serieListOri, const QString& szSerie, const qint32& year = -1, const QString& szLanguage = "all");
 	/*!
 	 \brief
 
@@ -123,7 +123,7 @@ public:
 	 \param szLanguage
 	 \return QList<cSerie *>
 	*/
-	QList<cSerie*>			discoverSerie(const QString& szText, const qint32& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage = "all");
+	QList<cSerie*>			discoverSerie(cSerieList& serieListOri, const QString& szText, const qint32& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage = "all");
 	/*!
 	 \brief
 

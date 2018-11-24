@@ -44,7 +44,7 @@ public:
 	 \fn cMainWindow
 	 \param parent
 	*/
-	explicit cMainWindow(QWidget *parent = 0);
+	explicit cMainWindow(QWidget *parent = nullptr);
 	/*!
 	 \brief
 
@@ -276,6 +276,12 @@ private slots:
 	 \fn onActionExport
 	*/
 	void				onActionExport();
+	/*!
+	 \brief
+
+	 \fn onActionPreferences
+	*/
+	void				onActionPreferences();
 
 	/*!
 	 \brief
@@ -472,6 +478,7 @@ private:
 
 	QMenu*				m_lpFileMenu; /*!< TODO: describe */
 	QAction*			m_lpFileExportAction; /*!< TODO: describe */
+	QAction*			m_lpFilePreferencesAction; /*!< TODO: describe */
 	QAction*			m_lpFileExitAction; /*!< TODO: describe */
 
 	/*!

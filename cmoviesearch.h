@@ -5,6 +5,8 @@
 #include <QList>
 #include <QStandardItemModel>
 
+#include "cmovie.h"
+
 
 namespace Ui {
 class cMovieSearch;
@@ -26,7 +28,7 @@ public:
 	 \fn cMovieSearch
 	 \param parent
 	*/
-	explicit cMovieSearch(QWidget *parent = 0);
+	explicit cMovieSearch(const cMovieList& movieList, QWidget *parent = nullptr);
 	/*!
 	 \brief
 
@@ -101,11 +103,11 @@ private slots:
 	 \param index
 	*/
 	void	on_m_lpResults_clicked(const QModelIndex &index);
-//	void	on_m_lpResults_doubleClicked(const QModelIndex &index);
 
 private:
 	Ui::cMovieSearch*		ui; /*!< TODO: describe */
 	QStandardItemModel*		m_lpResultsModel;
+	cMovieList				m_movieList; /*!< TODO: describe */
 
 	/*!
 	 \brief

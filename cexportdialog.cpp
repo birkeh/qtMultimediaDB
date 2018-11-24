@@ -13,8 +13,8 @@ cExportDialog::cExportDialog(QWidget *parent) :
 	ui->setupUi(this);
 
 	QSettings			settings;
-	QString				szExportSerie	= settings.value("exportSeriePath", QDir::homePath()).toString();
-	QString				szExportMovie	= settings.value("exportMoviePath", QDir::homePath()).toString();
+	QString				szExportSerie	= settings.value("exportSeriePath", QString("%1%2series.xml").arg(QDir::homePath()).arg(QDir::separator())).toString();
+	QString				szExportMovie	= settings.value("exportMoviePath", QString("%1%2movies.xml").arg(QDir::homePath()).arg(QDir::separator())).toString();
 	bool				bExportSerie	= settings.value("exportSerie", QDir::homePath()).toBool();
 	bool				bExportMovie	= settings.value("exportMovie", QDir::homePath()).toBool();
 

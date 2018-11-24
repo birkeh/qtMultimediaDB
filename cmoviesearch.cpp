@@ -9,10 +9,11 @@
 #include <QList>
 
 
-cMovieSearch::cMovieSearch(QWidget *parent) :
+cMovieSearch::cMovieSearch(const cMovieList& movieList, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::cMovieSearch),
-	m_lpResultsModel(0)
+	m_lpResultsModel(nullptr),
+	m_movieList(movieList)
 {
 	ui->setupUi(this);
 	ui->m_lpSearchButton->setEnabled(false);
@@ -64,7 +65,7 @@ void cMovieSearch::on_m_lpSearchButton_clicked()
 		}
 	}
 
-	QList<cMovie*>		movieList	= theMovieDBV3.searchMovie(szSearchText, iYear, "de-DE");
+	QList<cMovie*>		movieList	= theMovieDBV3.searchMovie(m_movieList, szSearchText, iYear, "de-DE");
 
 	m_lpResultsModel->clear();
 	QStringList	headerLabels	= QStringList() << tr("Title") << tr("Year");

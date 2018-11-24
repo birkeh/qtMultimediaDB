@@ -2,10 +2,10 @@
 #define CDISCOVER_H
 
 
-#include <cserie.h>
-
 #include <QDialog>
 #include <QStandardItemModel>
+
+#include "cserie.h"
 
 
 namespace Ui {

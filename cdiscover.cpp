@@ -89,7 +89,7 @@ void cDiscover::on_m_lpDiscover_clicked()
 	setCursor(Qt::WaitCursor);
 
 	cTheMovieDBV3			movieDB3;
-	QList<cSerie*>			serieList	= movieDB3.discoverSerie(szText, iYear, genres, voteMin, voteMax, "de-DE");
+	QList<cSerie*>			serieList	= movieDB3.discoverSerie(m_serieList, szText, iYear, genres, voteMin, voteMax, "de-DE");
 
 	m_lpSeriesModel->clear();
 

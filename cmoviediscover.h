@@ -29,7 +29,7 @@ public:
 	 \param movieList
 	 \param parent
 	*/
-	explicit cMovieDiscover(const cMovieList movieList, QWidget *parent = 0);
+	explicit cMovieDiscover(const cMovieList movieList, QWidget *parent = nullptr);
 	/*!
 	 \brief
 
@@ -73,7 +73,7 @@ private slots:
 	 \fn on_m_lpMovies_clicked
 	 \param index
 	*/
-	void on_m_lpMovies_clicked(const QModelIndex &index);
+	void					on_m_lpMovies_clicked(const QModelIndex &index);
 
 private:
 	Ui::cMovieDiscover*		ui; /*!< TODO: describe */

@@ -12,6 +12,8 @@
 
 #include <QApplication>
 
+#include <QSettings>
+
 
 cTheMovieDBV3::cTheMovieDBV3()
 {
@@ -22,7 +24,7 @@ cTheMovieDBV3::~cTheMovieDBV3()
 {
 }
 
-QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint32& year, const QString& szLanguage)
+QList<cMovie*> cTheMovieDBV3::searchMovie(cMovieList& movieListOri, const QString& szMovie, const qint32& year, const QString& szLanguage)
 {
 	if(m_genres.isEmpty())
 		m_genres	= genresMovie("de-DE");
@@ -31,6 +33,8 @@ QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint32& 
 	QNetworkAccessManager	networkManager;
 	QString					szRequest	= QString("https://api.themoviedb.org/3/search/movie?api_key=%1").arg(m_szToken);
 	qint32					page		= 1;
+	QSettings				settings;
+	qint32					iResults	= settings.value("movieSearch/results", 100).toInt();
 
 	if(!szLanguage.contains("all"))
 		szRequest.append(QString("&language=%1").arg(szLanguage));
@@ -62,6 +66,10 @@ QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint32& 
 			for(int z = 0;z < jsonArray.count();z++)
 			{
 				QJsonObject	movie			= jsonArray[z].toObject();
+
+				if(movieListOri.find(movie["id"].toInt()))
+					continue;
+
 				cMovie*		lpMovie			= new cMovie;
 				lpMovie->setMovieTitle(movie["title"].toString());
 				lpMovie->setMovieID(movie["id"].toInt());
@@ -86,12 +94,16 @@ QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint32& 
 				lpMovie->setReleaseDate(movie["release_date"].toString());
 
 				movieList.append(lpMovie);
+
+				if(movieList.count() >= iResults)
+					break;
 			}
 			if(jsonObj["total_pages"].toInt() == page)
 				break;
 
 			page++;
-			if(page > 20)
+
+			if(movieList.count() >= iResults)
 				break;
 
 			delete reply;
@@ -105,12 +117,14 @@ QList<cMovie*> cTheMovieDBV3::searchMovie(const QString& szMovie, const qint32& 
 	return(movieList);
 }
 
-QList<cSerie*> cTheMovieDBV3::searchSerie(const QString& szSerie, const qint32& year, const QString& szLanguage)
+QList<cSerie*> cTheMovieDBV3::searchSerie(cSerieList& serieListOri, const QString& szSerie, const qint32& year, const QString& szLanguage)
 {
 	QList<cSerie*>			serieList;
 	QNetworkAccessManager	networkManager;
 	QString					szRequest	= QString("https://api.themoviedb.org/3/search/tv?api_key=%1").arg(m_szToken);
 	qint32					page		= 1;
+	QSettings				settings;
+	qint32					iResults	= settings.value("serieSearch/results", 100).toInt();
 
 	if(!szLanguage.contains("all"))
 		szRequest.append(QString("&language=%1").arg(szLanguage));
@@ -144,6 +158,10 @@ QList<cSerie*> cTheMovieDBV3::searchSerie(const QString& szSerie, const qint32& 
 			for(int z = 0;z < jsonArray.count();z++)
 			{
 				QJsonObject	serie			= jsonArray[z].toObject();
+
+				if(serieListOri.find(serie["id"].toInt()))
+					continue;
+
 				cSerie*		lpSerie			= new cSerie;
 
 				lpSerie->setSeriesID(serie["id"].toInt());
@@ -195,12 +213,16 @@ QList<cSerie*> cTheMovieDBV3::searchSerie(const QString& szSerie, const qint32& 
 				lpSerie->setVoteCount(serie["vote_count"].toInt());
 
 				serieList.append(lpSerie);
+
+				if(serieList.count() >= iResults)
+					break;
 			}
 			if(jsonObj["total_pages"].toInt() == page)
 				break;
 
 			page++;
-			if(page > 20)
+
+			if(serieList.count() >= iResults)
 				break;
 
 			delete reply;
@@ -637,7 +659,7 @@ QMap<qint32, QString> cTheMovieDBV3::genresMovie(const QString& szLanguage)
 	return(genres);
 }
 
-QList<cMovie*> cTheMovieDBV3::discoverMovie(const QString& szText, const bool& bAdult, const qint32& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage)
+QList<cMovie*> cTheMovieDBV3::discoverMovie(cMovieList& movieListOri, const QString& szText, const bool& bAdult, const qint32& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage)
 {
 	if(m_genres.isEmpty())
 		m_genres	= genresMovie("de-DE");
@@ -646,6 +668,8 @@ QList<cMovie*> cTheMovieDBV3::discoverMovie(const QString& szText, const bool& b
 	QNetworkAccessManager	networkManager;
 	QString					szRequest	= QString("https://api.themoviedb.org/3/discover/movie?api_key=%1").arg(m_szToken);
 	qint32					page		= 1;
+	QSettings				settings;
+	qint32					iResults	= settings.value("movieDiscover/results", 100).toInt();
 
 	if(!szLanguage.contains("all"))
 		szRequest.append(QString("&language=%1").arg(szLanguage));
@@ -687,6 +711,10 @@ QList<cMovie*> cTheMovieDBV3::discoverMovie(const QString& szText, const bool& b
 			for(int z = 0;z < jsonArray.count();z++)
 			{
 				QJsonObject	movie			= jsonArray[z].toObject();
+
+				if(movieListOri.find(movie["id"].toInt()))
+					continue;
+
 				cMovie*		lpMovie			= new cMovie;
 				lpMovie->setMovieTitle(movie["title"].toString());
 				lpMovie->setMovieID(movie["id"].toInt());
@@ -711,12 +739,16 @@ QList<cMovie*> cTheMovieDBV3::discoverMovie(const QString& szText, const bool& b
 				lpMovie->setReleaseDate(movie["release_date"].toString());
 
 				movieList.append(lpMovie);
+
+				if(movieList.count() >= iResults)
+					break;
 			}
 			if(jsonObj["total_pages"].toInt() == page)
 				break;
 
 			page++;
-			if(page > 20)
+
+			if(movieList.count() >= iResults)
 				break;
 
 			delete reply;
@@ -845,7 +877,7 @@ void cTheMovieDBV3::loadCastMovie(cMovie* lpMovie)
 	}
 }
 
-QList<cSerie*> cTheMovieDBV3::discoverSerie(const QString& szText, const qint32& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage)
+QList<cSerie*> cTheMovieDBV3::discoverSerie(cSerieList& serieListOri, const QString& szText, const qint32& iYear, const QList<qint32>& genres, const qreal& voteMin, const qreal& voteMax, const QString& szLanguage)
 {
 	if(m_genres.isEmpty())
 		m_genres	= genresMovie("de-DE");
@@ -854,6 +886,8 @@ QList<cSerie*> cTheMovieDBV3::discoverSerie(const QString& szText, const qint32&
 	QNetworkAccessManager	networkManager;
 	QString					szRequest	= QString("https://api.themoviedb.org/3/discover/tv?api_key=%1").arg(m_szToken);
 	qint32					page		= 1;
+	QSettings				settings;
+	qint32					iResults	= settings.value("serieDiscover/results", 100).toInt();
 
 	if(!szLanguage.contains("all"))
 		szRequest.append(QString("&language=%1").arg(szLanguage));
@@ -895,6 +929,10 @@ QList<cSerie*> cTheMovieDBV3::discoverSerie(const QString& szText, const qint32&
 			for(int z = 0;z < jsonArray.count();z++)
 			{
 				QJsonObject	serie			= jsonArray[z].toObject();
+
+				if(serieListOri.find(serie["id"].toInt()))
+					continue;
+
 				cSerie*		lpSerie			= new cSerie;
 
 				lpSerie->setSeriesID(serie["id"].toInt());
@@ -946,12 +984,16 @@ QList<cSerie*> cTheMovieDBV3::discoverSerie(const QString& szText, const qint32&
 				lpSerie->setVoteCount(serie["vote_count"].toInt());
 
 				serieList.append(lpSerie);
+
+				if(serieList.count() >= iResults)
+					break;
 			}
 			if(jsonObj["total_pages"].toInt() == page)
 				break;
 
 			page++;
-			if(page > 20)
+
+			if(serieList.count() >= iResults)
 				break;
 
 			delete reply;

@@ -5,6 +5,8 @@
 #include <QDialog>
 #include <QStandardItemModel>
 
+#include "cserie.h"
+
 
 namespace Ui {
 class cSearch;
@@ -26,7 +28,7 @@ public:
 	 \fn cSearch
 	 \param parent
 	*/
-	explicit cSearch(QWidget *parent = 0);
+	explicit cSearch(const cSerieList& serieList, QWidget *parent = 0);
 	/*!
 	 \brief
 
@@ -112,6 +114,7 @@ private slots:
 private:
 	Ui::cSearch*		ui; /*!< TODO: describe */
 	QStandardItemModel*	m_lpResultsModel;
+	cSerieList			m_serieList; /*!< TODO: describe */
 
 	/*!
 	 \brief

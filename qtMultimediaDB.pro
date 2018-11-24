@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     cseriedetails.cpp \
     ctheaudiodbv1.cpp \
     cartist.cpp \
-    csplashscreen.cpp
+    csplashscreen.cpp \
+    cpreferences.cpp
 
 HEADERS  += cmainwindow.h \
     cserie.h \
@@ -86,7 +87,8 @@ HEADERS  += cmainwindow.h \
     cseriedetails.h \
     ctheaudiodbv1.h \
     cartist.h \
-    csplashscreen.h
+    csplashscreen.h \
+    cpreferences.h
 
 FORMS    += cmainwindow.ui \
     csearch.ui \
@@ -101,7 +103,8 @@ FORMS    += cmainwindow.ui \
     cdiscover.ui \
     cmoviediscover.ui \
     cmoviedetails.ui \
-    cseriedetails.ui
+    cseriedetails.ui \
+    cpreferences.ui
 
 DISTFILES += \
     Doxyfile \

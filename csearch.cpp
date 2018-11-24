@@ -9,10 +9,11 @@
 #include <QList>
 
 
-cSearch::cSearch(QWidget *parent) :
+cSearch::cSearch(const cSerieList& serieList, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::cSearch),
-	m_lpResultsModel(0)
+	m_lpResultsModel(nullptr),
+	m_serieList(serieList)
 {
 	ui->setupUi(this);
 	ui->m_lpSearchButton->setEnabled(false);
@@ -51,7 +52,7 @@ void cSearch::on_m_lpSearchButton_clicked()
 
 	cTheMovieDBV3		theMovieDBV3;
 
-	QList<cSerie*>		serieList3	= theMovieDBV3.searchSerie(ui->m_lpSearch->text(), -1, "de-DE");
+	QList<cSerie*>		serieList3	= theMovieDBV3.searchSerie(m_serieList, ui->m_lpSearch->text(), -1, "de-DE");
 
 	m_lpResultsModel->clear();
 

@@ -27,7 +27,7 @@ void cSeasonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
 {
 	if(index.column() > 2)
 	{
-		cSeason*	lpSeason	= 0;
+		cSeason*	lpSeason	= nullptr;
 
 		if(index.data(Qt::UserRole).canConvert<cSeason*>())
 			lpSeason	= qvariant_cast<cSeason*>(index.data(Qt::UserRole));
@@ -107,13 +107,10 @@ QSize cSeasonDelegate::sizeHint(const QStyleOptionViewItem &option, const QModel
 			}
 			if(iTotal > 0 && lpSeason->seasonNumber() != 0)
 				return(QSize((iTotal+1)*FIELD_STEP, HEIGHT));
-				//return(QSize((iTotal+1)*FIELD_STEP, FIELD_HEIGHT));
 			else
 				return(QSize(FIELD_STEP*40, HEIGHT));
-				//return(QSize(FIELD_STEP*40, FIELD_HEIGHT));
 		}
 		return(QSize(FIELD_STEP, HEIGHT));
-		//return(QSize(FIELD_STEP, FIELD_HEIGHT));
 	}
 	return QSize(QStyledItemDelegate::sizeHint(option, index).width(), HEIGHT);
 }
