@@ -19,7 +19,7 @@
      <item>
       <widget class="QTabWidget" name="m_lpTabWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="cPixmapWidget" name="m_lpProgressTab">
         <attribute name="title">
@@ -76,6 +76,16 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="m_lpDownloadLink"/>
+               </item>
+               <item>
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Local Path:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="m_lpLocalPath"/>
                </item>
               </layout>
              </item>

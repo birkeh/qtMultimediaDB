@@ -544,6 +544,21 @@ public:
 	/*!
 	 \brief
 
+	 \fn setLocalPath
+	 \param szLocalPath
+	*/
+	void			setLocalPath(const QString& szLocalPath);
+	/*!
+	 \brief
+
+	 \fn localPath
+	 \return QString
+	*/
+	QString			localPath();
+
+	/*!
+	 \brief
+
 	 \fn setCliffhanger
 	 \param bCliffhanger
 	*/
@@ -774,6 +789,7 @@ private:
 	qint32			m_iTVRageID; /*!< TODO: describe */
 	QString			m_szStatus; /*!< TODO: describe */
 	QString			m_szDownload; /*!< TODO: describe */
+	QString			m_szLocalPath; /*!< TODO: describe */
 	bool			m_bCliffhanger; /*!< TODO: describe */
 	cFanartList		m_fanartList; /*!< TODO: describe */
 	QList<cSeason*>	m_seasonList; /*!< TODO: describe */

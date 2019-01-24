@@ -50,6 +50,13 @@ public:
 	 \return QString
 	*/
 	QString		download();
+	/*!
+	 \brief
+
+	 \fn localPath
+	 \return QString
+	*/
+	QString		localPath();
 private slots:
 	/*!
 	 \brief

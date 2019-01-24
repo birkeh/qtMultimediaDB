@@ -27,26 +27,26 @@ cEdit::cEdit(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::cEdit),
 	m_bLoaded(false),
-	m_lpButton1(0),
-	m_lpButton2(0),
-	m_lpButton3(0),
-	m_lpInit(0),
-	m_lpProgress(0),
-	m_lpDone(0),
-	m_lpGroupBox(0),
-	m_lpGridLayout(0),
-	m_lpGrid(0),
-	m_lpLabel(0),
-	m_lpLabel1(0),
-	m_lpSpacer(0),
-	m_lpGroup(0),
-	m_lpAllInit(0),
-	m_lpAllProgress(0),
-	m_lpAllDone(0),
-	m_lpVerticalSpacer(0),
-	m_lpDetailsActorsModel(0),
-	m_lpDetailsGenreModel(0),
-	m_lpSerie(0)
+	m_lpButton1(nullptr),
+	m_lpButton2(nullptr),
+	m_lpButton3(nullptr),
+	m_lpInit(nullptr),
+	m_lpProgress(nullptr),
+	m_lpDone(nullptr),
+	m_lpGroupBox(nullptr),
+	m_lpGridLayout(nullptr),
+	m_lpGrid(nullptr),
+	m_lpLabel(nullptr),
+	m_lpLabel1(nullptr),
+	m_lpSpacer(nullptr),
+	m_lpGroup(nullptr),
+	m_lpAllInit(nullptr),
+	m_lpAllProgress(nullptr),
+	m_lpAllDone(nullptr),
+	m_lpVerticalSpacer(nullptr),
+	m_lpDetailsActorsModel(nullptr),
+	m_lpDetailsGenreModel(nullptr),
+	m_lpSerie(nullptr)
 {
 	ui->setupUi(this);
 
@@ -108,6 +108,7 @@ void cEdit::setSerie(cSerie* lpSerie)
     ui->m_lpFirstAired->setDate(lpSerie->firstAired());
 	ui->m_lpCliffhanger->setChecked(lpSerie->cliffhanger());
 	ui->m_lpDownloadLink->setText(lpSerie->download());
+	ui->m_lpLocalPath->setText(lpSerie->localPath());
 
 	QString			szBanner	= lpSerie->fanartBanner();
 	{
@@ -262,6 +263,11 @@ void cEdit::allDone_clicked()
 QString cEdit::download()
 {
 	return(ui->m_lpDownloadLink->text());
+}
+
+QString cEdit::localPath()
+{
+	return(ui->m_lpLocalPath->text());
 }
 
 void cEdit::on_m_lpTabWidget_tabBarClicked(int index)

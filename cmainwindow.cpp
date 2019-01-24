@@ -273,6 +273,7 @@ void cMainWindow::initDB()
 					"   tvrageid			INTEGER,"
 					"   status              STRING,"
 					"   download            STRING,"
+					"	localPath			STRING,"
 					"   cliffhanger         BOOL);");
 	}
 
@@ -467,6 +468,7 @@ void cMainWindow::loadSeriesDB()
 			"			serie.tvrageid tvrageid,"
 			" 			serie.status status,"
 			" 			serie.download download,"
+			"			serie.localPath localPath,"
 			" 			serie.cliffhanger cliffhanger,"
 			" 			season._id s__id,"
 			" 			season.airDate s_airDate,"
@@ -542,6 +544,7 @@ void cMainWindow::loadSeriesDB()
 				lpSerie->setTVRageID(query.value("tvrageid").toInt());
 				lpSerie->setStatus(query.value("status").toString());
 				lpSerie->setDownload(query.value("download").toString());
+				lpSerie->setLocalPath(query.value("localPath").toString());
 				lpSerie->setCliffhanger(query.value("cliffhanger").toBool());
 			}
 
@@ -1185,6 +1188,8 @@ bool cMainWindow::runEdit(cSerie* lpSerie, QString& szDownload)
 	szDownload	= lpEdit->download();
 
 	lpSerie->setDownload(szDownload);
+	lpSerie->setLocalPath(lpEdit->localPath());
+
 	lpSerie->updateState();
 
 	delete lpEdit;
