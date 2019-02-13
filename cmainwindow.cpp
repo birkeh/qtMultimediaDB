@@ -1662,6 +1662,7 @@ void cMainWindow::doUpdate(cSerieList& serieList)
 						}
 					}
 					lpSerieNew->setDownload(lpSerie->download());
+					lpSerieNew->setLocalPath(lpSerie->localPath());
 					for(int x = 0;x < lpSerieNew->seasonList().count();x++)
 					{
 						cSeason*	lpSeasonNew	= lpSerieNew->seasonList().at(x);
