@@ -562,6 +562,29 @@ public:
 	 \fn setCliffhanger
 	 \param bCliffhanger
 	*/
+
+	/*!
+	 \brief
+
+	 \fn setResolution
+	 \param szResolution
+	*/
+	void			setResolution(const QString& szResolution);
+	/*!
+	 \brief
+
+	 \fn resolution
+	 \return QString
+	*/
+	QString			resolution();
+
+	/*!
+	 \brief
+
+	 \fn setCliffhanger
+	 \param bCliffhanger
+	*/
+
 	void			setCliffhanger(const bool& bCliffhanger);
 	/*!
 	 \brief
@@ -790,6 +813,7 @@ private:
 	QString			m_szStatus; /*!< TODO: describe */
 	QString			m_szDownload; /*!< TODO: describe */
 	QString			m_szLocalPath; /*!< TODO: describe */
+	QString			m_szResolution; /*!< TODO: describe */
 	bool			m_bCliffhanger; /*!< TODO: describe */
 	cFanartList		m_fanartList; /*!< TODO: describe */
 	QList<cSeason*>	m_seasonList; /*!< TODO: describe */

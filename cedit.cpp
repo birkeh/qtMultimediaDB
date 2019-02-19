@@ -109,6 +109,7 @@ void cEdit::setSerie(cSerie* lpSerie)
 	ui->m_lpCliffhanger->setChecked(lpSerie->cliffhanger());
 	ui->m_lpDownloadLink->setText(lpSerie->download());
 	ui->m_lpLocalPath->setText(lpSerie->localPath());
+	ui->m_lpResolution->setText(lpSerie->resolution());
 
 	QString			szBanner	= lpSerie->fanartBanner();
 	{
@@ -268,6 +269,11 @@ QString cEdit::download()
 QString cEdit::localPath()
 {
 	return(ui->m_lpLocalPath->text());
+}
+
+QString cEdit::resolution()
+{
+	return(ui->m_lpResolution->text());
 }
 
 void cEdit::on_m_lpTabWidget_tabBarClicked(int index)

@@ -66,7 +66,7 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,4,0,2,0,1">
                <item>
                 <widget class="QLabel" name="m_lpDownloadLinkLabel">
                  <property name="text">
@@ -86,6 +86,16 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="m_lpLocalPath"/>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Resolution:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="m_lpResolution"/>
                </item>
               </layout>
              </item>
@@ -206,7 +216,7 @@
                 <bool>false</bool>
                </attribute>
                <attribute name="headerDefaultSectionSize">
-                <number>0</number>
+                <number>35</number>
                </attribute>
               </widget>
              </item>

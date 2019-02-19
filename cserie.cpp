@@ -540,8 +540,8 @@ bool cSerie::save(QSqlDatabase &db)
 	QSqlQuery	queryEpisode;
 	QSqlQuery	queryFanart;
 
-	querySerie.prepare("INSERT INTO serie (seriesID,seriesName,originalName,backdropPath,createdBy,homepage,lastAired,languages,networks,nrEpisodes,nrSeasons,originCountries,originalLanguage,popularity,posterPath,productionCompanies,type,voteAverage,voteCount,overview,firstAired,cast,crew,genre,imdbid,freebasemid,freebaseid,tvdbid,tvrageid,status,download,localPath,cliffhanger)"
-						" VALUES (:seriesID,:seriesName,:originalName,:backdropPath,:createdBy,:homepage,:lastAired,:languages,:networks,:nrEpisodes,:nrSeasons,:originCountries,:originalLanguage,:popularity,:posterPath,:productionCompanies,:type,:voteAverage,:voteCount,:overview,:firstAired,:cast,:crew,:genre,:imdbid,:freebasemid,:freebaseid,:tvdbid,:tvrageid,:status,:download,:localPath,:cliffhanger);");
+	querySerie.prepare("INSERT INTO serie (seriesID,seriesName,originalName,backdropPath,createdBy,homepage,lastAired,languages,networks,nrEpisodes,nrSeasons,originCountries,originalLanguage,popularity,posterPath,productionCompanies,type,voteAverage,voteCount,overview,firstAired,cast,crew,genre,imdbid,freebasemid,freebaseid,tvdbid,tvrageid,status,download,localPath,resolution,cliffhanger)"
+						" VALUES (:seriesID,:seriesName,:originalName,:backdropPath,:createdBy,:homepage,:lastAired,:languages,:networks,:nrEpisodes,:nrSeasons,:originCountries,:originalLanguage,:popularity,:posterPath,:productionCompanies,:type,:voteAverage,:voteCount,:overview,:firstAired,:cast,:crew,:genre,:imdbid,:freebasemid,:freebaseid,:tvdbid,:tvrageid,:status,:download,:localPath,:resolution,:cliffhanger);");
 	querySeason.prepare("INSERT INTO season (_id,airDate,name,overview,id,posterPath,seasonNumber,seriesID) VALUES (:_id,:airDate,:name,:overview,:id,:posterPath,:seasonNumber,:seriesID);");
 	queryEpisode.prepare("INSERT INTO episode (id,name,episodeNumber,airDate,guestStars,overview,productioncode,seasonNumber,seasonID,seriesID,stillPath,voteAverage,voteCount,crew,state)"
 						 " VALUES (:id,:name,:episodeNumber,:airDate,:guestStars,:overview,:productioncode,:seasonNumber,:seasonID,:seriesID,:stillPath,:voteAverage,:voteCount,:crew,:state);");
@@ -585,6 +585,7 @@ bool cSerie::save(QSqlDatabase &db)
 		querySerie.bindValue(":status", status());
 		querySerie.bindValue(":download", download());
 		querySerie.bindValue(":localPath", localPath());
+		querySerie.bindValue(":resolution", resolution());
 		querySerie.bindValue(":cliffhanger", cliffhanger());
 		if(querySerie.exec())
 		{

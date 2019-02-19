@@ -274,6 +274,7 @@ void cMainWindow::initDB()
 					"   status              STRING,"
 					"   download            STRING,"
 					"	localPath			STRING,"
+					"   resolution          STRING,"
 					"   cliffhanger         BOOL);");
 	}
 
@@ -357,6 +358,7 @@ void cMainWindow::initDB()
 					"   video               BOOL,"
 					"   cast                TEXT,"
 					"   crew                TEXT,"
+					"	localPath			STRING,"
 					"   state               INTEGER);");
 	}
 }
@@ -469,6 +471,7 @@ void cMainWindow::loadSeriesDB()
 			" 			serie.status status,"
 			" 			serie.download download,"
 			"			serie.localPath localPath,"
+			"           serie.resolution resolution,"
 			" 			serie.cliffhanger cliffhanger,"
 			" 			season._id s__id,"
 			" 			season.airDate s_airDate,"
@@ -545,6 +548,7 @@ void cMainWindow::loadSeriesDB()
 				lpSerie->setStatus(query.value("status").toString());
 				lpSerie->setDownload(query.value("download").toString());
 				lpSerie->setLocalPath(query.value("localPath").toString());
+				lpSerie->setResolution(query.value("resolution").toString());
 				lpSerie->setCliffhanger(query.value("cliffhanger").toBool());
 			}
 
@@ -1189,6 +1193,7 @@ bool cMainWindow::runEdit(cSerie* lpSerie, QString& szDownload)
 
 	lpSerie->setDownload(szDownload);
 	lpSerie->setLocalPath(lpEdit->localPath());
+	lpSerie->setResolution(lpEdit->resolution());
 
 	lpSerie->updateState();
 
@@ -1695,15 +1700,6 @@ void cMainWindow::doUpdate(cSerieList& serieList)
 
 
 		updateDone();
-
-//		m_lpUpdateThread		= new cUpdateThread;
-//		m_lpUpdateThread->setData(m_lpMessageDialog, serieList, m_db);
-
-//		connect(m_lpUpdateThread, SIGNAL(finished()), this, SLOT(updateDone()));
-//		connect(m_lpUpdateThread, SIGNAL(updateMessage(QString,qint32)), this, SLOT(updateMessage(QString,qint32)));
-//		connect(m_lpUpdateThread, SIGNAL(updateAppendMessage(QString)), this, SLOT(updateAppendMessage(QString)));
-
-//		m_lpUpdateThread->start();
 	}
 }
 
@@ -1722,10 +1718,6 @@ void cMainWindow::updateAppendMessage(const QString& szMessage)
 
 void cMainWindow::updateDone()
 {
-//	if(m_lpUpdateThread)
-//		delete m_lpUpdateThread;
-//	m_lpUpdateThread	= 0;
-
 	loadDB();
 	displaySeries();
 	applySeriesFilter();

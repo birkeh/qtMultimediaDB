@@ -57,6 +57,13 @@ public:
 	 \return QString
 	*/
 	QString		localPath();
+	/*!
+	 \brief
+
+	 \fn resolution
+	 \return QString
+	*/
+	QString		resolution();
 private slots:
 	/*!
 	 \brief

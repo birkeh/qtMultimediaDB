@@ -25,7 +25,6 @@ SOURCES += main.cpp\
     cverticallabel.cpp \
     cepisodedetails.cpp \
     cmessagedialog.cpp \
-    cupdatethread.cpp \
     cpicturesthread.cpp \
     cthemoviedbv3.cpp \
     cmovie.cpp \
@@ -63,7 +62,6 @@ HEADERS  += cmainwindow.h \
     cverticallabel.h \
     cepisodedetails.h \
     cmessagedialog.h \
-    cupdatethread.h \
     cpicturesthread.h \
     cthemoviedbv3.h \
     cmovie.h \
