@@ -125,7 +125,7 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	ui->m_lpMoviesFilterProgress->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasProgress", Qt::PartiallyChecked).toUInt()));
 	ui->m_lpMoviesFilterDone->setCheckState(static_cast<Qt::CheckState>(settings.value("movieFilter/hasDone", Qt::PartiallyChecked).toUInt()));
 
-	m_lpSeriesListModel	= new QStandardItemModel(0, 3);
+	m_lpSeriesListModel	= new QStandardItemModel(0, 4);
 	initDB();
 
 	ui->m_lpSeriesList1->setModel(m_lpSeriesListModel);
@@ -164,7 +164,7 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	qint32	iWidth1			= 0;
 	qint32	iWidth2;
 
-	for(int z = 0;z < 3;z++)
+	for(int z = 0;z < 4;z++)
 		iWidth1	+= ui->m_lpSeriesList1->columnWidth(z);
 
 	iWidth1	+= 2;
@@ -693,6 +693,7 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 	lpItems.at(0)->setForeground(QBrush(Qt::black));
 	lpItems.at(1)->setForeground(QBrush(Qt::black));
 	lpItems.at(2)->setForeground(QBrush(Qt::black));
+	lpItems.at(3)->setForeground(QBrush(Qt::black));
 
 	QList<cSeason*>	seasonList	= lpSerie->seasonList();
 	for(int season = 0;season < seasonList.count();season++)
@@ -706,7 +707,7 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 		if(!lpSeason->seasonNumber() && !bDisplaySeason0)
 			continue;
 
-		lpItems.at(lpSeason->seasonNumber()+3-iMin)->setData(QVariant::fromValue(lpSeason), Qt::UserRole);
+		lpItems.at(lpSeason->seasonNumber()+4-iMin)->setData(QVariant::fromValue(lpSeason), Qt::UserRole);
 
 		for(int y = 0;y < lpSeason->episodeList().count();y++)
 		{
@@ -781,6 +782,7 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 		lpItems.at(0)->setFont(font);
 		lpItems.at(1)->setFont(font);
 		lpItems.at(2)->setFont(font);
+		lpItems.at(3)->setFont(font);
 	}
 
 	if(lpSerie->cliffhanger())
@@ -788,9 +790,11 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 		lpItems.at(0)->setFont(fontI);
 		lpItems.at(1)->setFont(fontI);
 		lpItems.at(2)->setFont(fontI);
+		lpItems.at(3)->setFont(fontI);
 		lpItems.at(0)->setForeground(QBrush(Qt::red));
 		lpItems.at(1)->setForeground(QBrush(Qt::red));
 		lpItems.at(2)->setForeground(QBrush(Qt::red));
+		lpItems.at(3)->setForeground(QBrush(Qt::red));
 	}
 
 	if(bHasProg)
@@ -798,21 +802,25 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 		lpItems.at(0)->setForeground(QBrush(Qt::white));
 		lpItems.at(1)->setForeground(QBrush(Qt::white));
 		lpItems.at(2)->setForeground(QBrush(Qt::white));
+		lpItems.at(3)->setForeground(QBrush(Qt::white));
 		lpItems.at(0)->setBackground(QBrush(Qt::blue));
 		lpItems.at(1)->setBackground(QBrush(Qt::blue));
 		lpItems.at(2)->setBackground(QBrush(Qt::blue));
+		lpItems.at(3)->setBackground(QBrush(Qt::blue));
 	}
 	else if(bHasInit)
 	{
 		lpItems.at(0)->setBackground(QBrush(Qt::lightGray));
 		lpItems.at(1)->setBackground(QBrush(Qt::lightGray));
 		lpItems.at(2)->setBackground(QBrush(Qt::lightGray));
+		lpItems.at(3)->setBackground(QBrush(Qt::lightGray));
 	}
 	else
 	{
 		lpItems.at(0)->setBackground(QBrush(Qt::green));
 		lpItems.at(1)->setBackground(QBrush(Qt::green));
 		lpItems.at(2)->setBackground(QBrush(Qt::green));
+		lpItems.at(3)->setBackground(QBrush(Qt::green));
 	}
 
 	if(lpSerie->download().length())
@@ -821,6 +829,7 @@ void cMainWindow::setSeriesStyle(QList<QStandardItem*>lpItems)
 	lpItems.at(0)->setToolTip(szOpen);
 	lpItems.at(1)->setToolTip(szOpen);
 	lpItems.at(2)->setToolTip(szOpen);
+	lpItems.at(3)->setToolTip(szOpen);
 }
 
 void cMainWindow::setMovieStyle(QStandardItem* /*lpItem*/)
@@ -844,10 +853,10 @@ void cMainWindow::displaySeries()
 	qint32	iSeries		= 0;
 	qint32	iEpisodes	= 0;
 
-	m_lpSeriesListModel->setColumnCount(iMax-iMin+2);
+	m_lpSeriesListModel->setColumnCount(iMax-iMin+3);
 
 	QStringList	header;
-	header << "Nr" << "Serie" << "Year";
+	header << tr("Nr") << tr("Serie") << tr("Year") << tr("Res");
 
 	for(int z = iMin;z <= iMax;z++)
 		header.append(QString("Season %1").arg(z));
@@ -878,12 +887,15 @@ void cMainWindow::displaySeries()
 		lpItems.at(2)->setText(lpSerie->firstAired().toString("yyyy"));
 		lpItems.at(2)->setTextAlignment(Qt::AlignRight);
 
+		lpItems.at(3)->setText(lpSerie->resolution());
+		lpItems.at(3)->setTextAlignment(Qt::AlignRight);
+
 		QList<cSeason*>	seasonList	= lpSerie->seasonList();
 		for(int season = 0;season < seasonList.count();season++)
 		{
 			cSeason*	lpSeason	= seasonList.at(season);
 			if(lpSeason->seasonNumber() || bDisplaySeason0)
-				lpItems.at(lpSeason->seasonNumber()+3-iMin)->setData(QVariant::fromValue(lpSeason), Qt::UserRole);
+				lpItems.at(lpSeason->seasonNumber()+4-iMin)->setData(QVariant::fromValue(lpSeason), Qt::UserRole);
 		}
 
 		m_lpSeriesListModel->appendRow(lpItems);
@@ -899,13 +911,13 @@ void cMainWindow::displaySeries()
 		}
 	}
 
-	for(int z = 3;z < m_lpSeriesListModel->columnCount();z++)
+	for(int z = 4;z < m_lpSeriesListModel->columnCount();z++)
 	{
 		ui->m_lpSeriesList1->setColumnWidth(z, 0);
 		ui->m_lpSeriesList2->resizeColumnToContents(z);
 	}
 
-	for(int z = 2;z >= 0;z--)
+	for(int z = 3;z >= 0;z--)
 		ui->m_lpSeriesList1->resizeColumnToContents(z);
 
 	if(selected.isValid())
@@ -916,12 +928,13 @@ void cMainWindow::displaySeries()
 
 	m_szOldSelected	= "";
 
-	for(int z = 3;z < m_lpSeriesListModel->columnCount();z++)
+	for(int z = 4;z < m_lpSeriesListModel->columnCount();z++)
 		ui->m_lpSeriesList1->setColumnHidden(z, true);
 
 	ui->m_lpSeriesList2->setColumnHidden(0, true);
 	ui->m_lpSeriesList2->setColumnHidden(1, true);
 	ui->m_lpSeriesList2->setColumnHidden(2, true);
+	ui->m_lpSeriesList2->setColumnHidden(3, true);
 
 	ui->m_lpSeriesCount->setText(QString("%1").arg(iSeries));
 	ui->m_lpEpisodesCount->setText(QString("%1").arg(iEpisodes));
@@ -960,7 +973,14 @@ void cMainWindow::displayMovies()
 			}
 		}
 
-		QStandardItem*	lpItem	= new QStandardItem(QString("<b>%1</b> (%2)&nbsp;&nbsp;<br><i>%3</i>").arg(lpMovie->movieTitle()).arg(lpMovie->releaseDate().year()).arg(lpMovie->tagline()));
+		QString			szText;
+
+		if(lpMovie->resolution().isEmpty())
+			szText	= QString("<b>%1</b> (%2)&nbsp;&nbsp;<br><i>%3</i>").arg(lpMovie->movieTitle()).arg(lpMovie->releaseDate().year()).arg(lpMovie->tagline());
+		else
+			szText	= QString("<b>%1</b> (%2) [%4]&nbsp;&nbsp;<br><i>%3</i>").arg(lpMovie->movieTitle()).arg(lpMovie->releaseDate().year()).arg(lpMovie->tagline()).arg(lpMovie->resolution());
+
+		QStandardItem*	lpItem	= new QStandardItem(szText);
 		lpItem->setData(QVariant::fromValue(lpMovie), Qt::UserRole);
 
 		if(lpRoot)
@@ -1733,9 +1753,9 @@ void cMainWindow::onActionMovieDelete()
 
 void cMainWindow::onActionEdit()
 {
-	QModelIndex	index	= ui->m_lpSeriesList1->selectionModel()->selectedRows().at(0);
-
-	cSerie*	lpSerie	= m_lpSeriesListModel->itemFromIndex(index)->data(Qt::UserRole).value<cSerie*>();
+	QModelIndex		index	= ui->m_lpSeriesList1->selectionModel()->selectedRows().at(0);
+	QStandardItem*	lpRes	= m_lpSeriesListModel->item(index.row(), 3);
+	cSerie*			lpSerie	= m_lpSeriesListModel->itemFromIndex(index)->data(Qt::UserRole).value<cSerie*>();
 	if(!lpSerie)
 		return;
 
@@ -1753,6 +1773,8 @@ void cMainWindow::onActionEdit()
 
 	lpSerie->del(m_db);
 	lpSerie->save(m_db);
+
+	lpRes->setText(lpSerie->resolution());
 
 	QList<QStandardItem*>	lpItems;
 	QStandardItem*			lpItem;
@@ -1795,6 +1817,16 @@ void cMainWindow::onActionMovieEdit()
 */
 
 	QStandardItem*	lpItem	= m_lpMoviesListModel->itemFromIndex(ui->m_lpMoviesList->selectionModel()->selectedRows().at(0));
+
+	QString			szText;
+
+	if(lpMovie->resolution().isEmpty())
+		szText	= QString("<b>%1</b> (%2)&nbsp;&nbsp;<br><i>%3</i>").arg(lpMovie->movieTitle()).arg(lpMovie->releaseDate().year()).arg(lpMovie->tagline());
+	else
+		szText	= QString("<b>%1</b> (%2) [%4]&nbsp;&nbsp;<br><i>%3</i>").arg(lpMovie->movieTitle()).arg(lpMovie->releaseDate().year()).arg(lpMovie->tagline()).arg(lpMovie->resolution());
+
+	lpItem->setText(szText);
+
 	setMovieStyle(lpItem);
 	emit m_lpMoviesListModel->layoutChanged();
 

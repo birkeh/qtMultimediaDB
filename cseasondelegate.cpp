@@ -25,7 +25,7 @@
 
 void cSeasonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	if(index.column() > 2)
+	if(index.column() > 3)
 	{
 		cSeason*	lpSeason	= nullptr;
 
@@ -84,11 +84,11 @@ void cSeasonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
 
 QSize cSeasonDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	if(index.column() > 2)
+	if(index.column() > 3)
 	{
 		qint32		iTotal		= -1;
 		qint32		z;
-		cSeason*	lpSeason	= 0;
+		cSeason*	lpSeason	= nullptr;
 
 		if(index.data(Qt::UserRole).canConvert<cSeason*>())
 			lpSeason	= qvariant_cast<cSeason*>(index.data(Qt::UserRole));
