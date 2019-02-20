@@ -398,6 +398,16 @@ QString cSerie::localPath()
 	return(m_szLocalPath);
 }
 
+void cSerie::setResolution(const QString& szResolution)
+{
+	m_szResolution	= szResolution;
+}
+
+QString cSerie::resolution()
+{
+	return(m_szResolution);
+}
+
 void cSerie::setCliffhanger(const bool& bCliffhanger)
 {
 	m_bCliffhanger	= bCliffhanger;
@@ -424,7 +434,7 @@ cSeason* cSerie::findSeason(const qint32& iSeason)
 		if(m_seasonList.at(z)->seasonNumber() == iSeason)
 			return(m_seasonList.at(z));
 	}
-	return(0);
+	return(nullptr);
 }
 
 QList<cSeason*> cSerie::seasonList()
@@ -468,7 +478,7 @@ cEpisode* cSerie::findEpisode(const qint32& id)
 				return(lpEpisode);
 		}
 	}
-	return(0);
+	return(nullptr);
 }
 
 bool cSerie::isValid()

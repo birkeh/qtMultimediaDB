@@ -3,15 +3,26 @@
 
 #include "ui_cmovieedit.h"
 
+#include <QSqlQuery>
+
 
 cMovieEdit::cMovieEdit(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::cMovieEdit),
-	m_lpMovie(0),
-	m_lpActorsModel(0),
-	m_lpGenreModel(0)
+	m_lpMovie(nullptr),
+	m_lpActorsModel(nullptr),
+	m_lpGenreModel(nullptr)
 {
 	ui->setupUi(this);
+
+	QSqlQuery	query;
+
+	query.prepare("SELECT resolution FROM resolution ORDER BY sort;");
+	if(query.exec())
+	{
+		while(query.next())
+			ui->m_lpResolution->addItem(query.value("resolution").toString());
+	}
 
 	m_lpActorsModel	= new QStandardItemModel(0, 0);
 	ui->m_lpDetailsActors->setModel(m_lpActorsModel);
@@ -37,6 +48,8 @@ void cMovieEdit::setMovie(cMovie *lpMovie)
 
 	ui->m_lpName->setText(lpMovie->movieTitle());
 	ui->m_lpFirstAired->setDate(lpMovie->releaseDate());
+	ui->m_lpLocalPath->setText(lpMovie->localPath());
+	ui->m_lpResolution->setCurrentText(lpMovie->resolution());
 
 	switch(lpMovie->state())
 	{
@@ -78,17 +91,15 @@ void cMovieEdit::setMovie(cMovie *lpMovie)
 	ui->m_lpDetailsGenre->resizeColumnToContents(0);
 }
 
-void cMovieEdit::on_m_lpInit_clicked()
+void cMovieEdit::on_buttonBox_accepted()
 {
-	m_lpMovie->setState(cMovie::StateInit);
-}
+	m_lpMovie->setLocalPath(ui->m_lpLocalPath->text());
+	m_lpMovie->setResolution(ui->m_lpResolution->currentText());
 
-void cMovieEdit::on_m_lpProgress_clicked()
-{
-	m_lpMovie->setState(cMovie::StateProgress);
-}
-
-void cMovieEdit::on_m_lpDone_clicked()
-{
-	m_lpMovie->setState(cMovie::StateDone);
+	if(ui->m_lpInit->isChecked())
+		m_lpMovie->setState(cMovie::StateInit);
+	else if(ui->m_lpProgress->isChecked())
+		m_lpMovie->setState(cMovie::StateProgress);
+	else
+		m_lpMovie->setState(cMovie::StateDone);
 }

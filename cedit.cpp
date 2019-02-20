@@ -19,6 +19,8 @@
 #include <QLabel>
 #include <QButtonGroup>
 
+#include <QSqlQuery>
+
 #include <QDebug>
 #include <QTime>
 
@@ -49,6 +51,15 @@ cEdit::cEdit(QWidget *parent) :
 	m_lpSerie(nullptr)
 {
 	ui->setupUi(this);
+
+	QSqlQuery	query;
+
+	query.prepare("SELECT resolution FROM resolution ORDER BY sort;");
+	if(query.exec())
+	{
+		while(query.next())
+			ui->m_lpResolution->addItem(query.value("resolution").toString());
+	}
 
 	QPalette	palette	= ui->m_lpDownloadLinkLabel->palette();
 	QColor		col		= palette.color(QPalette::Window);
@@ -84,9 +95,9 @@ cEdit::~cEdit()
 				cEpisode*	lpEpisode	= episodeList.at(y);
 				if(lpEpisode)
 				{
-					lpEpisode->setButton1(0);
-					lpEpisode->setButton2(0);
-					lpEpisode->setButton3(0);
+					lpEpisode->setButton1(nullptr);
+					lpEpisode->setButton2(nullptr);
+					lpEpisode->setButton3(nullptr);
 				}
 			}
 		}
@@ -109,7 +120,7 @@ void cEdit::setSerie(cSerie* lpSerie)
 	ui->m_lpCliffhanger->setChecked(lpSerie->cliffhanger());
 	ui->m_lpDownloadLink->setText(lpSerie->download());
 	ui->m_lpLocalPath->setText(lpSerie->localPath());
-	ui->m_lpResolution->setText(lpSerie->resolution());
+	ui->m_lpResolution->setCurrentText(lpSerie->resolution());
 
 	QString			szBanner	= lpSerie->fanartBanner();
 	{
@@ -245,19 +256,19 @@ void cEdit::lpAllDone_clicked()
 
 void cEdit::allInit_clicked()
 {
-	QPushButton*	lpButton	= (QPushButton*)sender();
+	QPushButton*	lpButton	= static_cast<QPushButton*>(sender());
 	m_lpSerie->seasonInit(lpButton);
 }
 
 void cEdit::allProgress_clicked()
 {
-	QPushButton*	lpButton	= (QPushButton*)sender();
+	QPushButton*	lpButton	= static_cast<QPushButton*>(sender());
 	m_lpSerie->seasonProgress(lpButton);
 }
 
 void cEdit::allDone_clicked()
 {
-	QPushButton*	lpButton	= (QPushButton*)sender();
+	QPushButton*	lpButton	= static_cast<QPushButton*>(sender());
 	m_lpSerie->seasonDone(lpButton);
 }
 
@@ -273,7 +284,7 @@ QString cEdit::localPath()
 
 QString cEdit::resolution()
 {
-	return(ui->m_lpResolution->text());
+	return(ui->m_lpResolution->currentText());
 }
 
 void cEdit::on_m_lpTabWidget_tabBarClicked(int index)

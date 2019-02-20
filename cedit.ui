@@ -66,7 +66,7 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,4,0,2,0,1">
+              <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,4,0,2,0,0">
                <item>
                 <widget class="QLabel" name="m_lpDownloadLinkLabel">
                  <property name="text">
@@ -95,7 +95,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="m_lpResolution"/>
+                <widget class="QComboBox" name="m_lpResolution"/>
                </item>
               </layout>
              </item>

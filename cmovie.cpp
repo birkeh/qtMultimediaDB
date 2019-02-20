@@ -23,7 +23,9 @@ cMovie::cMovie() :
 	m_bVideo(false),
 	m_dVoteAverage(0.0),
 	m_iVoteCount(0),
-	m_iState(StateInit)
+	m_iState(StateInit),
+	m_szLocalPath(""),
+	m_szResolution("")
 {
 }
 
@@ -327,6 +329,26 @@ cMovie::State cMovie::state()
 	return(m_iState);
 }
 
+void cMovie::setLocalPath(const QString& szLocalPath)
+{
+	m_szLocalPath	= szLocalPath;
+}
+
+QString cMovie::localPath()
+{
+	return(m_szLocalPath);
+}
+
+void cMovie::setResolution(const QString& szResolution)
+{
+	m_szResolution	= szResolution;
+}
+
+QString cMovie::resolution()
+{
+	return(m_szResolution);
+}
+
 void cMovie::loadFanart()
 {
 	cFanartTV	fanartTV;
@@ -349,8 +371,8 @@ bool cMovie::save(QSqlDatabase &db)
 	QSqlQuery	queryMovie;
 	QSqlQuery	queryFanart;
 
-	queryMovie.prepare("INSERT INTO movie (movieID,movieTitle,originalTitle,backdropPath,posterPath,overview,releaseDate,genre,imdbid,originalLanguage,popularity,productionCompanies,productionCountries,voteAverage,voteCount,adult,belongsToCollection,budget,homepage,revenue,runtime,spokenLanguages,status,tagline,video,cast,crew,state)"
-						  " VALUES (:movieID,:movieTitle,:originalTitle,:backdropPath,:posterPath,:overview,:releaseDate,:genre,:imdbid,:originalLanguage,:popularity,:productionCompanies,:productionCountries,:voteAverage,:voteCount,:adult,:belongsToCollection,:budget,:homepage,:revenue,:runtime,:spokenLanguages,:status,:tagline,:video,:cast,:crew,:state);");
+	queryMovie.prepare("INSERT INTO movie (movieID,movieTitle,originalTitle,backdropPath,posterPath,overview,releaseDate,genre,imdbid,originalLanguage,popularity,productionCompanies,productionCountries,voteAverage,voteCount,adult,belongsToCollection,budget,homepage,revenue,runtime,spokenLanguages,status,tagline,video,cast,crew,state,localPath,resolution)"
+						  " VALUES (:movieID,:movieTitle,:originalTitle,:backdropPath,:posterPath,:overview,:releaseDate,:genre,:imdbid,:originalLanguage,:popularity,:productionCompanies,:productionCountries,:voteAverage,:voteCount,:adult,:belongsToCollection,:budget,:homepage,:revenue,:runtime,:spokenLanguages,:status,:tagline,:video,:cast,:crew,:state,:localPath,:resolution);");
 	queryFanart.prepare("INSERT INTO fanart (id,type,url,language,likes,discType,disc,active,movieID) VALUES (:id,:type,:url,:language,:likes,:discType,:disc,:active,:movieID);");
 
 	db.transaction();
@@ -385,6 +407,8 @@ bool cMovie::save(QSqlDatabase &db)
 		queryMovie.bindValue(":cast", cast().join("|"));
 		queryMovie.bindValue(":crew", crew().join("|"));
 		queryMovie.bindValue(":state", state());
+		queryMovie.bindValue(":localPath", localPath());
+		queryMovie.bindValue(":resolution", resolution());
 
 		if(queryMovie.exec())
 		{
@@ -452,7 +476,7 @@ cMovie* cMovieList::add(cMovie* lpMovie)
 	for(int z = 0;z < count();z++)
 	{
 		if(at(z) == lpMovie)
-			return(0);
+			return(nullptr);
 	}
 	append(lpMovie);
 	return(lpMovie);
@@ -465,5 +489,5 @@ cMovie* cMovieList::find(const qint32& iID)
 		if(at(z)->movieID() == iID)
 			return(at(z));
 	}
-	return(0);
+	return(nullptr);
 }

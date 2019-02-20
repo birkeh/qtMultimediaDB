@@ -28,7 +28,7 @@ public:
 	 \fn cMovieEdit
 	 \param parent
 	*/
-	explicit cMovieEdit(QWidget *parent = 0);
+	explicit cMovieEdit(QWidget *parent = nullptr);
 	/*!
 	 \brief
 
@@ -47,29 +47,15 @@ private slots:
 	/*!
 	 \brief
 
-	 \fn on_m_lpInit_clicked
+	 \fn on_buttonBox_accepted
 	*/
-	void on_m_lpInit_clicked();
-
-	/*!
-	 \brief
-
-	 \fn on_m_lpProgress_clicked
-	*/
-	void on_m_lpProgress_clicked();
-
-	/*!
-	 \brief
-
-	 \fn on_m_lpDone_clicked
-	*/
-	void on_m_lpDone_clicked();
+	void		on_buttonBox_accepted();
 
 private:
-	Ui::cMovieEdit*		ui; /*!< TODO: describe */
-	cMovie*				m_lpMovie; /*!< TODO: describe */
-	QStandardItemModel*	m_lpActorsModel;
-	QStandardItemModel*	m_lpGenreModel;
+	Ui::cMovieEdit*		ui;					/*!< TODO: describe */
+	cMovie*				m_lpMovie;			/*!< TODO: describe */
+	QStandardItemModel*	m_lpActorsModel;	/*!< TODO: describe */
+	QStandardItemModel*	m_lpGenreModel;		/*!< TODO: describe */
 };
 
 #endif // CMOVIEEDIT_H

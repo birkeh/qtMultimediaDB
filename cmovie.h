@@ -485,6 +485,36 @@ public:
 	/*!
 	 \brief
 
+	 \fn setLocalPath
+	 \param szLocalPath
+	*/
+	void					setLocalPath(const QString& szLocalPath);
+	/*!
+	 \brief
+
+	 \fn localPath
+	 \return QString
+	*/
+	QString					localPath();
+
+	/*!
+	 \brief
+
+	 \fn setResolution
+	 \param szResolution
+	*/
+	void					setResolution(const QString& szResolution);
+	/*!
+	 \brief
+
+	 \fn resolution
+	 \return QString
+	*/
+	QString					resolution();
+
+	/*!
+	 \brief
+
 	 \fn save
 	 \param db
 	 \return bool
@@ -549,6 +579,8 @@ private:
 	QStringList				m_szCast; /*!< TODO: describe */
 	QStringList				m_szCrew; /*!< TODO: describe */
 	State					m_iState; /*!< TODO: describe */
+	QString					m_szLocalPath; /*!< TODO: describe */
+	QString					m_szResolution; /*!< TODO: describe */
 	cFanartList				m_fanartList; /*!< TODO: describe */
 };
 

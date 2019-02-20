@@ -497,13 +497,6 @@ private:
 	/*!
 	 \brief
 
-	 \fn convertSeries
-	*/
-	void				convertSeries();
-
-	/*!
-	 \brief
-
 	 \fn loadSeriesDB
 	*/
 	void				loadSeriesDB();

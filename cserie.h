@@ -559,13 +559,6 @@ public:
 	/*!
 	 \brief
 
-	 \fn setCliffhanger
-	 \param bCliffhanger
-	*/
-
-	/*!
-	 \brief
-
 	 \fn setResolution
 	 \param szResolution
 	*/

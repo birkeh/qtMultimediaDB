@@ -235,7 +235,10 @@ void cMainWindow::initDB()
 	m_db.setHostName("localhost");
 	m_db.setDatabaseName(szDBPath);
 	if(!m_db.open())
+	{
+		qDebug() << m_db.lastError().text();
 		return;
+	}
 
 	QSqlQuery	query;
 
@@ -359,69 +362,22 @@ void cMainWindow::initDB()
 					"   cast                TEXT,"
 					"   crew                TEXT,"
 					"	localPath			STRING,"
+					"   resolution          STRING,"
 					"   state               INTEGER);");
+	}
+
+	if(!m_db.tables().contains("resolution"))
+	{
+		query.exec("CREATE TABLE resolution ("
+					"	resolution     STRING,"
+					"   SORT           INTEGER);");
 	}
 }
 
 void cMainWindow::loadDB()
 {
-//	convertSeries();
 	loadSeriesDB();
 	loadMoviesDB();
-}
-
-void cMainWindow::convertSeries()
-{
-	QSqlQuery		query;
-	QString			szOldIMDBID	= "";
-	cTheMovieDBV3	theMovieDB;
-	cSerie*			lpSerie		= nullptr;
-
-	if(query.exec("SELECT s.imdbid, s.download, s.cliffhanger, e.episodeNumber, e.seasonNumber, e.state FROM serie_old s LEFT JOIN episode_old e ON s.id = e.seriesID WHERE s.imdbid IS NOT NULL AND s.imdbid <> \"\" ORDER BY s.imdbid, e.seasonNumber, e.episodeNumber;"))
-	{
-		while(query.next())
-		{
-			QString	szIMDBID		= query.value("imdbid").toString();
-
-			if(!szIMDBID.isEmpty())
-			{
-				if(szIMDBID != szOldIMDBID)
-				{
-					if(lpSerie)
-					{
-						lpSerie->save(m_db);
-						delete lpSerie;
-						lpSerie	= nullptr;
-					}
-
-					szOldIMDBID	= szIMDBID;
-					lpSerie		= theMovieDB.loadSerie(szIMDBID);
-					if(lpSerie)
-					{
-						lpSerie->setDownload(query.value("download").toString());
-						lpSerie->setCliffhanger(query.value("cliffhanger").toBool());
-					}
-				}
-
-				if(lpSerie)
-				{
-					cSeason*		lpSeason	= lpSerie->findSeason(query.value("seasonNumber").toInt());
-					if(lpSeason)
-					{
-						cEpisode*	lpEpisode	= lpSeason->findEpisode(query.value("episodeNumber").toInt());
-						if(lpEpisode)
-							lpEpisode->setState(query.value("state").value<cEpisode::State>());
-					}
-				}
-			}
-		}
-	}
-	if(lpSerie)
-	{
-		lpSerie->save(m_db);
-		delete lpSerie;
-		lpSerie	= nullptr;
-	}
 }
 
 void cMainWindow::loadSeriesDB()
@@ -628,7 +584,7 @@ void cMainWindow::loadMoviesDB()
 	QSqlQuery	query;
 	qint32		iMovieID;
 
-	if(query.exec("SELECT movieID, movieTitle, originalTitle, backdropPath, posterPath, overview, releaseDate, genre, imdbid, originalLanguage, popularity, productionCompanies, productionCountries, voteAverage, voteCount, adult, belongsToCollection, budget, homepage, revenue, runtime, spokenLanguages, status, tagline, video, `cast`, crew, state, sortText FROM (SELECT *, IFNULL(belongsToCollection, movieTitle) AS sortText FROM movie) ORDER BY sortText, releaseDate;"))
+	if(query.exec("SELECT movieID, movieTitle, originalTitle, backdropPath, posterPath, overview, releaseDate, genre, imdbid, originalLanguage, popularity, productionCompanies, productionCountries, voteAverage, voteCount, adult, belongsToCollection, budget, homepage, revenue, runtime, spokenLanguages, status, tagline, video, `cast`, crew, state, sortText, localPath, resolution FROM (SELECT *, IFNULL(belongsToCollection, movieTitle) AS sortText FROM movie) ORDER BY sortText, releaseDate;"))
 	{
 		while(query.next())
 		{
@@ -662,6 +618,8 @@ void cMainWindow::loadMoviesDB()
 			lpMovie->setCast(query.value("cast").toString().split("|"));
 			lpMovie->setCrew(query.value("crew").toString().split("|"));
 			lpMovie->setState(query.value("state").value<cMovie::State>());
+			lpMovie->setLocalPath(query.value("localPath").toString());
+			lpMovie->setResolution(query.value("resolution").toString());
 		}
 
 		qint32 iOldMovieID	= -1;
