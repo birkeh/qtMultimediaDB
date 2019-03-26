@@ -214,6 +214,13 @@ cMainWindow::~cMainWindow()
 
 void cMainWindow::closeEvent(QCloseEvent *event)
 {
+	if(m_db.isOpen())
+	{
+//		QSqlQuery	query;
+//		query.exec("VACUUM;");
+		m_db.close();
+	}
+
 	QSettings	settings;
 	settings.setValue("main/width", QVariant::fromValue(size().width()));
 	settings.setValue("main/hight", QVariant::fromValue(size().height()));
@@ -1658,6 +1665,7 @@ void cMainWindow::doUpdate(cSerieList& serieList)
 						}
 					}
 					lpSerieNew->setCliffhanger(lpSerie->cliffhanger());
+					lpSerieNew->setResolution(lpSerie->resolution());
 					if(!m_db.isOpen())
 						m_db.open();
 					lpSerie->del(m_db);
