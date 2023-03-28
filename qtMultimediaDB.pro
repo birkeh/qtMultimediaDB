@@ -13,6 +13,7 @@ TEMPLATE = app
 RC_ICONS = qtMultimediaDB.ico
 
 SOURCES += main.cpp\
+    ../weatherData/cmeteodata.cpp \
         cmainwindow.cpp \
     cserie.cpp \
     cseasondelegate.cpp \
@@ -51,6 +52,7 @@ SOURCES += main.cpp\
     cpreferences.cpp
 
 HEADERS  += cmainwindow.h \
+    ../weatherData/cmeteodata.h \
     cserie.h \
     cseasondelegate.h \
     cseason.h \
